@@ -1,0 +1,2304 @@
+<!DOCTYPE html>
+<!-- ============================================================
+  MallGuard — Tenant Safety & Standards Inspection System
+  Version 3 (v3) — สิ่งที่เพิ่มจาก v2:
+  1. Splash Screen หน้าโลโก้ + กราฟิกเคลื่อนไหว (วงแหวน/อนุภาค/นาฬิกาไทย)
+  2. Idle Timeout: ไม่มีการใช้งานเกิน 1 นาที -> กลับหน้าโลโก้อัตโนมัติ
+     และเมื่อแตะเข้าใหม่จะรีเซ็ตไปหน้าแดชบอร์ด (หน้าแรก) เสมอ
+  3. Dashboard เต็มหน้าจอ (max-w 1720px) + KPI Cards 8 ใบ
+     (เพิ่ม คะแนนเฉลี่ยรวม / อัตราผ่านมาตรฐาน / ความคืบหน้ารอบตรวจ / ร้านค้างแก้ไข)
+  4. กราฟใหม่ 2 ตัว: Line Trend คะแนนเฉลี่ยรายวัน + Radar อัตราผ่านรายหมวดตรวจ
+     พร้อมเส้นเป้าหมาย 85 คะแนนบนกราฟแท่งแยกโซน
+  5. กราฟทั้งหมด responsive จริง (maintainAspectRatio:false + chart-box)
+     รองรับมือถือ / แท็บเลต / จอคอมพิวเตอร์
+
+  v3.1 — เชื่อมต่อ Google Sheets ของจริง (ใช้คู่กับ Code_v2.gs):
+  6. ชั้นเชื่อมต่อข้อมูลใหม่ (Data Layer) อ่านข้อมูลจริงผ่าน JSONP
+     ทำให้รีเฟรชหน้าจอแล้วข้อมูลไม่หายอีกต่อไป
+  7. เพิ่ม/แก้/ลบร้านค้า บันทึกลง Google Sheets จริง พร้อม loading state
+  8. ป้ายสถานะการเชื่อมต่อบนแถบหัวเว็บ + ปุ่มซิงก์ข้อมูลบนแดชบอร์ด
+  9. แคชข้อมูลลงเครื่อง ใช้ดูต่อได้เมื่อสัญญาณขาด + ซิงก์อัตโนมัติเมื่อกลับมาออนไลน์
+ 10. ดึงรูปหลักฐานจาก Drive เป็น base64 ก่อนออก PDF เพื่อไม่ให้รูปหายจากไฟล์รายงาน
+ 11. ถ้ายังไม่ตั้งค่า URL ของ Apps Script ระบบจะทำงานใน "โหมดสาธิต" อัตโนมัติ
+============================================================ -->
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>MallGuard | ระบบตรวจประเมินความปลอดภัยและมาตรฐานร้านค้า</title>
+<meta name="theme-color" content="#3B82F6">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MallGuard">
+<link rel="apple-touch-icon" id="appleTouchIcon" href="">
+<link rel="icon" id="faviconLink" href="">
+<link rel="manifest" id="manifestLink" href="">
+
+<!-- ===================== CDN LIBRARIES ===================== -->
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.dataTables.min.css">
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<style>
+/* ============================================================
+   ธีมสี — โทนสดใส (Vivid) รองรับ Light / Dark Mode
+   ตัวแปร CSS ทั้งหมดถูกสลับผ่าน class "dark" บน <html>
+   ============================================================ */
+:root{
+  --bg: #f3f0ff;
+  --bg-2: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f7f5ff;
+  --text: #1e1b2e;
+  --text-muted: #6b6280;
+  --border: #e6e1fa;
+  --shadow: 0 10px 30px -10px rgba(124,58,237,.18);
+  --brand-a:#3B82F6; --brand-b:#EC4899; /* ฟ้า -> ชมพู (สีหลักของแบรนด์) */
+  --grad-1a:#3B82F6; --grad-1b:#06B6D4; /* ฟ้า -> ฟ้าเขียว (Primary) */
+  --grad-2a:#10B981; --grad-2b:#14B8A6; /* emerald -> teal (สื่อความหมาย "ผ่าน") */
+  --grad-3a:#F97316; --grad-3b:#FB923C; /* ส้ม (Accent พลังงาน) */
+  --grad-4a:#EC4899; --grad-4b:#F43F5E; /* ชมพู -> กุหลาบ */
+  --grad-5a:#F59E0B; --grad-5b:#EC4899; /* อำพัน -> ชมพู */
+  --bg-blob-blue: rgba(59,130,246,.16);
+  --bg-blob-pink: rgba(236,72,153,.14);
+  --bg-blob-orange: rgba(249,115,22,.12);
+}
+html.dark{
+  --bg:#120f1e;
+  --bg-2:#181428;
+  --surface:#1c1730;
+  --surface-2:#231d3a;
+  --text:#f2effa;
+  --text-muted:#a79fc4;
+  --border:#332a55;
+  --shadow: 0 10px 30px -10px rgba(0,0,0,.5);
+  --bg-blob-blue: rgba(59,130,246,.22);
+  --bg-blob-pink: rgba(236,72,153,.18);
+  --bg-blob-orange: rgba(249,115,22,.16);
+}
+*{ font-family:'Prompt', sans-serif; }
+body{
+  background: var(--bg);
+  color: var(--text);
+  line-height:1.6;
+  transition: background .35s ease, color .35s ease;
+  position:relative;
+}
+/* พื้นหลังลายเมช (mesh gradient) สีฟ้า/ส้ม/ชมพู ลอยนิ่งๆ อยู่หลังเนื้อหาทั้งแอป
+   ให้ความรู้สึกทันสมัย โดยเฉพาะหน้าแดชบอร์ดที่การ์ดสีขาว/มืดลอยอยู่ด้านบน */
+body::before{
+  content:''; position:fixed; inset:0; z-index:-1; pointer-events:none;
+  background:
+    radial-gradient(600px 500px at 8% 0%, var(--bg-blob-blue), transparent 60%),
+    radial-gradient(650px 550px at 100% 15%, var(--bg-blob-pink), transparent 60%),
+    radial-gradient(550px 500px at 30% 100%, var(--bg-blob-orange), transparent 60%);
+  background-repeat:no-repeat;
+  animation: meshFloat 22s ease-in-out infinite alternate;
+}
+@keyframes meshFloat{
+  0%{ background-position: 0% 0%, 0% 0%, 0% 0%; }
+  100%{ background-position: 2% 4%, -3% 2%, 3% -3%; }
+}
+@media (prefers-reduced-motion: reduce){ body::before{ animation:none; } }
+
+/* Header แบบไล่สีฟ้า -> ชมพู เคลื่อนไหวเบาๆ ให้ดูมีชีวิตชีวา */
+.app-header{
+  background-image: linear-gradient(115deg, #2563EB 0%, #3B82F6 28%, #EC4899 78%, #F97316 100%);
+  background-size: 220% 220%;
+  animation: headerGradientShift 12s ease infinite;
+  box-shadow: 0 12px 30px -14px rgba(59,130,246,.55);
+}
+@keyframes headerGradientShift{
+  0%{ background-position: 0% 50%; }
+  50%{ background-position: 100% 50%; }
+  100%{ background-position: 0% 50%; }
+}
+@media (prefers-reduced-motion: reduce){ .app-header{ animation:none; } }
+.header-select{
+  background: rgba(255,255,255,.18) !important; color:#fff !important; border:1.5px solid rgba(255,255,255,.35) !important;
+  backdrop-filter: blur(4px);
+}
+.header-select option{ color:#1e1b2e; }
+.header-btn{
+  background: rgba(255,255,255,.18); color:#fff; border:1.5px solid rgba(255,255,255,.35);
+  backdrop-filter: blur(4px);
+}
+.header-btn:hover{ background: rgba(255,255,255,.3); }
+.surface{ background:var(--surface); border:1px solid var(--border); box-shadow:var(--shadow); }
+.surface-2{ background:var(--surface-2); }
+.text-muted{ color:var(--text-muted); }
+.border-soft{ border-color:var(--border); }
+
+/* ปุ่มใหญ่พอสำหรับผู้ใช้ที่สวมถุงมือหน้างาน (ขั้นต่ำ 52px สูง) */
+.btn{
+  min-height:52px; padding:0 22px; border-radius:16px; font-weight:600;
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  transition: transform .12s ease, box-shadow .2s ease, opacity .2s ease;
+  cursor:pointer; user-select:none; font-size:15px; white-space:nowrap;
+}
+.btn:active{ transform:scale(.97); }
+.btn:disabled{ opacity:.55; cursor:not-allowed; transform:none; }
+.btn-grad{ color:#fff; background-image: linear-gradient(135deg,var(--g1),var(--g2)); box-shadow: 0 8px 20px -6px var(--g1); position:relative; overflow:hidden; }
+.btn-grad:hover{ box-shadow: 0 12px 26px -6px var(--g1); filter:brightness(1.06); }
+.btn-outline{ border:2px solid var(--border); color:var(--text); background:transparent; }
+.btn-outline:hover{ border-color:var(--brand-a); color:var(--brand-a); }
+.btn-soft{ background:var(--surface-2); color:var(--text); }
+.btn-soft:hover{ background:var(--border); }
+.chip{ padding:4px 12px; border-radius:999px; font-weight:600; font-size:12px; display:inline-flex; align-items:center; gap:6px; }
+
+/* KPI Card แบบ product card พร้อมแอนิเมชันไล่เข้าทีละใบ (stagger) */
+.kpi-card{
+  border-radius:22px; padding:20px; color:#fff; position:relative; overflow:hidden;
+  box-shadow: 0 14px 30px -12px rgba(0,0,0,.35);
+  transition: transform .2s ease, box-shadow .2s ease;
+  animation: kpiPopIn .5s cubic-bezier(.22,1,.36,1) backwards;
+}
+.kpi-card:hover{ transform: translateY(-6px) scale(1.015); box-shadow: 0 20px 36px -14px rgba(0,0,0,.4); }
+.kpi-card::after{
+  content:''; position:absolute; right:-30px; top:-30px; width:140px; height:140px; border-radius:50%;
+  background: rgba(255,255,255,.14);
+}
+.kpi-card.kpi-alert{ animation: kpiPopIn .5s cubic-bezier(.22,1,.36,1) backwards, kpiPulse 2.2s ease-in-out infinite 1s; }
+@keyframes kpiPopIn{ from{ opacity:0; transform:translateY(14px) scale(.96);} to{ opacity:1; transform:translateY(0) scale(1);} }
+@keyframes kpiPulse{ 0%,100%{ box-shadow:0 14px 30px -12px rgba(0,0,0,.35), 0 0 0 0 rgba(239,68,68,.45);} 50%{ box-shadow:0 14px 30px -12px rgba(0,0,0,.35), 0 0 0 10px rgba(239,68,68,0);} }
+.kpi-num{ font-size:34px; font-weight:800; line-height:1; }
+
+/* แท็บ / เมนู */
+.nav-item{
+  display:flex; align-items:center; gap:12px; padding:14px 16px; border-radius:14px;
+  color:var(--text-muted); font-weight:600; cursor:pointer; transition:.15s ease;
+}
+.nav-item:hover{ background:var(--surface-2); color:var(--text); transform:translateX(2px); }
+.nav-item.active{ background-image:linear-gradient(135deg,var(--brand-a),var(--brand-b)); color:#fff; box-shadow:0 8px 18px -8px var(--brand-a); }
+
+.page{ animation: fadeSlide .35s ease; }
+@keyframes fadeSlide{ from{ opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+
+/* Checklist toggle */
+.check-item{ border:2px solid var(--border); border-radius:16px; padding:14px 16px; transition:.15s ease; }
+.check-item.state-pass{ border-color:#10B981; background:rgba(16,185,129,.08); }
+.check-item.state-fail{ border-color:#EF4444; background:rgba(239,68,68,.1); }
+.seg-btn{ padding:10px 16px; border-radius:12px; font-weight:700; font-size:13px; min-height:44px; border:2px solid var(--border); }
+.seg-btn.pass-on{ background:#10B981; color:#fff; border-color:#10B981; }
+.seg-btn.fail-on{ background:#EF4444; color:#fff; border-color:#EF4444; }
+
+/* Toast / Modal */
+.modal-backdrop{ position:fixed; inset:0; background:rgba(15,10,30,.55); backdrop-filter:blur(3px); z-index:60; display:flex; align-items:center; justify-content:center; padding:16px; animation:fadeSlide .2s ease;}
+.modal-box{ background:var(--surface); border-radius:22px; max-width:640px; width:100%; max-height:90vh; overflow-y:auto; box-shadow:0 30px 60px -20px rgba(0,0,0,.5); }
+
+.toast-wrap{ position:fixed; top:16px; right:16px; z-index:80; display:flex; flex-direction:column; gap:10px; }
+.toast{ min-width:260px; max-width:340px; border-radius:14px; padding:14px 16px; color:#fff; box-shadow:0 12px 26px -10px rgba(0,0,0,.4); animation:toastIn .25s ease; font-size:14px; font-weight:500;}
+@keyframes toastIn{ from{opacity:0; transform:translateX(30px);} to{opacity:1; transform:translateX(0);} }
+
+.spinner{ width:18px; height:18px; border-radius:50%; border:3px solid rgba(255,255,255,.4); border-top-color:#fff; animation:spin .7s linear infinite; }
+@keyframes spin{ to{ transform:rotate(360deg);} }
+
+input, select, textarea{ background:var(--surface-2); border:2px solid var(--border); color:var(--text); border-radius:12px; padding:11px 14px; width:100%; font-size:14px; transition:border-color .15s ease, box-shadow .15s ease; }
+input:focus, select:focus, textarea:focus{ outline:none; border-color:var(--brand-a); box-shadow:0 0 0 4px rgba(59,130,246,.15); }
+label.field-label{ font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:6px; display:block; }
+
+.sig-canvas{ width:100%; height:160px; background:#fff; border-radius:14px; border:2px dashed var(--border); touch-action:none; }
+
+::-webkit-scrollbar{ width:8px; height:8px; }
+::-webkit-scrollbar-thumb{ background:var(--border); border-radius:8px; }
+
+table.dataTable{ color:var(--text) !important; }
+table.dataTable thead th{ color:var(--text) !important; border-bottom:2px solid var(--border) !important; }
+table.dataTable tbody td{ border-color:var(--border) !important; }
+.dataTables_wrapper .dataTables_filter input, .dataTables_wrapper .dataTables_length select{ color:var(--text); background:var(--surface-2); }
+.dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_paginate, .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter label{ color:var(--text-muted) !important; }
+
+#pdfReportRoot{ position:fixed; left:-99999px; top:0; background:#fff; color:#111; }
+
+/* class เฉพาะสำหรับ JS สั่งซ่อน/แสดง element (หน้า, โมดัล, การ์ดข้อมูล ฯลฯ)
+   ตั้งใจแยกออกจาก "hidden" ของ Tailwind โดยเด็ดขาด เพราะ Tailwind ใช้ "hidden"
+   คู่กับ responsive variant เช่น "hidden md:block" — ถ้าเราสร้าง .hidden{!important} ทับเอง
+   จะไปบังคับปิดตลอดกาลแม้ตอน md:block ควรแสดง (บั๊กที่ทำให้แถบเมนูข้างกดไม่ได้) */
+.js-hidden{ display:none !important; }
+
+/* ---------- ใบรายงาน (Report Template) — ใช้ร่วมกันทั้งตัวอย่างบนจอและตอน Export PDF ---------- */
+.report-page{ width:1123px; min-height:794px; background:#fff; color:#1e1b2e; font-family:'Prompt',sans-serif; box-sizing:border-box; padding:36px 44px; position:relative; }
+.report-header{ display:flex; align-items:center; justify-content:space-between; border-radius:18px; padding:20px 26px; color:#fff;
+  background-image:linear-gradient(115deg,#2563EB,#3B82F6 45%,#EC4899 100%); margin-bottom:18px; }
+.report-logo{ width:46px; height:46px; border-radius:14px; background:rgba(255,255,255,.22); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:18px; }
+.report-summary-strip{ display:flex; gap:16px; align-items:stretch; margin-bottom:16px; }
+.report-store-block{ flex:1.4; background:#F8FAFC; border-radius:16px; padding:16px 18px; border:1px solid #E6E1FA; }
+.report-grade-block{ flex:.8; border-radius:16px; padding:16px 18px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; }
+.report-mini-stats{ flex:1; display:flex; flex-direction:column; gap:8px; justify-content:center; }
+.report-mini-stat{ background:#F8FAFC; border:1px solid #E6E1FA; border-radius:12px; padding:8px 12px; font-size:12.5px; display:flex; justify-content:space-between; gap:8px; }
+.report-checklist-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:14px; }
+.report-cat-card{ border-radius:14px; padding:12px 14px; border:1px solid #eee; background:#FCFCFF; }
+.report-cat-title{ font-weight:700; font-size:13px; margin-bottom:8px; display:flex; align-items:center; gap:6px; }
+.report-check-row{ display:flex; justify-content:space-between; gap:8px; align-items:flex-start; font-size:11.5px; padding:6px 8px; border-radius:8px; margin-bottom:5px; }
+.report-photos-grid{ display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin-bottom:14px; }
+.report-photos-grid img{ width:100%; height:78px; object-fit:cover; border-radius:10px; border:1px solid #eee; }
+.report-note-box{ background:#FFF7ED; border:1px solid #FED7AA; border-radius:14px; padding:12px 16px; font-size:12.5px; margin-bottom:14px; }
+.report-sign-row{ display:flex; gap:24px; margin-top:10px; }
+.report-sign-box{ flex:1; text-align:center; font-size:12px; }
+.report-sign-img{ height:64px; object-fit:contain; margin-bottom:4px; }
+.report-footer{ position:absolute; bottom:24px; left:44px; right:44px; display:flex; justify-content:space-between; font-size:11px; color:#9691ab; border-top:1px solid #eee; padding-top:8px; }
+
+@media (max-width: 768px){
+  .kpi-num{ font-size:28px; }
+}
+
+/* ============================================================
+   SPLASH / IDLE SCREEN — หน้าโลโก้ต้อนรับ
+   แสดงตอนเปิดแอปครั้งแรก และเมื่อไม่มีการใช้งานเกิน 1 นาที
+   เหตุผล: ป้องกันข้อมูลภายใน (คะแนนร้านค้า/ข้อบกพร่อง) ค้างบนจอ
+   ให้คนเดินผ่านเห็น — ต้องแตะหน้าจอก่อนจึงจะเข้าดูข้อมูลได้
+   ============================================================ */
+#splashScreen{
+  position:fixed; inset:0; z-index:200;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  background:
+    radial-gradient(720px 620px at 12% 8%, rgba(59,130,246,.35), transparent 60%),
+    radial-gradient(760px 660px at 92% 20%, rgba(236,72,153,.30), transparent 60%),
+    radial-gradient(680px 600px at 40% 100%, rgba(249,115,22,.24), transparent 60%),
+    linear-gradient(160deg, #0d0a1c 0%, #171130 55%, #1d1240 100%);
+  color:#fff; overflow:hidden; cursor:pointer; user-select:none;
+  transition: opacity .5s ease, visibility .5s ease;
+}
+#splashScreen.splash-hidden{ opacity:0; visibility:hidden; pointer-events:none; }
+/* วงแหวนเรืองแสงหมุนรอบโลโก้ */
+.splash-logo-wrap{ position:relative; width:190px; height:190px; display:flex; align-items:center; justify-content:center; }
+.splash-ring{ position:absolute; inset:0; border-radius:50%; border:2px solid transparent; }
+.splash-ring-1{ border-top-color:rgba(59,130,246,.85); border-right-color:rgba(59,130,246,.25); animation: ringSpin 3.2s linear infinite; }
+.splash-ring-2{ inset:-16px; border-bottom-color:rgba(236,72,153,.8); border-left-color:rgba(236,72,153,.22); animation: ringSpin 5s linear infinite reverse; }
+.splash-ring-3{ inset:-32px; border-top-color:rgba(249,115,22,.55); animation: ringSpin 7.5s linear infinite; }
+@keyframes ringSpin{ to{ transform:rotate(360deg); } }
+.splash-logo{
+  width:132px; height:132px; border-radius:36px;
+  background-image:linear-gradient(135deg,#3B82F6,#EC4899);
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 24px 60px -16px rgba(59,130,246,.65), 0 0 0 8px rgba(255,255,255,.06);
+  animation: logoBreath 3s ease-in-out infinite;
+}
+@keyframes logoBreath{ 0%,100%{ transform:scale(1);} 50%{ transform:scale(1.05);} }
+.splash-title{
+  font-size:44px; font-weight:800; letter-spacing:.5px; margin-top:34px;
+  background-image:linear-gradient(100deg,#93C5FD,#F9A8D4 55%,#FDBA74);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  animation: fadeSlide .8s ease .15s backwards;
+}
+.splash-sub{ color:rgba(255,255,255,.78); font-size:15px; margin-top:8px; text-align:center; padding:0 24px; animation: fadeSlide .8s ease .3s backwards; }
+.splash-clock{ margin-top:26px; text-align:center; animation: fadeSlide .8s ease .45s backwards; }
+.splash-clock-time{ font-size:42px; font-weight:700; letter-spacing:2px; line-height:1.1; }
+.splash-clock-date{ font-size:14px; color:rgba(255,255,255,.7); margin-top:2px; }
+.splash-hint{
+  margin-top:44px; display:flex; align-items:center; gap:10px;
+  padding:16px 34px; border-radius:999px; font-weight:600; font-size:16px;
+  background:rgba(255,255,255,.1); border:1.5px solid rgba(255,255,255,.28);
+  backdrop-filter:blur(6px);
+  animation: hintPulse 2.4s ease-in-out infinite, fadeSlide .8s ease .6s backwards;
+}
+@keyframes hintPulse{
+  0%,100%{ box-shadow:0 0 0 0 rgba(255,255,255,.25); transform:scale(1); }
+  50%{ box-shadow:0 0 0 14px rgba(255,255,255,0); transform:scale(1.03); }
+}
+/* อนุภาคลอย (particles) ให้หน้าพักจอดูมีชีวิต ไม่นิ่งทื่อ */
+.splash-particle{
+  position:absolute; border-radius:50%; pointer-events:none; opacity:.55;
+  background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.9), rgba(255,255,255,0) 70%);
+  animation: particleFloat linear infinite;
+}
+@keyframes particleFloat{
+  0%{ transform:translateY(20vh) scale(.6); opacity:0; }
+  15%{ opacity:.55; }
+  85%{ opacity:.4; }
+  100%{ transform:translateY(-110vh) scale(1.1); opacity:0; }
+}
+.splash-footer{ position:absolute; bottom:22px; font-size:11.5px; color:rgba(255,255,255,.45); text-align:center; padding:0 16px; }
+@media (prefers-reduced-motion: reduce){
+  .splash-ring, .splash-logo, .splash-hint, .splash-particle{ animation:none !important; }
+}
+@media (max-width:640px){
+  .splash-title{ font-size:32px; }
+  .splash-clock-time{ font-size:34px; }
+  .splash-logo-wrap{ width:160px; height:160px; }
+  .splash-logo{ width:112px; height:112px; }
+}
+
+/* ---------- ป้ายสถานะการเชื่อมต่อ backend (บนแถบหัวเว็บ) ---------- */
+.conn-badge{
+  display:inline-flex; align-items:center; gap:7px; height:44px; padding:0 12px;
+  border-radius:14px; font-size:12px; font-weight:600; color:#fff; white-space:nowrap;
+  background:rgba(255,255,255,.18); border:1.5px solid rgba(255,255,255,.35); backdrop-filter:blur(4px);
+}
+.conn-dot{ width:9px; height:9px; border-radius:50%; box-shadow:0 0 0 3px rgba(255,255,255,.18); animation: connPulse 2s ease-in-out infinite; }
+@keyframes connPulse{ 0%,100%{ opacity:1; } 50%{ opacity:.45; } }
+
+/* ---------- ม่านโหลดข้อมูลระหว่างซิงก์กับ Google Sheets ---------- */
+#dataLoadingOverlay{
+  position:fixed; inset:0; z-index:150; display:flex; align-items:center; justify-content:center;
+  background:rgba(15,10,30,.45); backdrop-filter:blur(3px);
+}
+.data-loading-box{
+  background:var(--surface); color:var(--text); border-radius:20px; padding:26px 34px;
+  display:flex; flex-direction:column; align-items:center; gap:12px; text-align:center;
+  box-shadow:0 26px 50px -18px rgba(0,0,0,.5); border:1px solid var(--border);
+}
+
+/* กล่องกราฟ: กำหนดความสูงคงที่ + ให้ Chart.js ยืดเต็ม (maintainAspectRatio:false)
+   เพื่อให้ layout แดชบอร์ดเต็มจอสวยงามเท่ากันทุกจอ ไม่ยืดหดตามสัดส่วน canvas */
+.chart-box{ position:relative; height:280px; }
+.chart-box-tall{ position:relative; height:320px; }
+@media (max-width:768px){ .chart-box, .chart-box-tall{ height:240px; } }
+</style>
+</head>
+<body class="min-h-screen">
+
+<!-- ===================== SPLASH / IDLE SCREEN ===================== -->
+<!-- แสดงตอนเปิดแอป และกลับมาแสดงอัตโนมัติเมื่อไม่มีการใช้งานเกิน 1 นาที -->
+<div id="splashScreen" onclick="enterApp()">
+  <div id="splashParticles"></div>
+  <div class="splash-logo-wrap">
+    <div class="splash-ring splash-ring-1"></div>
+    <div class="splash-ring splash-ring-2"></div>
+    <div class="splash-ring splash-ring-3"></div>
+    <div class="splash-logo">
+      <svg viewBox="0 0 192 192" width="92" height="92" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M96 30 L150 52 V96 C150 130 128 154 96 166 C64 154 42 130 42 96 V52 Z" fill="rgba(255,255,255,.16)"/>
+        <path d="M96 46 L136 62 V96 C136 122 118 140 96 150 C74 140 56 122 56 96 V62 Z" fill="none" stroke="#fff" stroke-width="6"/>
+        <path d="M78 98 L91 111 L118 82" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+  </div>
+  <div class="splash-title">MallGuard</div>
+  <div class="splash-sub">ระบบตรวจประเมินความปลอดภัย สุขอนามัย และมาตรฐานร้านค้าผู้เช่า<br>Tenant Safety &amp; Standards Inspection System</div>
+  <div class="splash-clock">
+    <div class="splash-clock-time" id="splashClockTime">--:--</div>
+    <div class="splash-clock-date" id="splashClockDate"></div>
+  </div>
+  <div class="splash-hint">👆 แตะที่หน้าจอเพื่อเริ่มใช้งาน</div>
+  <div class="splash-footer">เพื่อความปลอดภัยของข้อมูล ระบบจะกลับสู่หน้านี้อัตโนมัติเมื่อไม่มีการใช้งานเกิน 1 นาที</div>
+</div>
+
+<!-- ===================== LOADING OVERLAY (ระหว่างซิงก์ข้อมูลจริง) ===================== -->
+<div id="dataLoadingOverlay" class="js-hidden">
+  <div class="data-loading-box">
+    <div class="spinner" style="width:34px;height:34px;border-width:4px;border-color:rgba(59,130,246,.25);border-top-color:#3B82F6;"></div>
+    <div class="font-semibold">กำลังซิงก์ข้อมูลจาก Google Sheets…</div>
+    <div class="text-xs text-muted">การเรียกครั้งแรกอาจใช้เวลาสักครู่</div>
+  </div>
+</div>
+
+<!-- ===================== TOAST CONTAINER ===================== -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<!-- ===================== TOP NAVBAR ===================== -->
+<header class="app-header sticky top-0 z-40">
+  <div class="max-w-[1400px] mx-auto px-4 py-3 flex items-center justify-between gap-3">
+    <div class="flex items-center gap-3">
+      <div id="appLogo" class="w-11 h-11 rounded-2xl flex items-center justify-center text-white font-extrabold text-lg shadow-lg" style="background:rgba(255,255,255,.22); backdrop-filter:blur(4px);">MG</div>
+      <div>
+        <div class="font-extrabold text-lg leading-tight text-white">MallGuard</div>
+        <div class="text-xs leading-tight" style="color:rgba(255,255,255,.85);">ระบบตรวจประเมินความปลอดภัยและมาตรฐานร้านค้า</div>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <select id="roleSwitch" class="header-select !w-auto !py-2 !text-xs font-semibold hidden sm:block">
+        <option value="inspector">👷 เจ้าหน้าที่ผู้ตรวจ (Inspector)</option>
+        <option value="manager">📊 หัวหน้างาน/ผู้บริหาร (Manager)</option>
+        <option value="admin">🛠️ ผู้ดูแลระบบ (Admin)</option>
+      </select>
+      <div id="connBadge" class="conn-badge" title="สถานะการเชื่อมต่อ"></div>
+      <button id="darkToggle" class="btn header-btn !min-h-[44px] !px-3" title="สลับโหมดสว่าง/มืด">🌙</button>
+    </div>
+  </div>
+  <select id="roleSwitchMobile" class="header-select !w-full !py-2 !text-xs font-semibold sm:hidden !rounded-none">
+    <option value="inspector">👷 เจ้าหน้าที่ผู้ตรวจ (Inspector)</option>
+    <option value="manager">📊 หัวหน้างาน/ผู้บริหาร (Manager)</option>
+    <option value="admin">🛠️ ผู้ดูแลระบบ (Admin)</option>
+  </select>
+</header>
+
+<div class="max-w-[1720px] mx-auto flex gap-5 px-4 py-5 pb-24 md:pb-5">
+  <!-- ===================== SIDEBAR (Desktop) ===================== -->
+  <aside class="desktop-sidebar w-64 shrink-0 hidden md:block">
+    <nav class="surface rounded-2xl p-3 flex flex-col gap-1 sticky top-24">
+      <div class="nav-item active" data-page="dashboard"><span>📊</span> แดชบอร์ด</div>
+      <div class="nav-item" data-page="inspect"><span>📝</span> ตรวจประเมิน</div>
+      <div class="nav-item" data-page="reports"><span>📁</span> รายงาน/ประวัติ</div>
+      <div class="nav-item nav-admin-only" data-page="tenants"><span>🏬</span> ข้อมูลร้านค้า</div>
+      <div class="mt-3 pt-3 border-t border-soft text-xs text-muted px-2">เข้าสู่ระบบในบทบาท:</div>
+      <div class="px-2 text-sm font-semibold" id="roleLabelSidebar">👷 เจ้าหน้าที่ผู้ตรวจ</div>
+    </nav>
+  </aside>
+
+  <!-- ===================== MAIN CONTENT ===================== -->
+  <main class="flex-1 min-w-0">
+
+    <!-- ============ PAGE: DASHBOARD ============ -->
+    <section id="page-dashboard" class="page space-y-5">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 class="text-2xl font-extrabold">ภาพรวมการตรวจประเมิน</h1>
+          <p class="text-muted text-sm" id="dashDateLabel"></p>
+          <p class="text-muted text-xs mt-0.5" id="syncLabel"></p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button class="btn btn-grad" style="--g1:var(--grad-1a);--g2:var(--grad-1b);" id="refreshBtn" onclick="refreshData()">🔄 ซิงก์ข้อมูล</button>
+          <button class="btn btn-outline" onclick="previewDashboardReport()">👁️ ดูตัวอย่าง/PDF</button>
+          <button class="btn btn-outline" onclick="exportDashboardExcel()">📊 Export Excel</button>
+        </div>
+      </div>
+
+<!-- แถว KPI 8 ใบ: มือถือ 2 คอลัมน์ / แท็บเลต 4 / จอคอมกว้าง 4 (2 แถว) เต็มความกว้างแดชบอร์ด -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="kpiRow"></div>
+
+      <!-- แถวกราฟชุดที่ 1: สัดส่วนผลตรวจ + คะแนนเฉลี่ยแยกโซน -->
+      <div class="grid grid-cols-1 xl:grid-cols-12 gap-4">
+        <div class="surface rounded-2xl p-5 xl:col-span-4">
+          <h3 class="font-bold mb-1">สัดส่วนผลตรวจ (รอบปัจจุบัน)</h3>
+          <p class="text-muted text-xs mb-3">Compliant / Minor / Major Defect</p>
+          <div class="chart-box"><canvas id="chartDoughnut"></canvas></div>
+        </div>
+        <div class="surface rounded-2xl p-5 xl:col-span-8">
+          <h3 class="font-bold mb-1">คะแนนเฉลี่ยแยกโซน (เต็ม 100)</h3>
+          <p class="text-muted text-xs mb-3">เทียบกับเส้นเป้าหมายมาตรฐาน 85 คะแนน</p>
+          <div class="chart-box"><canvas id="chartBar"></canvas></div>
+        </div>
+      </div>
+
+      <!-- แถวกราฟชุดที่ 2 (KPI ใหม่): แนวโน้มคะแนน + อัตราผ่านรายหมวดตรวจ -->
+      <div class="grid grid-cols-1 xl:grid-cols-12 gap-4">
+        <div class="surface rounded-2xl p-5 xl:col-span-7">
+          <h3 class="font-bold mb-1">📈 แนวโน้มคะแนนเฉลี่ยรายวัน (Trend)</h3>
+          <p class="text-muted text-xs mb-3">คะแนนเฉลี่ยของผลตรวจในแต่ละวันตลอดรอบปัจจุบัน</p>
+          <div class="chart-box"><canvas id="chartTrend"></canvas></div>
+        </div>
+        <div class="surface rounded-2xl p-5 xl:col-span-5">
+          <h3 class="font-bold mb-1">🎯 อัตราผ่านรายหมวดตรวจ (%)</h3>
+          <p class="text-muted text-xs mb-3">อัคคีภัย / สุขอนามัย / ไฟฟ้าวิศวกรรม — จุดอ่อนอยู่หมวดไหน</p>
+          <div class="chart-box"><canvas id="chartRadar"></canvas></div>
+        </div>
+      </div>
+
+      <div class="surface rounded-2xl p-5">
+        <h3 class="font-bold mb-3">🔥 Top 5 ร้านค้าที่ต้องปรับปรุงด่วนที่สุด</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm" id="top5Table">
+            <thead><tr class="text-left text-muted border-b border-soft">
+              <th class="py-2">อันดับ</th><th>ร้านค้า</th><th>โซน</th><th>สถานะ</th><th>คะแนน</th><th>ตรวจล่าสุด</th>
+            </tr></thead>
+            <tbody id="top5Body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PAGE: INSPECT ============ -->
+    <section id="page-inspect" class="page js-hidden space-y-5">
+      <div>
+        <h1 class="text-2xl font-extrabold">ฟอร์มตรวจประเมินร้านค้า</h1>
+        <p class="text-muted text-sm">สแกน QR หรือเลือกร้านค้า แล้วประเมินตามรายการตรวจสอบ</p>
+      </div>
+
+      <!-- Step 0: ประเภทการตรวจ -->
+      <div class="surface rounded-2xl p-5">
+        <label class="field-label">ประเภทการตรวจ</label>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="inspectionTypeGroup">
+          <div class="seg-btn insp-type-btn pass-on-candidate cursor-pointer text-center" data-type="weekly">📅 ประจำสัปดาห์/เดือน</div>
+          <div class="seg-btn insp-type-btn cursor-pointer text-center" data-type="preopening">🏗️ ก่อนเปิดร้านใหม่</div>
+          <div class="seg-btn insp-type-btn cursor-pointer text-center" data-type="incident">🚨 กรณีฉุกเฉิน/เร่งด่วน</div>
+        </div>
+      </div>
+
+      <!-- Step 1: เลือกร้าน -->
+      <div class="surface rounded-2xl p-5">
+        <div class="flex items-center justify-between mb-3">
+          <label class="field-label !mb-0">เลือกร้านค้า</label>
+          <button class="btn btn-grad !min-h-[40px] !py-2 !px-4 text-sm" style="--g1:var(--grad-1a);--g2:var(--grad-1b);" onclick="openQrScanner()">📷 สแกน QR</button>
+        </div>
+        <select id="storeSelect"></select>
+        <div id="storeInfoCard" class="js-hidden mt-4 surface-2 rounded-2xl p-4"></div>
+      </div>
+
+      <!-- Step 2: Checklist -->
+      <div id="checklistWrap" class="space-y-4 js-hidden"></div>
+
+      <!-- Step 3: หลักฐาน + ลายเซ็น + หมายเหตุ -->
+      <div id="evidenceWrap" class="js-hidden space-y-4">
+        <div class="surface rounded-2xl p-5">
+          <h3 class="font-bold mb-3">📸 รูปภาพหลักฐาน</h3>
+          <div class="flex flex-wrap gap-3 mb-3">
+            <button class="btn btn-soft" onclick="openCamera()">📷 เปิดกล้องถ่ายภาพ</button>
+            <label class="btn btn-soft cursor-pointer">🖼️ อัปโหลดรูป
+              <input type="file" accept="image/*" multiple class="hidden" id="fileUploadInput" onchange="handleFileUpload(event)">
+            </label>
+          </div>
+          <div class="grid grid-cols-3 sm:grid-cols-5 gap-2" id="photoGallery"></div>
+        </div>
+
+        <div class="surface rounded-2xl p-5">
+          <h3 class="font-bold mb-3">📝 บันทึกเพิ่มเติม</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="sm:col-span-2">
+              <label class="field-label">ข้อเสนอแนะ / คำสั่งปรับปรุงงาน</label>
+              <textarea id="noteText" rows="3" placeholder="ระบุรายละเอียดสิ่งที่ต้องแก้ไข..."></textarea>
+            </div>
+            <div>
+              <label class="field-label">กำหนดวันเดดไลน์แก้ไข</label>
+              <input type="date" id="deadlineInput">
+            </div>
+          </div>
+        </div>
+
+        <div class="surface rounded-2xl p-5">
+          <h3 class="font-bold mb-3">✍️ ลงลายมือชื่อ</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="field-label">ผู้ตรวจสอบ (Inspector)</label>
+              <canvas class="sig-canvas" id="sigInspector"></canvas>
+              <button class="btn btn-outline !min-h-[36px] !py-1 text-xs mt-2" onclick="clearSig('sigInspector')">ล้างลายเซ็น</button>
+            </div>
+            <div>
+              <label class="field-label">ผู้แทนร้านค้า (Store Rep.)</label>
+              <canvas class="sig-canvas" id="sigStore"></canvas>
+              <button class="btn btn-outline !min-h-[36px] !py-1 text-xs mt-2" onclick="clearSig('sigStore')">ล้างลายเซ็น</button>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn btn-grad w-full text-base" style="--g1:var(--grad-2a);--g2:var(--grad-2b);" id="submitBtn" onclick="openSubmitPreview()">👁️ ตรวจสอบตัวอย่างก่อนบันทึก</button>
+      </div>
+    </section>
+
+    <!-- ============ PAGE: REPORTS ============ -->
+    <section id="page-reports" class="page js-hidden space-y-5">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <h1 class="text-2xl font-extrabold">รายงาน / ประวัติการตรวจ</h1>
+        <div class="flex gap-2">
+          <button class="btn btn-outline" onclick="exportHistoryExcel()">📊 Export Excel</button>
+          <button class="btn btn-outline" onclick="exportHistoryCSV()">📋 Export CSV</button>
+        </div>
+      </div>
+      <div class="surface rounded-2xl p-4 overflow-x-auto">
+        <table id="historyTable" class="w-full text-sm" style="width:100%">
+          <thead><tr>
+            <th>วันที่ตรวจ</th><th>ร้านค้า</th><th>โซน</th><th>ประเภทตรวจ</th><th>สถานะ</th><th>ผู้ตรวจ</th><th>รายงาน</th>
+          </tr></thead>
+          <tbody id="historyBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ PAGE: TENANTS (ADMIN) ============ -->
+    <section id="page-tenants" class="page js-hidden space-y-5">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <h1 class="text-2xl font-extrabold">ข้อมูลหลักร้านค้า (Tenant Master Data)</h1>
+        <button class="btn btn-grad" style="--g1:var(--grad-4a);--g2:var(--grad-4b);" onclick="openTenantModal()">➕ เพิ่มร้านค้าใหม่</button>
+      </div>
+      <div class="surface rounded-2xl p-4 overflow-x-auto">
+        <table id="tenantsTable" class="w-full text-sm" style="width:100%">
+          <thead><tr>
+            <th>Store ID</th><th>ชื่อร้าน</th><th>ประเภทธุรกิจ</th><th>โซน/ชั้น</th><th>ผู้ติดต่อ</th><th>เบอร์โทร</th><th>สถานะ</th><th>จัดการ</th>
+          </tr></thead>
+          <tbody id="tenantsBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- ===================== MOBILE BOTTOM TABBAR ===================== -->
+<nav class="mobile-tabbar fixed bottom-0 left-0 right-0 z-40 surface border-t md:hidden" style="border-color:var(--border);">
+  <div class="flex justify-around items-center py-2">
+    <div class="nav-item !flex-col !gap-0 !py-2 !px-3 text-[11px] active" data-page="dashboard"><span class="text-lg">📊</span>แดชบอร์ด</div>
+    <div class="nav-item !flex-col !gap-0 !py-2 !px-3 text-[11px]" data-page="inspect"><span class="text-lg">📝</span>ตรวจ</div>
+    <div class="nav-item !flex-col !gap-0 !py-2 !px-3 text-[11px]" data-page="reports"><span class="text-lg">📁</span>รายงาน</div>
+    <div class="nav-item nav-admin-only !flex-col !gap-0 !py-2 !px-3 text-[11px]" data-page="tenants"><span class="text-lg">🏬</span>ร้านค้า</div>
+  </div>
+</nav>
+
+<!-- ===================== MODALS ===================== -->
+<div id="qrModal" class="modal-backdrop js-hidden">
+  <div class="modal-box p-5">
+    <div class="flex justify-between items-center mb-3">
+      <h3 class="font-bold text-lg">📷 สแกน QR Code หน้าร้าน</h3>
+      <button onclick="closeQrScanner()" class="text-2xl leading-none">&times;</button>
+    </div>
+    <div id="qrReader" class="rounded-xl overflow-hidden"></div>
+    <p class="text-xs text-muted mt-3">* ต้องเปิดผ่าน HTTPS และอนุญาตสิทธิ์กล้องบนเบราว์เซอร์มือถือ</p>
+  </div>
+</div>
+
+<div id="cameraModal" class="modal-backdrop js-hidden">
+  <div class="modal-box p-5">
+    <div class="flex justify-between items-center mb-3">
+      <h3 class="font-bold text-lg">📷 ถ่ายภาพหลักฐาน</h3>
+      <button onclick="closeCamera()" class="text-2xl leading-none">&times;</button>
+    </div>
+    <video id="cameraVideo" autoplay playsinline class="w-full rounded-xl bg-black"></video>
+    <canvas id="cameraCanvas" class="hidden"></canvas>
+    <button class="btn btn-grad w-full mt-3" style="--g1:var(--grad-3a);--g2:var(--grad-3b);" onclick="capturePhoto()">📸 ถ่ายภาพ</button>
+  </div>
+</div>
+
+<div id="tenantModal" class="modal-backdrop js-hidden">
+  <div class="modal-box p-5">
+    <div class="flex justify-between items-center mb-3">
+      <h3 class="font-bold text-lg" id="tenantModalTitle">เพิ่มร้านค้าใหม่</h3>
+      <button onclick="closeTenantModal()" class="text-2xl leading-none">&times;</button>
+    </div>
+    <div class="space-y-3">
+      <input type="hidden" id="t_storeId_edit">
+      <div><label class="field-label">รหัสร้าน (Store ID)</label><input id="t_storeId" placeholder="เช่น A-101"></div>
+      <div><label class="field-label">ชื่อร้านค้า</label><input id="t_name" placeholder="เช่น ชาบูฮะ"></div>
+      <div><label class="field-label">ประเภทธุรกิจ</label><input id="t_type" placeholder="เช่น ร้านอาหาร/บุฟเฟต์"></div>
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="field-label">โซน</label>
+          <select id="t_zone"><option>โซนอาหาร</option><option>โซนพลาซ่า</option><option>โซนไอที</option><option>โซนแฟชั่น</option><option>โซนบริการ</option></select>
+        </div>
+        <div><label class="field-label">ชั้น</label><input id="t_floor" placeholder="เช่น ชั้น 3"></div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="field-label">ผู้ติดต่อประจำร้าน</label><input id="t_contact"></div>
+        <div><label class="field-label">เบอร์โทรศัพท์</label><input id="t_phone"></div>
+      </div>
+      <div><label class="field-label">สถานะ</label><select id="t_status"><option value="Active">Active (เปิดดำเนินการ)</option><option value="Closed">Closed (ปิดร้าน)</option></select></div>
+      <button class="btn btn-grad w-full" style="--g1:var(--grad-1a);--g2:var(--grad-1b);" id="saveTenantBtn" onclick="saveTenant()">💾 บันทึกข้อมูล</button>
+    </div>
+  </div>
+</div>
+
+<div id="reportPreviewModal" class="modal-backdrop js-hidden">
+  <div class="modal-box p-0" style="max-width:940px;">
+    <div class="flex justify-between items-center p-4 border-b border-soft">
+      <h3 class="font-bold text-lg" id="reportPreviewTitle">📄 ตัวอย่างใบรายงาน</h3>
+      <button onclick="closeReportPreview()" class="text-2xl leading-none">&times;</button>
+    </div>
+    <div class="p-4 overflow-auto" style="max-height:64vh; background:var(--surface-2);" id="reportPreviewScrollArea">
+      <div id="reportPreviewScaleWrap" style="overflow:hidden; margin:0 auto; border-radius:14px; box-shadow:0 20px 40px -18px rgba(0,0,0,.35);">
+        <div id="reportPreviewContent"></div>
+      </div>
+    </div>
+    <div class="p-4 border-t border-soft flex flex-wrap gap-2 justify-end" id="reportPreviewActions"></div>
+  </div>
+</div>
+
+<!-- ===================== HIDDEN A4 PDF TEMPLATE CONTAINERS ===================== -->
+<div id="pdfReportRoot">
+  <div id="pdfInspectionReport"></div>
+  <div id="pdfDashboardReport"></div>
+</div>
+
+<script>
+/* ================================================================
+   ===============  CONFIG / ค่าคงที่ของระบบ  =====================
+   ================================================================ */
+const CONFIG = {
+  // TODO: แก้เป็น URL ของ Google Apps Script Web App หลัง deploy จริง (ดูคู่มือ DEPLOY_GUIDE.md)
+  // ต้องลงท้ายด้วย /exec เท่านั้น (ไม่ใช่ /dev)
+  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyeEU5_3GOxgL6hMzuClWB_8LHBe0Q44mewCLTYcnvJSvQe0uoSHH4veFFl-P6Y432IIQ/exec',
+  APP_NAME: 'MallGuard',
+  REQUEST_TIMEOUT_MS: 20000,   // Apps Script ตอบช้าได้ถึง ~10 วิ ในการเรียกครั้งแรก (cold start)
+  CACHE_KEY: 'mallguard_data_cache_v3',
+};
+
+/* ตรวจว่าตั้งค่า URL จริงแล้วหรือยัง — ถ้ายังเป็นค่า placeholder ให้ทำงานใน
+   "โหมดสาธิต" ด้วยข้อมูลจำลอง เพื่อให้เปิดไฟล์ดูได้ทันทีโดยไม่ต้อง deploy ก่อน */
+const BACKEND_READY = !/REPLACE_WITH_YOUR_DEPLOYMENT_ID/.test(CONFIG.APPS_SCRIPT_URL);
+
+/* หมวดหมู่รายการตรวจสอบ — ตรงตามสเปกโปรเจกต์ 3 หมวด
+   severity บอกว่าถ้าข้อในหมวดนี้ "ผิดปกติ" จะถือเป็น major หรือ minor defect */
+const CHECKLIST_CATEGORIES = [
+  { key:'fire', name:'ความปลอดภัยและอัคคีภัย', icon:'🔥', severity:'major', grad:['var(--grad-3a)','var(--grad-3b)'], items:[
+    { id:'fire1', text:'ถังดับเพลิงประจำร้านมีสภาพพร้อมใช้งาน (เกจปกติ / มีแท็กตรวจสอบ / ไม่หมดอายุ)' },
+    { id:'fire2', text:'ทางหนีไฟและทางเดินหลังร้านไม่มีสิ่งกีดขวาง' },
+    { id:'fire3', text:'ระบบเตือนภัย/สปริงเกลอร์หน้าร้านไม่มีสิ่งบดบัง' },
+  ]},
+  { key:'hygiene', name:'สุขอนามัยและสิ่งแวดล้อม', icon:'🧼', severity:'minor', grad:['var(--grad-2a)','var(--grad-2b)'], items:[
+    { id:'hyg1', text:'บ่อดักไขมันตักล้างสม่ำเสมอ (สำหรับร้านอาหาร)' },
+    { id:'hyg2', text:'การคัดแยกขยะไม่มีน้ำรั่วซึม เลอะเทอะ หรือส่งกลิ่นเหม็น' },
+    { id:'hyg3', text:'จัดเก็บวัตถุดิบ/สินค้าเป็นระเบียบ ปลอดหนู/แมลงสาบ' },
+  ]},
+  { key:'electrical', name:'ไฟฟ้าและวิศวกรรม', icon:'⚡', severity:'major', grad:['var(--grad-5a)','var(--grad-5b)'], items:[
+    { id:'elec1', text:'ตู้ควบคุมไฟฟ้า (MDB) ปิดฝาแน่นหนา ไม่มีของกีดขวาง ไม่มีสายไฟชำรุด' },
+    { id:'elec2', text:'การใช้ปลั๊กพ่วงมีความปลอดภัย ไม่โหลดไฟเกินกำลัง' },
+  ]},
+];
+
+/* ================================================================
+   ===============  ข้อมูลจำลอง (Mock Master Data)  ===============
+   ในการใช้งานจริง ข้อมูลนี้จะถูกดึงมาจาก Google Sheets ผ่าน Apps Script
+   ================================================================ */
+let TENANTS = [
+  { storeId:'A-101', name:'ชาบูฮะ บุฟเฟต์', type:'ร้านอาหาร/ชาบูบุฟเฟต์', zone:'โซนอาหาร', floor:'ชั้น 3', contact:'คุณสมชาย ใจดี', phone:'081-234-5671', status:'Active' },
+  { storeId:'A-102', name:'ก๋วยเตี๋ยวเรือคุณยาย', type:'ร้านอาหาร', zone:'โซนอาหาร', floor:'ชั้น 3', contact:'คุณสมหญิง รักษ์ดี', phone:'081-234-5672', status:'Active' },
+  { storeId:'A-103', name:'ครัวอีสานแซ่บนัว', type:'ร้านอาหาร', zone:'โซนอาหาร', floor:'ชั้น 3', contact:'คุณประยุทธ มั่นคง', phone:'081-234-5673', status:'Active' },
+  { storeId:'B-201', name:'แฟชั่นสไตล์ บูติค', type:'เสื้อผ้าแฟชั่น', zone:'โซนแฟชั่น', floor:'ชั้น 1', contact:'คุณนภา สวยงาม', phone:'082-345-6712', status:'Active' },
+  { storeId:'B-202', name:'ยูนิเวิร์ส เดนิม', type:'เสื้อผ้าแฟชั่น', zone:'โซนแฟชั่น', floor:'ชั้น 1', contact:'คุณวิชัย เก่งกาจ', phone:'082-345-6713', status:'Active' },
+  { storeId:'C-301', name:'ไอทีสไมล์ โซลูชัน', type:'อุปกรณ์ไอที', zone:'โซนไอที', floor:'ชั้น 2', contact:'คุณกิตติ เทคโน', phone:'083-456-7812', status:'Active' },
+  { storeId:'C-302', name:'โมบายเวิลด์', type:'มือถือ/อุปกรณ์เสริม', zone:'โซนไอที', floor:'ชั้น 2', contact:'คุณอนุชา ไฮเทค', phone:'083-456-7813', status:'Active' },
+  { storeId:'D-401', name:'คลินิกเสริมความงาม ดีเฟรช', type:'คลินิกเสริมความงาม', zone:'โซนบริการ', floor:'ชั้น 2', contact:'พญ.สุนิสา ผิวใส', phone:'084-567-8912', status:'Active' },
+  { storeId:'D-402', name:'สปาผ่อนคลาย เวลเนส', type:'สปา/นวด', zone:'โซนบริการ', floor:'ชั้น 2', contact:'คุณมาลี สุขใจ', phone:'084-567-8913', status:'Active' },
+  { storeId:'E-501', name:'พลาซ่ามินิมาร์ท', type:'ร้านสะดวกซื้อ', zone:'โซนพลาซ่า', floor:'ชั้น 1', contact:'คุณธนกร ค้าขาย', phone:'085-678-9012', status:'Active' },
+  { storeId:'E-502', name:'ร้านหนังสือปัญญาชน', type:'หนังสือ/เครื่องเขียน', zone:'โซนพลาซ่า', floor:'ชั้น 1', contact:'คุณปัญญา รู้มาก', phone:'085-678-9013', status:'Active' },
+  { storeId:'A-104', name:'ซูชิเดะ โอมากาเสะ', type:'ร้านอาหารญี่ปุ่น', zone:'โซนอาหาร', floor:'ชั้น 3', contact:'คุณฮิโรชิ ทาคาฮาชิ', phone:'081-234-5674', status:'Closed' },
+];
+
+/* ประวัติการตรวจจำลอง เพื่อให้ Dashboard มีข้อมูลตั้งต้นแสดงผลได้ทันที
+   (ในระบบจริงจะดึงจาก Google Sheets ผ่าน Apps Script API) */
+let INSPECTION_HISTORY = [
+  mkHistory('A-101','2569-07-01','weekly','major', {fire:'fail',hygiene:'pass',electrical:'pass'}, 62, 'จนท.ตรวจ สมศักดิ์'),
+  mkHistory('A-102','2569-07-02','weekly','minor', {fire:'pass',hygiene:'fail',electrical:'pass'}, 78, 'จนท.ตรวจ สมศักดิ์'),
+  mkHistory('A-103','2569-07-02','weekly','compliant', {fire:'pass',hygiene:'pass',electrical:'pass'}, 96, 'จนท.ตรวจ วิภา'),
+  mkHistory('B-201','2569-07-03','weekly','compliant', {fire:'pass',hygiene:'pass',electrical:'pass'}, 92, 'จนท.ตรวจ วิภา'),
+  mkHistory('B-202','2569-07-05','weekly','minor', {fire:'pass',hygiene:'pass',electrical:'fail'}, 80, 'จนท.ตรวจ สมศักดิ์'),
+  mkHistory('C-301','2569-07-06','weekly','compliant', {fire:'pass',hygiene:'pass',electrical:'pass'}, 95, 'จนท.ตรวจ วิภา'),
+  mkHistory('C-302','2569-07-08','preopening','major', {fire:'fail',hygiene:'pass',electrical:'fail'}, 45, 'จนท.ตรวจ สมศักดิ์'),
+  mkHistory('D-401','2569-07-09','weekly','compliant', {fire:'pass',hygiene:'pass',electrical:'pass'}, 90, 'จนท.ตรวจ วิภา'),
+  mkHistory('D-402','2569-07-10','weekly','minor', {fire:'pass',hygiene:'fail',electrical:'pass'}, 75, 'จนท.ตรวจ สมศักดิ์'),
+  mkHistory('E-501','2569-07-11','weekly','compliant', {fire:'pass',hygiene:'pass',electrical:'pass'}, 94, 'จนท.ตรวจ วิภา'),
+  mkHistory('E-502','2569-07-12','incident','major', {fire:'fail',hygiene:'pass',electrical:'pass'}, 55, 'จนท.ตรวจ สมศักดิ์'),
+];
+
+function mkHistory(storeId, dateStr, type, grade, checks, score, inspector){
+  return {
+    id: 'INS-' + storeId + '-' + dateStr.replace(/-/g,''),
+    storeId, date: dateStr, type, grade, checks, score, inspector,
+    notes:'', deadline:'', photos:[], sigInspector:null, sigStore:null,
+  };
+}
+
+/* ================================================================
+   ===============  STATE ของแอปพลิเคชัน  =========================
+   ================================================================ */
+const State = {
+  role: 'inspector',
+  page: 'dashboard',
+  draft: null,        // ฟอร์มตรวจที่กำลังกรอกอยู่
+  photos: [],          // รูปที่แนบในฟอร์มปัจจุบัน (base64 หลัง compress แล้ว)
+  cameraStream: null,
+  qrScanner: null,
+  sigPadInspector: null,
+  sigPadStore: null,
+  editingTenantId: null,
+  pendingRecord: null, // ผลตรวจที่ผ่านการตรวจสอบแล้วและกำลังรอดูตัวอย่าง/ยืนยันบันทึก
+  // สถานะการเชื่อมต่อ backend: demo | loading | online | offline
+  connection: BACKEND_READY ? 'loading' : 'demo',
+  lastSync: null,      // เวลาที่ซิงก์ข้อมูลกับ Google Sheets สำเร็จครั้งล่าสุด
+  usingCache: false,   // true = กำลังแสดงข้อมูลจากแคชเพราะเชื่อมต่อไม่ได้
+};
+
+/* ================================================================
+   ===============  UTILITIES / ฟังก์ชันช่วยเหลือ  =================
+   ================================================================ */
+
+// แปลง ค.ศ. เป็น พ.ศ. และจัดรูปแบบวันที่แบบไทย เช่น "7 กรกฎาคม 2569"
+const THAI_MONTHS = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+function toBuddhistDateStr(dateInput){
+  const d = (dateInput instanceof Date) ? dateInput : new Date(dateInput);
+  if (isNaN(d.getTime())) return '-';
+  const be = d.getFullYear() + 543;
+  return `${d.getDate()} ${THAI_MONTHS[d.getMonth()]} ${be}`;
+}
+// แปลงสตริงวันที่แบบ "พ.ศ.-MM-DD" (ที่ mock data ใช้) กลับเป็น Date จริง เพื่อคำนวณวันในสัปดาห์ได้ถูกต้อง
+function parseBEDateStr(beDateStr){
+  const [y,m,dd] = beDateStr.split('-').map(Number);
+  return new Date(y - 543, m - 1, dd);
+}
+function numFmt(n){ return Number(n).toLocaleString('th-TH'); }
+
+function showToast(msg, type='success'){
+  const colors = { success:'#10B981', error:'#EF4444', info:'#3B82F6', warning:'#F59E0B' };
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.style.background = colors[type] || colors.success;
+  el.textContent = msg;
+  wrap.appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transition='opacity .3s'; setTimeout(()=>el.remove(),300); }, 3200);
+}
+
+// วิ่งตัวเลขไล่จาก 0 ไปยังค่าจริงแบบมีแอนิเมชัน (ใช้กับการ์ด KPI บนแดชบอร์ด)
+function animateCountUps(container){
+  container.querySelectorAll('[data-countup]').forEach(el=>{
+    const target = Number(el.dataset.countup) || 0;
+    const duration = 700; const start = performance.now();
+    function tick(now){
+      const p = Math.min(1, (now-start)/duration);
+      const eased = 1 - Math.pow(1-p, 3); // ease-out cubic
+      el.textContent = numFmt(Math.round(target*eased));
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  });
+}
+
+function gradeMeta(grade){
+  if (grade==='major') return { label:'ไม่ผ่านขั้นวิกฤต', color:'#EF4444', bg:'rgba(239,68,68,.12)' };
+  if (grade==='minor') return { label:'ข้อแก้ไขเล็กน้อย', color:'#F59E0B', bg:'rgba(245,158,11,.12)' };
+  return { label:'ผ่านมาตรฐาน', color:'#10B981', bg:'rgba(16,185,129,.12)' };
+}
+
+/* ================================================================
+   ===============  INIT — เริ่มต้นแอปพลิเคชัน  ====================
+   ================================================================ */
+document.addEventListener('DOMContentLoaded', init);
+
+function init(){
+  setupPWAAssets();
+  setupDarkMode();
+  setupNav();
+  setupRoleSwitch();
+  populateStoreSelect();
+  setupInspectionTypeButtons();
+  renderTenantsTable();
+  renderHistoryTable();
+  renderDashboard();
+  document.getElementById('dashDateLabel').textContent = 'ข้อมูล ณ วันที่ ' + toBuddhistDateStr(new Date());
+  applyRoleVisibility();
+  setupSplashAndIdle();
+
+  // โหลดข้อมูลจริงจาก Google Sheets (ถ้าตั้งค่า URL แล้ว)
+  // วางไว้ท้ายสุดเพื่อให้หน้าจอวาดเสร็จก่อน ผู้ใช้จะได้ไม่เห็นจอขาวระหว่างรอเซิร์ฟเวอร์
+  renderConnectionBadge();
+  loadAllData();
+
+  // ซิงก์อัตโนมัติเมื่อเบราว์เซอร์กลับมาออนไลน์ (เช่น เดินออกจากจุดอับสัญญาณ)
+  window.addEventListener('online', ()=>{
+    if (BACKEND_READY && !splashActive) loadAllData({ silent:true });
+  });
+}
+
+/* ================================================================
+   ===============  SPLASH SCREEN + IDLE TIMEOUT (v3)  =============
+   - เปิดแอปมาเจอหน้าโลโก้ก่อนเสมอ ต้อง "แตะ" จึงเข้าดูข้อมูลได้
+   - ไม่มีการสัมผัส/ใช้งานเกิน 1 นาที -> กลับสู่หน้าโลโก้อัตโนมัติ
+   - เมื่อแตะเข้าใหม่ ระบบรีเซ็ตไปหน้าแดชบอร์ด (หน้าแรก) ทุกครั้ง
+   เหตุผลด้านความปลอดภัย: ข้อมูลผลตรวจ/ข้อบกพร่องร้านค้าเป็นข้อมูลภายใน
+   ไม่ควรค้างบนจอให้บุคคลภายนอกที่เดินผ่านมองเห็น
+   ================================================================ */
+const IDLE_LIMIT_MS = 60 * 1000; // 1 นาที
+let idleTimer = null;
+let splashActive = true;   // เริ่มต้นแอปด้วยหน้า splash เสมอ
+let splashClockTimer = null;
+
+function setupSplashAndIdle(){
+  buildSplashParticles();
+  updateSplashClock();
+  splashClockTimer = setInterval(updateSplashClock, 1000);
+
+  // ฟัง event การใช้งานทุกชนิด (เมาส์/คีย์บอร์ด/สัมผัส/สกรอลล์) เพื่อรีเซ็ตตัวจับเวลา
+  // ใช้ passive:true เพื่อไม่ให้กระทบประสิทธิภาพการสกรอลล์บนมือถือ
+  ['pointerdown','pointermove','keydown','touchstart','wheel','scroll'].forEach(ev=>{
+    document.addEventListener(ev, resetIdleTimer, { passive:true });
+  });
+}
+
+// สร้างอนุภาคลอยแบบสุ่มตำแหน่ง/ขนาด/ความเร็ว ให้หน้าพักจอมีมิติ
+function buildSplashParticles(){
+  const wrap = document.getElementById('splashParticles');
+  if (!wrap || wrap.childElementCount) return; // สร้างครั้งเดียวพอ
+  for (let i=0; i<22; i++){
+    const p = document.createElement('div');
+    p.className = 'splash-particle';
+    const size = 4 + Math.random()*10;
+    p.style.width = p.style.height = size + 'px';
+    p.style.left = Math.random()*100 + '%';
+    p.style.bottom = '-20px';
+    p.style.animationDuration = (9 + Math.random()*14) + 's';
+    p.style.animationDelay = (Math.random()*12) + 's';
+    wrap.appendChild(p);
+  }
+}
+
+// นาฬิกา + วันที่ไทย (พ.ศ.) บนหน้า splash — อัปเดตทุกวินาที
+function updateSplashClock(){
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  const timeEl = document.getElementById('splashClockTime');
+  const dateEl = document.getElementById('splashClockDate');
+  if (timeEl) timeEl.textContent = `${hh}:${mm}`;
+  if (dateEl){
+    const THAI_DAYS = ['วันอาทิตย์','วันจันทร์','วันอังคาร','วันพุธ','วันพฤหัสบดี','วันศุกร์','วันเสาร์'];
+    // วันในสัปดาห์คำนวณจริงจาก Date object (ห้าม hardcode)
+    dateEl.textContent = `${THAI_DAYS[now.getDay()]}ที่ ${toBuddhistDateStr(now)}`;
+  }
+}
+
+// เข้าใช้งานแอป: ซ่อน splash + รีเซ็ตกลับหน้าแดชบอร์ด (หน้าแรก) เสมอ
+function enterApp(){
+  if (!splashActive) return;
+  splashActive = false;
+  document.getElementById('splashScreen').classList.add('splash-hidden');
+  goToPage('dashboard'); // กลับหน้าแรกทุกครั้งที่เข้าใหม่ + rerender ข้อมูลล่าสุด
+  resetIdleTimer();
+}
+
+// กลับสู่หน้า splash (เรียกอัตโนมัติเมื่อครบ 1 นาทีไม่มีการใช้งาน)
+function showSplash(){
+  if (splashActive) return;
+  splashActive = true;
+  clearTimeout(idleTimer);
+
+  // ปิดกล้อง/สแกนเนอร์/โมดัลทุกตัวก่อนพักจอ — กันกล้องเปิดค้างกินแบตและละเมิดความเป็นส่วนตัว
+  try{ closeCamera(); }catch(e){}
+  try{ closeQrScanner(); }catch(e){}
+  document.querySelectorAll('.modal-backdrop').forEach(m=> m.classList.add('js-hidden'));
+
+  updateSplashClock();
+  document.getElementById('splashScreen').classList.remove('splash-hidden');
+}
+
+// รีเซ็ตตัวจับเวลาว่าง ทุกครั้งที่มีการใช้งาน (ทำงานเฉพาะตอนอยู่ในแอป)
+function resetIdleTimer(){
+  if (splashActive) return;
+  clearTimeout(idleTimer);
+  idleTimer = setTimeout(showSplash, IDLE_LIMIT_MS);
+}
+
+/* ---------- PWA: โลโก้ + manifest แบบฝังในไฟล์เดียว (add to home screen) ---------- */
+function setupPWAAssets(){
+  // สร้างโลโก้แอปเป็น SVG แบบ data URI (ไม่ต้องพึ่งไฟล์ภายนอก ยังคงเป็น single-file HTML)
+  const svgLogo = `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+      <defs>
+        <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#3B82F6"/>
+          <stop offset="1" stop-color="#EC4899"/>
+        </linearGradient>
+      </defs>
+      <rect width="192" height="192" rx="42" fill="url(#g)"/>
+      <path d="M96 30 L150 52 V96 C150 130 128 154 96 166 C64 154 42 130 42 96 V52 Z" fill="rgba(255,255,255,.16)"/>
+      <path d="M96 46 L136 62 V96 C136 122 118 140 96 150 C74 140 56 122 56 96 V62 Z" fill="none" stroke="#fff" stroke-width="6"/>
+      <path d="M78 98 L91 111 L118 82" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="96" y="182" text-anchor="middle" font-family="Prompt, sans-serif" font-size="16" font-weight="700" fill="#fff">MallGuard</text>
+    </svg>`;
+  const svgBlob = new Blob([svgLogo], {type:'image/svg+xml'});
+  const logoUrl = URL.createObjectURL(svgBlob);
+  document.getElementById('appleTouchIcon').href = logoUrl;
+  document.getElementById('faviconLink').href = logoUrl;
+
+  // สร้าง Web App Manifest แบบ dynamic (Blob URL) เพื่อรองรับ "Add to Home Screen"
+  const manifest = {
+    name: 'MallGuard - ระบบตรวจประเมินความปลอดภัยร้านค้า',
+    short_name: 'MallGuard',
+    start_url: '.',
+    display: 'standalone',
+    background_color: '#120f1e',
+    theme_color: '#3B82F6',
+    icons: [{ src: logoUrl, sizes:'192x192', type:'image/svg+xml' }]
+  };
+  const manifestBlob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
+  document.getElementById('manifestLink').href = URL.createObjectURL(manifestBlob);
+}
+
+/* ---------- Dark Mode ---------- */
+function setupDarkMode(){
+  const saved = localStorage.getItem('mallguard_theme');
+  if (saved === 'dark') document.documentElement.classList.add('dark');
+  updateDarkIcon();
+  document.getElementById('darkToggle').addEventListener('click', ()=>{
+    document.documentElement.classList.toggle('dark');
+    localStorage.setItem('mallguard_theme', document.documentElement.classList.contains('dark') ? 'dark':'light');
+    updateDarkIcon();
+    renderDashboard(); // rerender charts เพื่ออัปเดตสีให้เข้ากับธีม
+  });
+}
+function updateDarkIcon(){
+  document.getElementById('darkToggle').textContent = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
+}
+
+/* ---------- Navigation ---------- */
+function setupNav(){
+  document.querySelectorAll('.nav-item').forEach(el=>{
+    el.addEventListener('click', ()=> goToPage(el.dataset.page));
+  });
+}
+function goToPage(page){
+  State.page = page;
+  document.querySelectorAll('.page').forEach(p=>p.classList.add('js-hidden'));
+  document.getElementById('page-'+page).classList.remove('js-hidden');
+  document.querySelectorAll('.nav-item').forEach(el=>{
+    el.classList.toggle('active', el.dataset.page===page);
+  });
+  if (page==='dashboard') renderDashboard();
+  if (page==='tenants') { renderTenantsTable(); }
+  if (page==='reports') { renderHistoryTable(); }
+}
+
+/* ---------- Role Switch ---------- */
+function setupRoleSwitch(){
+  const sync = (val)=>{
+    State.role = val;
+    document.getElementById('roleSwitch').value = val;
+    document.getElementById('roleSwitchMobile').value = val;
+    applyRoleVisibility();
+  };
+  document.getElementById('roleSwitch').addEventListener('change', e=>sync(e.target.value));
+  document.getElementById('roleSwitchMobile').addEventListener('change', e=>sync(e.target.value));
+}
+function applyRoleVisibility(){
+  const labels = { inspector:'👷 เจ้าหน้าที่ผู้ตรวจ', manager:'📊 หัวหน้างาน/ผู้บริหาร', admin:'🛠️ ผู้ดูแลระบบ' };
+  document.getElementById('roleLabelSidebar').textContent = labels[State.role];
+  const isAdmin = State.role === 'admin';
+  document.querySelectorAll('.nav-admin-only').forEach(el=> el.classList.toggle('js-hidden', !isAdmin));
+  if (!isAdmin && State.page==='tenants') goToPage('dashboard');
+}
+
+/* ================================================================
+   ===============  ชั้นเชื่อมต่อข้อมูล (DATA LAYER) v3  ===========
+   เชื่อมกับ Google Apps Script + Google Sheets ของจริง
+   - อ่านข้อมูล: ใช้ JSONP (แทรก <script>) เพราะ Apps Script ไม่ส่ง CORS header
+     ที่เบราว์เซอร์อ่าน response ได้ — วิธีนี้อ่านผลลัพธ์ได้จริงโดยไม่ต้องมี proxy
+   - เขียนข้อมูลก้อนใหญ่ (ผลตรวจ + รูป base64): ใช้ POST no-cors แล้วโหลดข้อมูลใหม่
+     จากเซิร์ฟเวอร์เพื่อยืนยันผล (self-verifying) เพราะ no-cors อ่าน response ไม่ได้
+   ================================================================ */
+let jsonpSeq = 0;
+
+/**
+ * เรียก backend แบบ JSONP พร้อม timeout และเก็บกวาด element ให้เรียบร้อยเสมอ
+ * เหตุผลที่ต้อง cleanup: ถ้าปล่อย <script> ค้างไว้ทุกครั้งที่เรียก DOM จะบวมขึ้นเรื่อยๆ
+ */
+function jsonpRequest(params){
+  return new Promise((resolve, reject)=>{
+    if (!BACKEND_READY){ reject(new Error('ยังไม่ได้ตั้งค่า URL ของ Apps Script')); return; }
+
+    const cbName = '__mgcb_' + (++jsonpSeq) + '_' + Date.now();
+    const qs = Object.keys(params)
+      .map(k=> encodeURIComponent(k) + '=' + encodeURIComponent(params[k]))
+      .join('&');
+    const script = document.createElement('script');
+    let done = false;
+
+    const cleanup = ()=>{
+      done = true;
+      clearTimeout(timer);
+      delete window[cbName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+    };
+    const timer = setTimeout(()=>{
+      if (done) return;
+      cleanup();
+      reject(new Error('หมดเวลารอการตอบกลับจากเซิร์ฟเวอร์'));
+    }, CONFIG.REQUEST_TIMEOUT_MS);
+
+    window[cbName] = (res)=>{ if (done) return; cleanup(); resolve(res); };
+    script.onerror = ()=>{ if (done) return; cleanup(); reject(new Error('เชื่อมต่อเซิร์ฟเวอร์ไม่สำเร็จ')); };
+
+    script.src = CONFIG.APPS_SCRIPT_URL + '?' + qs + '&callback=' + cbName + '&_=' + Date.now();
+    document.body.appendChild(script);
+  });
+}
+
+/** ส่งข้อมูลก้อนใหญ่ด้วย POST (no-cors) — ใช้กับผลตรวจที่มีรูป base64 */
+function postToBackend(action, payload){
+  if (!BACKEND_READY) return Promise.resolve({ success:true, demo:true });
+  return fetch(CONFIG.APPS_SCRIPT_URL, {
+    method:'POST', mode:'no-cors',
+    // ใช้ text/plain เพื่อเลี่ยง CORS preflight ซึ่ง Apps Script ไม่รองรับ
+    headers:{ 'Content-Type':'text/plain;charset=utf-8' },
+    body: JSON.stringify({ action, payload })
+  });
+}
+
+/**
+ * แปลงวันที่ทุกรูปแบบที่อาจได้จาก Sheets ให้เป็น "พ.ศ.-MM-DD" ที่แอปใช้
+ * (ฝั่ง backend normalize มาแล้วชั้นหนึ่ง — ตรงนี้เป็นตาข่ายกันพลาดอีกชั้น
+ *  เผื่อกรณีที่มีคนแก้ข้อมูลในชีตด้วยมือแล้วใส่เป็น ค.ศ.)
+ */
+function normalizeToBEDate(v){
+  if (!v) return '';
+  const s = String(v).replace(/^'/,'').trim();
+  const m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (m){
+    let y = Number(m[1]);
+    if (y < 2400) y += 543;
+    return `${y}-${String(Number(m[2])).padStart(2,'0')}-${String(Number(m[3])).padStart(2,'0')}`;
+  }
+  const d = new Date(s);
+  if (!isNaN(d.getTime())){
+    return `${d.getFullYear()+543}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+  return s;
+}
+
+/** โหลดข้อมูลจริงทั้งหมดจาก Google Sheets แล้ววาดหน้าจอใหม่ */
+async function loadAllData({ silent=false } = {}){
+  if (!BACKEND_READY){
+    setConnectionState('demo');
+    return false;
+  }
+
+  setConnectionState('loading');
+  if (!silent) showDataLoading(true);
+
+  try{
+    const res = await jsonpRequest({ action:'getAll' });
+    if (!res || !res.success) throw new Error(res && res.message ? res.message : 'เซิร์ฟเวอร์ตอบกลับผิดพลาด');
+
+    applyServerData(res.data);
+    saveDataCache(res.data);
+    State.usingCache = false;
+    State.lastSync = new Date();
+    setConnectionState('online');
+    if (!silent) showToast('ซิงก์ข้อมูลจาก Google Sheets สำเร็จ', 'success');
+    return true;
+
+  }catch(err){
+    console.warn('โหลดข้อมูลจากเซิร์ฟเวอร์ไม่สำเร็จ:', err);
+    setConnectionState('offline');
+    // ใช้ข้อมูลที่แคชไว้ครั้งล่าสุดแทน เพื่อให้เจ้าหน้าที่ยังดูข้อมูลเดิมได้ขณะสัญญาณขาด
+    const cached = loadDataCache();
+    if (cached){
+      applyServerData(cached.data);
+      State.usingCache = true;
+      State.lastSync = cached.savedAt ? new Date(cached.savedAt) : null;
+      showToast('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ — กำลังแสดงข้อมูลที่บันทึกไว้ล่าสุด', 'warning');
+    } else {
+      showToast('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้: ' + err.message, 'error');
+    }
+    return false;
+
+  }finally{
+    if (!silent) showDataLoading(false);
+    renderConnectionBadge();
+  }
+}
+
+/** นำข้อมูลจากเซิร์ฟเวอร์มาแทนที่ข้อมูลในหน่วยความจำ แล้ว re-render ทุกหน้า */
+function applyServerData(data){
+  if (!data) return;
+
+  if (Array.isArray(data.tenants) && data.tenants.length){
+    TENANTS = data.tenants.map(t=>({
+      storeId: t.storeId, name: t.name, type: t.type || '',
+      zone: t.zone || 'ไม่ระบุโซน', floor: t.floor || '',
+      contact: t.contact || '', phone: t.phone || '',
+      status: t.status || 'Active',
+      lat: (t.lat ?? null), lng: (t.lng ?? null),
+    }));
+  }
+
+  if (Array.isArray(data.inspections)){
+    INSPECTION_HISTORY = data.inspections.map(h=>({
+      id: h.id, storeId: h.storeId,
+      date: normalizeToBEDate(h.date),
+      type: h.type || 'weekly',
+      grade: h.grade || 'compliant',
+      score: Number(h.score) || 0,
+      checks: h.checks || {},
+      inspector: h.inspector || '',
+      notes: h.notes || '',
+      deadline: h.deadline ? normalizeToBEDate(h.deadline) : '',
+      photos: Array.isArray(h.photos) ? h.photos : [],
+      photoIds: Array.isArray(h.photoIds) ? h.photoIds : [],
+      sigInspector: h.sigInspector || null,
+      sigStore: h.sigStore || null,
+      // ธงบอกว่ารูปยังเป็น "ลิงก์" อยู่ ต้องดึง base64 ก่อนทำ PDF (กัน canvas ถูก taint)
+      photosAreLinks: true,
+    }))
+    // เรียงใหม่สุดขึ้นก่อนเสมอ เพื่อให้หน้ารายงานและ Top 5 อ่านง่าย
+    .sort((a,b)=> parseBEDateStr(b.date) - parseBEDateStr(a.date));
+  }
+
+  populateStoreSelect();
+  renderTenantsTable();
+  renderHistoryTable();
+  renderDashboard();
+}
+
+/** ดึงรูป base64 ของผลตรวจ 1 รายการ (เรียกเมื่อจะดูตัวอย่าง/ออก PDF เท่านั้น)
+    เหตุผล: รูปจาก Drive เป็น cross-origin ทำให้ html2canvas เก็บภาพลง PDF ไม่ได้ */
+async function ensureRecordPhotos(record){
+  if (!record || !record.photosAreLinks) return record;
+  if (!BACKEND_READY) return record;
+  try{
+    const res = await jsonpRequest({ action:'getPhotos', recordId: record.id });
+    if (res && res.success && res.data){
+      record.photos = res.data.photos || [];
+      if (res.data.sigInspector) record.sigInspector = res.data.sigInspector;
+      if (res.data.sigStore) record.sigStore = res.data.sigStore;
+      record.photosAreLinks = false;   // ดึงมาแล้วครั้งเดียวพอ ครั้งต่อไปใช้ของที่แคชในหน่วยความจำ
+    }
+  }catch(err){
+    console.warn('ดึงรูปหลักฐานไม่สำเร็จ:', err);
+    showToast('ดึงรูปหลักฐานจากเซิร์ฟเวอร์ไม่สำเร็จ รายงานอาจแสดงรูปไม่ครบ', 'warning');
+  }
+  return record;
+}
+
+/* ---------- แคชข้อมูลไว้ในเครื่อง กันสัญญาณขาดหน้างาน ---------- */
+function saveDataCache(data){
+  try{
+    localStorage.setItem(CONFIG.CACHE_KEY, JSON.stringify({ savedAt: new Date().toISOString(), data }));
+  }catch(err){
+    // localStorage เต็มหรือถูกปิด — ไม่ใช่เรื่องคอขาดบาดตาย ทำงานต่อได้
+    console.warn('บันทึกแคชไม่สำเร็จ:', err);
+  }
+}
+function loadDataCache(){
+  try{
+    const raw = localStorage.getItem(CONFIG.CACHE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  }catch(err){ return null; }
+}
+
+/* ---------- แสดงสถานะการเชื่อมต่อให้ผู้ใช้เห็นตลอดเวลา ---------- */
+function setConnectionState(state){
+  State.connection = state;
+  renderConnectionBadge();
+}
+function renderConnectionBadge(){
+  const el = document.getElementById('connBadge');
+  if (!el) return;
+  const map = {
+    demo:    { text:'โหมดสาธิต',   dot:'#F59E0B', title:'ยังไม่ได้ตั้งค่า URL ของ Apps Script — ข้อมูลที่แสดงเป็นข้อมูลจำลอง' },
+    loading: { text:'กำลังซิงก์…', dot:'#3B82F6', title:'กำลังโหลดข้อมูลจาก Google Sheets' },
+    online:  { text:'เชื่อมต่อแล้ว', dot:'#10B981', title:'เชื่อมต่อ Google Sheets สำเร็จ' },
+    offline: { text: State.usingCache ? 'ออฟไลน์ (ข้อมูลแคช)' : 'ออฟไลน์', dot:'#EF4444', title:'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้' },
+  };
+  const m = map[State.connection] || map.demo;
+  el.title = m.title + (State.lastSync ? ` | ซิงก์ล่าสุด ${State.lastSync.toLocaleTimeString('th-TH')}` : '');
+  el.innerHTML = `<span class="conn-dot" style="background:${m.dot}"></span><span class="hidden sm:inline">${m.text}</span>`;
+
+  const syncLabel = document.getElementById('syncLabel');
+  if (syncLabel){
+    syncLabel.textContent = State.lastSync
+      ? `ซิงก์ล่าสุด ${State.lastSync.toLocaleTimeString('th-TH')}${State.usingCache ? ' (จากแคช)' : ''}`
+      : (BACKEND_READY ? 'ยังไม่ได้ซิงก์ข้อมูล' : 'โหมดสาธิต — ข้อมูลจำลอง');
+  }
+}
+
+/** ม่านโหลดข้อมูล (Loading state) ระหว่างรอเซิร์ฟเวอร์ */
+function showDataLoading(show){
+  const el = document.getElementById('dataLoadingOverlay');
+  if (el) el.classList.toggle('js-hidden', !show);
+}
+
+/** ปุ่มรีเฟรชข้อมูลบนแดชบอร์ด */
+async function refreshData(){
+  const btn = document.getElementById('refreshBtn');
+  if (!BACKEND_READY){
+    showToast('ยังไม่ได้ตั้งค่า URL ของ Apps Script — ดูขั้นตอนในคู่มือติดตั้ง', 'warning');
+    return;
+  }
+  if (btn){ btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> กำลังซิงก์...'; }
+  await loadAllData();
+  if (btn){ btn.disabled = false; btn.innerHTML = '🔄 ซิงก์ข้อมูล'; }
+}
+
+/* ================================================================
+   ===============  DASHBOARD  =====================================
+   ================================================================ */
+let chartDoughnut, chartBar, chartTrend, chartRadar;
+
+function computeDashboardStats(){
+  const total = TENANTS.filter(t=>t.status==='Active').length;
+  const inspectedStoreIds = new Set(INSPECTION_HISTORY.map(h=>h.storeId));
+  const inspected = inspectedStoreIds.size;
+  const notInspected = Math.max(total - inspected, 0);
+  const counts = { compliant:0, minor:0, major:0 };
+  INSPECTION_HISTORY.forEach(h=> counts[h.grade]++ );
+
+  // คะแนนเฉลี่ยแยกโซน
+  const zoneScores = {};
+  TENANTS.forEach(t=>{
+    if(!zoneScores[t.zone]) zoneScores[t.zone] = { sum:0, count:0 };
+  });
+  INSPECTION_HISTORY.forEach(h=>{
+    const tenant = TENANTS.find(t=>t.storeId===h.storeId);
+    if (!tenant) return;
+    zoneScores[tenant.zone].sum += h.score;
+    zoneScores[tenant.zone].count += 1;
+  });
+  const zoneLabels = Object.keys(zoneScores);
+  const zoneAvgs = zoneLabels.map(z=> zoneScores[z].count ? Math.round(zoneScores[z].sum / zoneScores[z].count) : 0);
+
+  // Top 5 ร้านที่ต้องปรับปรุงด่วนที่สุด (คะแนนต่ำสุด, เอาผลตรวจล่าสุดต่อร้าน)
+  const latestByStore = {};
+  INSPECTION_HISTORY.forEach(h=>{
+    if (!latestByStore[h.storeId] || parseBEDateStr(h.date) > parseBEDateStr(latestByStore[h.storeId].date)) {
+      latestByStore[h.storeId] = h;
+    }
+  });
+  const top5 = Object.values(latestByStore).sort((a,b)=>a.score-b.score).slice(0,5);
+
+  /* ---------- KPI เพิ่มเติม (v3) ---------- */
+  const nInsp = INSPECTION_HISTORY.length;
+  // คะแนนเฉลี่ยรวมทุกผลตรวจ — กันหารด้วยศูนย์เมื่อยังไม่มีข้อมูล
+  const avgScore = nInsp ? Math.round(INSPECTION_HISTORY.reduce((s,h)=>s+h.score,0) / nInsp) : 0;
+  // อัตราผ่านมาตรฐาน (Compliance Rate) = compliant / จำนวนผลตรวจทั้งหมด
+  const complianceRate = nInsp ? Math.round(counts.compliant / nInsp * 100) : 0;
+  // ความคืบหน้ารอบตรวจ = ร้านที่ตรวจแล้ว / ร้าน Active ทั้งหมด
+  const progressRate = total ? Math.round(inspected / total * 100) : 0;
+  // จำนวนงานค้างแก้ไข = ผลตรวจล่าสุดต่อร้านที่ยังเป็น minor/major (ยังไม่กลับมาผ่าน)
+  const openDefects = Object.values(latestByStore).filter(h=>h.grade!=='compliant').length;
+
+  // อัตราผ่านรายหมวดตรวจ (%) — ใช้กับ Radar chart ชี้จุดอ่อนเชิงหมวด
+  const catPassRates = CHECKLIST_CATEGORIES.map(cat=>{
+    let pass=0, cnt=0;
+    INSPECTION_HISTORY.forEach(h=>{
+      if (h.checks && h.checks[cat.key]){ cnt++; if (h.checks[cat.key]==='pass') pass++; }
+    });
+    return cnt ? Math.round(pass/cnt*100) : 0;
+  });
+  const catLabels = CHECKLIST_CATEGORIES.map(c=>c.name);
+
+  // แนวโน้มคะแนนเฉลี่ยรายวัน — เรียงตามวันที่จริง (normalize พ.ศ. เป็น Date ก่อนเรียง)
+  const byDate = {};
+  INSPECTION_HISTORY.forEach(h=>{
+    if (!byDate[h.date]) byDate[h.date] = { sum:0, count:0 };
+    byDate[h.date].sum += h.score; byDate[h.date].count++;
+  });
+  const trendDates = Object.keys(byDate).sort((a,b)=> parseBEDateStr(a) - parseBEDateStr(b));
+  const trendLabels = trendDates.map(d=>{
+    const dt = parseBEDateStr(d);
+    return `${dt.getDate()} ${THAI_MONTHS[dt.getMonth()].slice(0,3)}.`;
+  });
+  const trendAvgs = trendDates.map(d=> Math.round(byDate[d].sum / byDate[d].count));
+
+  return { total, inspected, notInspected, counts, zoneLabels, zoneAvgs, top5,
+           avgScore, complianceRate, progressRate, openDefects,
+           catLabels, catPassRates, trendLabels, trendAvgs };
+}
+
+function renderDashboard(){
+  const s = computeDashboardStats();
+  const kpiRow = document.getElementById('kpiRow');
+  kpiRow.innerHTML = `
+    <div class="kpi-card" style="background-image:linear-gradient(135deg,var(--grad-1a),var(--grad-1b)); animation-delay:.02s;">
+      <div class="text-sm opacity-90 mb-1">🏬 ร้านค้าทั้งหมด</div>
+      <div class="kpi-num" data-countup="${s.total}">0</div><div class="text-xs opacity-80 mt-1">ร้าน (สถานะ Active)</div>
+    </div>
+    <div class="kpi-card" style="background-image:linear-gradient(135deg,var(--grad-2a),var(--grad-2b)); animation-delay:.1s;">
+      <div class="text-sm opacity-90 mb-1">✅ ตรวจแล้วรอบนี้</div>
+      <div class="kpi-num" data-countup="${s.inspected}">0</div><div class="text-xs opacity-80 mt-1">ยังไม่ตรวจ ${numFmt(s.notInspected)} ร้าน</div>
+    </div>
+    <div class="kpi-card" style="background-image:linear-gradient(135deg,var(--grad-5a),var(--grad-5b)); animation-delay:.18s;">
+      <div class="text-sm opacity-90 mb-1">⚠️ ข้อแก้ไขเล็กน้อย</div>
+      <div class="kpi-num" data-countup="${s.counts.minor}">0</div><div class="text-xs opacity-80 mt-1">Minor Defect</div>
+    </div>
+    <div class="kpi-card ${s.counts.major>0?'kpi-alert':''}" style="background-image:linear-gradient(135deg,#EF4444,var(--grad-4b)); animation-delay:.26s;">
+      <div class="text-sm opacity-90 mb-1">🚨 ไม่ผ่านขั้นวิกฤต</div>
+      <div class="kpi-num" data-countup="${s.counts.major}">0</div><div class="text-xs opacity-80 mt-1">Major Defect</div>
+    </div>
+    <div class="kpi-card" style="background-image:linear-gradient(135deg,#8B5CF6,#6366F1); animation-delay:.34s;">
+      <div class="text-sm opacity-90 mb-1">⭐ คะแนนเฉลี่ยรวม</div>
+      <div class="kpi-num" data-countup="${s.avgScore}">0</div><div class="text-xs opacity-80 mt-1">จากคะแนนเต็ม 100</div>
+    </div>
+    <div class="kpi-card" style="background-image:linear-gradient(135deg,#06B6D4,#0EA5E9); animation-delay:.42s;">
+      <div class="text-sm opacity-90 mb-1">🏅 อัตราผ่านมาตรฐาน</div>
+      <div class="kpi-num"><span data-countup="${s.complianceRate}">0</span><span class="text-xl">%</span></div>
+      <div class="text-xs opacity-80 mt-1">Compliance Rate</div>
+    </div>
+    <div class="kpi-card" style="background-image:linear-gradient(135deg,var(--grad-3a),var(--grad-3b)); animation-delay:.5s;">
+      <div class="text-sm opacity-90 mb-1">⏱️ ความคืบหน้ารอบตรวจ</div>
+      <div class="kpi-num"><span data-countup="${s.progressRate}">0</span><span class="text-xl">%</span></div>
+      <div class="mt-2 h-2 rounded-full" style="background:rgba(255,255,255,.25);">
+        <div class="h-2 rounded-full" style="width:${s.progressRate}%; background:#fff; transition:width .8s ease;"></div>
+      </div>
+    </div>
+    <div class="kpi-card" style="background-image:linear-gradient(135deg,#F43F5E,#D946EF); animation-delay:.58s;">
+      <div class="text-sm opacity-90 mb-1">🛠️ ร้านค้างแก้ไข</div>
+      <div class="kpi-num" data-countup="${s.openDefects}">0</div><div class="text-xs opacity-80 mt-1">ร้าน (ผลล่าสุดยังไม่ผ่าน)</div>
+    </div>`;
+  animateCountUps(kpiRow);
+
+  const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text').trim();
+
+  if (chartDoughnut) chartDoughnut.destroy();
+  chartDoughnut = new Chart(document.getElementById('chartDoughnut'), {
+    type:'doughnut',
+    data:{ labels:['ผ่านมาตรฐาน','ข้อแก้ไขเล็กน้อย','ไม่ผ่านขั้นวิกฤต'],
+      datasets:[{ data:[s.counts.compliant, s.counts.minor, s.counts.major], backgroundColor:['#10B981','#F59E0B','#EF4444'], borderWidth:0, hoverOffset:8 }] },
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ position:'bottom', labels:{ color:textColor, font:{family:'Prompt'} } } }, cutout:'64%' }
+  });
+
+  if (chartBar) chartBar.destroy();
+  chartBar = new Chart(document.getElementById('chartBar'), {
+    type:'bar',
+    data:{ labels:s.zoneLabels, datasets:[
+      { label:'คะแนนเฉลี่ย', data:s.zoneAvgs,
+        backgroundColor:['#3B82F6','#F97316','#EC4899','#06B6D4','#F59E0B'], borderRadius:10, maxBarThickness:56 },
+      // เส้นเป้าหมายมาตรฐาน 85 คะแนน — ช่วยให้ผู้บริหารเห็นทันทีว่าโซนไหนต่ำกว่าเกณฑ์
+      { type:'line', label:'เป้าหมาย 85', data:s.zoneLabels.map(()=>85),
+        borderColor:'#EF4444', borderDash:[7,5], borderWidth:2, pointRadius:0, fill:false },
+    ]},
+    options:{ responsive:true, maintainAspectRatio:false,
+      scales:{ y:{ beginAtZero:true, max:100, ticks:{color:textColor}, grid:{color:'rgba(128,128,128,.15)'} }, x:{ ticks:{color:textColor, font:{family:'Prompt'}}, grid:{display:false} } },
+      plugins:{ legend:{ display:true, labels:{ color:textColor, font:{family:'Prompt'}, boxWidth:14 } } } }
+  });
+
+  // กราฟแนวโน้มคะแนนเฉลี่ยรายวัน (เส้นโค้ง + พื้นที่ไล่สี — เทรนด์ dashboard สมัยใหม่)
+  if (chartTrend) chartTrend.destroy();
+  const trendCtx = document.getElementById('chartTrend').getContext('2d');
+  const trendGrad = trendCtx.createLinearGradient(0,0,0,280);
+  trendGrad.addColorStop(0,'rgba(59,130,246,.35)');
+  trendGrad.addColorStop(1,'rgba(59,130,246,0)');
+  chartTrend = new Chart(trendCtx, {
+    type:'line',
+    data:{ labels:s.trendLabels, datasets:[{ label:'คะแนนเฉลี่ย/วัน', data:s.trendAvgs,
+      borderColor:'#3B82F6', backgroundColor:trendGrad, fill:true, tension:.4,
+      pointBackgroundColor:'#fff', pointBorderColor:'#3B82F6', pointBorderWidth:2, pointRadius:4, pointHoverRadius:6 }] },
+    options:{ responsive:true, maintainAspectRatio:false,
+      scales:{ y:{ beginAtZero:true, max:100, ticks:{color:textColor}, grid:{color:'rgba(128,128,128,.15)'} }, x:{ ticks:{color:textColor, font:{family:'Prompt'}}, grid:{display:false} } },
+      plugins:{ legend:{ display:false } } }
+  });
+
+  // กราฟเรดาร์อัตราผ่านรายหมวดตรวจ — ชี้จุดอ่อนว่าอยู่หมวดอัคคีภัย/สุขอนามัย/ไฟฟ้า
+  if (chartRadar) chartRadar.destroy();
+  chartRadar = new Chart(document.getElementById('chartRadar'), {
+    type:'radar',
+    data:{ labels:s.catLabels, datasets:[{ label:'อัตราผ่าน (%)', data:s.catPassRates,
+      backgroundColor:'rgba(236,72,153,.18)', borderColor:'#EC4899', borderWidth:2,
+      pointBackgroundColor:'#EC4899', pointRadius:4 }] },
+    options:{ responsive:true, maintainAspectRatio:false,
+      scales:{ r:{ beginAtZero:true, max:100, ticks:{ color:textColor, backdropColor:'transparent', stepSize:25 },
+        grid:{ color:'rgba(128,128,128,.2)' }, angleLines:{ color:'rgba(128,128,128,.2)' },
+        pointLabels:{ color:textColor, font:{ family:'Prompt', size:11 } } } },
+      plugins:{ legend:{ display:false } } }
+  });
+
+  const top5Body = document.getElementById('top5Body');
+  top5Body.innerHTML = s.top5.map((h,i)=>{
+    const tenant = TENANTS.find(t=>t.storeId===h.storeId) || {};
+    const g = gradeMeta(h.grade);
+    return `<tr class="border-b border-soft">
+      <td class="py-2 font-bold">#${i+1}</td>
+      <td class="font-semibold">${tenant.name||h.storeId}</td>
+      <td>${tenant.zone||'-'}</td>
+      <td><span class="chip" style="background:${g.bg};color:${g.color};">${g.label}</span></td>
+      <td class="font-bold">${h.score}</td>
+      <td class="text-muted">${toBuddhistDateStr(parseBEDateStr(h.date))}</td>
+    </tr>`;
+  }).join('') || `<tr><td colspan="6" class="text-center py-6 text-muted">ยังไม่มีข้อมูลการตรวจ</td></tr>`;
+}
+
+/* ================================================================
+   ===============  หน้าตรวจประเมิน (INSPECT FLOW)  ================
+   ================================================================ */
+function populateStoreSelect(){
+  const sel = document.getElementById('storeSelect');
+  const current = sel.value; // จำร้านที่เลือกอยู่ไว้ เผื่อฟังก์ชันนี้ถูกเรียกซ้ำตอนซิงก์ข้อมูล
+  const actives = TENANTS.filter(t=>t.status==='Active');
+  sel.innerHTML = (actives.length
+      ? '<option value="">-- เลือกร้านค้า --</option>'
+      : '<option value="">-- ยังไม่มีข้อมูลร้านค้าในระบบ --</option>')
+    + actives.map(t=> `<option value="${t.storeId}">${t.storeId} — ${t.name} (${t.zone})</option>`).join('');
+  if (current && actives.some(t=>t.storeId===current)) sel.value = current;
+
+  // ใช้ onchange (property) แทน addEventListener เพราะฟังก์ชันนี้ถูกเรียกซ้ำทุกครั้งที่ซิงก์ข้อมูล
+  // ถ้าใช้ addEventListener จะสะสม listener ซ้อนกันจนเรียก selectStore หลายรอบต่อการเลือก 1 ครั้ง
+  sel.onchange = ()=> selectStore(sel.value);
+}
+
+function setupInspectionTypeButtons(){
+  document.querySelectorAll('.insp-type-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.insp-type-btn').forEach(b=>b.classList.remove('pass-on'));
+      btn.classList.add('pass-on');
+      if (State.draft) State.draft.type = btn.dataset.type;
+    });
+  });
+  document.querySelector('.insp-type-btn[data-type="weekly"]').classList.add('pass-on');
+}
+
+function getSelectedInspectionType(){
+  const active = document.querySelector('.insp-type-btn.pass-on');
+  return active ? active.dataset.type : 'weekly';
+}
+
+function selectStore(storeId){
+  if (!storeId){
+    document.getElementById('storeInfoCard').classList.add('js-hidden');
+    document.getElementById('checklistWrap').classList.add('js-hidden');
+    document.getElementById('evidenceWrap').classList.add('js-hidden');
+    State.draft = null;
+    return;
+  }
+  const tenant = TENANTS.find(t=>t.storeId===storeId);
+  if (!tenant){ showToast('ไม่พบข้อมูลร้านค้านี้ในระบบ','error'); return; }
+
+  // เริ่มฟอร์มตรวจใหม่
+  State.draft = {
+    storeId: tenant.storeId,
+    type: getSelectedInspectionType(),
+    checks: {},   // { itemId: 'pass' | 'fail' }
+  };
+  State.photos = [];
+  document.getElementById('photoGallery').innerHTML = '';
+
+  const infoCard = document.getElementById('storeInfoCard');
+  infoCard.classList.remove('js-hidden');
+  infoCard.innerHTML = `
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+      <div><div class="text-muted text-xs">รหัสร้าน</div><div class="font-bold">${tenant.storeId}</div></div>
+      <div><div class="text-muted text-xs">ชื่อร้าน</div><div class="font-bold">${tenant.name}</div></div>
+      <div><div class="text-muted text-xs">ประเภทธุรกิจ</div><div class="font-bold">${tenant.type}</div></div>
+      <div><div class="text-muted text-xs">โซน/ชั้น</div><div class="font-bold">${tenant.zone} / ${tenant.floor}</div></div>
+      <div><div class="text-muted text-xs">ผู้ติดต่อ</div><div class="font-bold">${tenant.contact}</div></div>
+      <div><div class="text-muted text-xs">เบอร์โทร</div><div class="font-bold">${tenant.phone}</div></div>
+      <div><div class="text-muted text-xs">สถานะ</div><div class="font-bold">${tenant.status}</div></div>
+      <div><div class="text-muted text-xs">วันที่ตรวจ</div><div class="font-bold">${toBuddhistDateStr(new Date())}</div></div>
+    </div>`;
+
+  renderChecklist();
+  document.getElementById('checklistWrap').classList.remove('js-hidden');
+  document.getElementById('evidenceWrap').classList.remove('js-hidden');
+  resetSignatures();
+}
+
+function renderChecklist(){
+  const wrap = document.getElementById('checklistWrap');
+  wrap.innerHTML = CHECKLIST_CATEGORIES.map(cat=>`
+    <div class="surface rounded-2xl p-5">
+      <h3 class="font-bold mb-3 flex items-center gap-2">
+        <span>${cat.icon}</span> ${cat.name}
+        <span class="chip ml-1" style="background:${cat.severity==='major'?'rgba(239,68,68,.12)':'rgba(245,158,11,.12)'};color:${cat.severity==='major'?'#EF4444':'#F59E0B'};">
+          ${cat.severity==='major' ? 'มีผลกระทบขั้นวิกฤตหากไม่ผ่าน' : 'ข้อแก้ไขเล็กน้อยหากไม่ผ่าน'}
+        </span>
+      </h3>
+      <div class="space-y-3">
+        ${cat.items.map(item=>`
+          <div class="check-item flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3" id="checkrow-${item.id}">
+            <div class="text-sm flex-1">${item.text}</div>
+            <div class="flex gap-2 shrink-0">
+              <button class="seg-btn" onclick="setCheck('${item.id}','${cat.key}','pass')" id="btn-${item.id}-pass">⬜ ปกติ/ผ่าน</button>
+              <button class="seg-btn" onclick="setCheck('${item.id}','${cat.key}','fail')" id="btn-${item.id}-fail">⬜ ผิดปกติ/ต้องแก้ไข</button>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function setCheck(itemId, catKey, value){
+  if (!State.draft) return;
+  State.draft.checks[itemId] = value;
+  const row = document.getElementById('checkrow-'+itemId);
+  row.classList.remove('state-pass','state-fail');
+  row.classList.add(value==='pass' ? 'state-pass' : 'state-fail');
+  document.getElementById(`btn-${itemId}-pass`).classList.toggle('pass-on', value==='pass');
+  document.getElementById(`btn-${itemId}-fail`).classList.toggle('fail-on', value==='fail');
+}
+
+/* ---------- QR Scanner (html5-qrcode) ---------- */
+function openQrScanner(){
+  document.getElementById('qrModal').classList.remove('js-hidden');
+  State.qrScanner = new Html5Qrcode('qrReader');
+  State.qrScanner.start(
+    { facingMode:'environment' },
+    { fps:10, qrbox:230 },
+    (decodedText)=>{
+      // QR Code ควรเก็บ Store ID ตรงๆ เช่น "A-101"
+      const found = TENANTS.find(t=> t.storeId===decodedText.trim());
+      if (found){
+        document.getElementById('storeSelect').value = found.storeId;
+        selectStore(found.storeId);
+        showToast(`สแกนสำเร็จ: ${found.name}`, 'success');
+        closeQrScanner();
+      } else {
+        showToast('ไม่พบร้านค้าที่ตรงกับ QR นี้ในระบบ', 'error');
+      }
+    },
+    ()=>{ /* ไม่พบ QR ในเฟรมนี้ — ไม่ต้องแจ้งเตือน รอเฟรมถัดไป */ }
+  ).catch(err=>{
+    showToast('ไม่สามารถเปิดกล้องได้ กรุณาตรวจสอบสิทธิ์การเข้าถึงกล้อง (HTTPS จำเป็นสำหรับมือถือ)', 'error');
+    closeQrScanner();
+  });
+}
+function closeQrScanner(){
+  document.getElementById('qrModal').classList.add('js-hidden');
+  if (State.qrScanner){
+    State.qrScanner.stop().then(()=>State.qrScanner.clear()).catch(()=>{});
+    State.qrScanner = null;
+  }
+}
+
+/* ---------- กล้องถ่ายภาพหลักฐาน ---------- */
+function openCamera(){
+  document.getElementById('cameraModal').classList.remove('js-hidden');
+  navigator.mediaDevices.getUserMedia({ video:{ facingMode:'environment' } })
+    .then(stream=>{
+      State.cameraStream = stream;
+      document.getElementById('cameraVideo').srcObject = stream;
+    })
+    .catch(()=>{
+      showToast('ไม่สามารถเข้าถึงกล้องได้ กรุณาอนุญาตสิทธิ์กล้องบนเบราว์เซอร์', 'error');
+      closeCamera();
+    });
+}
+function closeCamera(){
+  document.getElementById('cameraModal').classList.add('js-hidden');
+  if (State.cameraStream){ State.cameraStream.getTracks().forEach(t=>t.stop()); State.cameraStream=null; }
+}
+function capturePhoto(){
+  const video = document.getElementById('cameraVideo');
+  const canvas = document.getElementById('cameraCanvas');
+  canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+  canvas.getContext('2d').drawImage(video, 0, 0);
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+  compressAndAddPhoto(dataUrl);
+  closeCamera();
+}
+
+/* ---------- อัปโหลดรูปจากเครื่อง ---------- */
+function handleFileUpload(evt){
+  Array.from(evt.target.files).forEach(file=>{
+    const reader = new FileReader();
+    reader.onload = e=> compressAndAddPhoto(e.target.result);
+    reader.readAsDataURL(file);
+  });
+  evt.target.value = '';
+}
+
+// บีบอัดภาพฝั่ง client ด้วย canvas (ลดขนาด ≤ 800px, quality 0.7) ก่อนแนบไป Apps Script
+// เพื่อไม่ให้ payload เกิน limit ของ Google Apps Script เวลาส่งเป็น base64
+function compressAndAddPhoto(dataUrl){
+  const img = new Image();
+  img.onload = ()=>{
+    const MAX = 800;
+    let { width, height } = img;
+    if (width > MAX || height > MAX){
+      const scale = MAX / Math.max(width, height);
+      width = Math.round(width*scale); height = Math.round(height*scale);
+    }
+    const canvas = document.createElement('canvas');
+    canvas.width = width; canvas.height = height;
+    canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+    const compressed = canvas.toDataURL('image/jpeg', 0.7);
+    State.photos.push(compressed);
+    renderPhotoGallery();
+  };
+  img.src = dataUrl;
+}
+function renderPhotoGallery(){
+  const gal = document.getElementById('photoGallery');
+  gal.innerHTML = State.photos.map((p,i)=>`
+    <div class="relative rounded-xl overflow-hidden aspect-square surface-2">
+      <img src="${p}" class="w-full h-full object-cover">
+      <button onclick="removePhoto(${i})" class="absolute top-1 right-1 bg-black/60 text-white rounded-full w-6 h-6 text-xs">✕</button>
+    </div>`).join('');
+}
+function removePhoto(i){ State.photos.splice(i,1); renderPhotoGallery(); }
+
+/* ---------- ลายเซ็นดิจิทัล (Signature Pad) ---------- */
+function resetSignatures(){
+  const c1 = document.getElementById('sigInspector');
+  const c2 = document.getElementById('sigStore');
+  fitCanvas(c1); fitCanvas(c2);
+  State.sigPadInspector = new SignaturePad(c1, { backgroundColor:'#ffffff' });
+  State.sigPadStore = new SignaturePad(c2, { backgroundColor:'#ffffff' });
+}
+function fitCanvas(canvas){
+  const ratio = Math.max(window.devicePixelRatio || 1, 1);
+  canvas.width = canvas.offsetWidth * ratio;
+  canvas.height = canvas.offsetHeight * ratio;
+  canvas.getContext('2d').scale(ratio, ratio);
+}
+function clearSig(id){
+  if (id==='sigInspector' && State.sigPadInspector) State.sigPadInspector.clear();
+  if (id==='sigStore' && State.sigPadStore) State.sigPadStore.clear();
+}
+
+/* ---------- คำนวณผลตรวจ (Grade) ---------- */
+function computeGrade(checks){
+  let hasMajorFail=false, hasMinorFail=false, answered=0, total=0;
+  CHECKLIST_CATEGORIES.forEach(cat=>{
+    cat.items.forEach(item=>{
+      total++;
+      const v = checks[item.id];
+      if (v) answered++;
+      if (v==='fail'){
+        if (cat.severity==='major') hasMajorFail = true; else hasMinorFail = true;
+      }
+    });
+  });
+  const grade = hasMajorFail ? 'major' : (hasMinorFail ? 'minor' : 'compliant');
+  // คะแนน = สัดส่วนข้อที่ผ่านจากทั้งหมด (0 ถ้ายังไม่ตอบเลย)
+  let passCount = 0;
+  CHECKLIST_CATEGORIES.forEach(cat=> cat.items.forEach(item=>{ if (checks[item.id]==='pass') passCount++; }));
+  const score = total ? Math.round((passCount/total)*100) : 0;
+  return { grade, score, answered, total };
+}
+
+/* ---------- ขั้นที่ 1: ตรวจสอบฟอร์มแล้วเปิด "ตัวอย่างใบรายงาน" ก่อนบันทึกจริง ---------- */
+function openSubmitPreview(){
+  if (!State.draft){ showToast('กรุณาเลือกร้านค้าก่อนบันทึกผล', 'error'); return; }
+  const { grade, score, answered, total } = computeGrade(State.draft.checks);
+  if (answered < total){
+    Swal.fire({ icon:'warning', title:'กรอกข้อมูลไม่ครบถ้วน', text:`กรุณาประเมินให้ครบทุกข้อ (ตอบแล้ว ${answered}/${total} ข้อ)`, confirmButtonColor:'#3B82F6' });
+    return;
+  }
+  if (State.sigPadInspector.isEmpty() || State.sigPadStore.isEmpty()){
+    Swal.fire({ icon:'warning', title:'ยังไม่ได้ลงลายมือชื่อ', text:'กรุณาให้ผู้ตรวจและผู้แทนร้านค้าลงลายมือชื่อให้ครบ', confirmButtonColor:'#3B82F6' });
+    return;
+  }
+
+  const now = new Date();
+  const record = {
+    id: 'INS-' + State.draft.storeId + '-' + Date.now(),
+    storeId: State.draft.storeId,
+    date: (now.getFullYear()+543) + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0'),
+    type: State.draft.type,
+    grade, score,
+    checks: { ...State.draft.checks },
+    inspector: 'จนท.ตรวจ (ผู้ใช้งานปัจจุบัน)',
+    notes: document.getElementById('noteText').value.trim(),
+    deadline: document.getElementById('deadlineInput').value,
+    photos: State.photos.slice(),
+    sigInspector: State.sigPadInspector.toDataURL('image/png'),
+    sigStore: State.sigPadStore.toDataURL('image/png'),
+  };
+  State.pendingRecord = record; // เก็บพักไว้ก่อน จะบันทึกจริงก็ต่อเมื่อกดยืนยันในหน้าตัวอย่าง
+
+  const tenant = TENANTS.find(t=>t.storeId===record.storeId);
+  openReportPreview({
+    record, tenant, mode:'presubmit',
+    title: '👁️ ตรวจสอบตัวอย่างก่อนบันทึกผล',
+    actionsHtml: `
+      <button class="btn btn-outline" onclick="closeReportPreview()">◀ กลับไปแก้ไข</button>
+      <button class="btn btn-grad" style="--g1:var(--grad-2a);--g2:var(--grad-2b);" id="confirmSubmitBtn" onclick="finalizeSubmit()">✅ ยืนยันบันทึกผล</button>`
+  });
+}
+
+/* ---------- ขั้นที่ 2: ยืนยันแล้วค่อยบันทึกจริง + ส่งเข้า backend + แจ้งเตือน ---------- */
+function finalizeSubmit(){
+  const record = State.pendingRecord;
+  if (!record) return;
+  const tenant = TENANTS.find(t=>t.storeId===record.storeId);
+  const btn = document.getElementById('confirmSubmitBtn');
+  if (btn){ btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> กำลังบันทึกข้อมูล...'; }
+
+  // ส่งข้อมูลไปยัง Google Apps Script backend (no-cors: อ่าน response ไม่ได้ จึงถือว่าสำเร็จเมื่อ fetch ไม่ throw)
+  postInspectionToBackend(record, tenant)
+    .then(()=>{
+      INSPECTION_HISTORY.unshift(record);
+      renderDashboard();
+      renderHistoryTable();
+      closeReportPreview();
+      showToast(BACKEND_READY ? 'บันทึกผลการตรวจลง Google Sheets สำเร็จ' : 'บันทึกผลการตรวจประเมินสำเร็จ (โหมดสาธิต)', 'success');
+
+      // ดึงข้อมูลจากเซิร์ฟเวอร์มายืนยันอีกครั้ง — จำเป็นเพราะ POST no-cors อ่าน response ไม่ได้
+      // ถ้าข้อมูลขึ้นชีตจริง รายการที่ซิงก์กลับมาจะมี record นี้อยู่ด้วย
+      if (BACKEND_READY){
+        setTimeout(()=> loadAllData({ silent:true }), 2500);
+      }
+
+      if (record.grade === 'major'){
+        // แจ้งเตือนอัตโนมัติทันทีเมื่อพบ Major Defect (ไม่ต้องรอ batch)
+        sendMajorDefectAlert(record, tenant);
+      }
+
+      Swal.fire({
+        icon: record.grade==='major' ? 'error' : (record.grade==='minor' ? 'warning' : 'success'),
+        title: 'บันทึกผลสำเร็จ',
+        html: `ร้าน <b>${tenant.name}</b><br>ผลการตรวจ: <b style="color:${gradeMeta(record.grade).color}">${gradeMeta(record.grade).label}</b><br>คะแนน: <b>${record.score}</b>/100`,
+        confirmButtonColor:'#3B82F6'
+      });
+
+      // เคลียร์ฟอร์มเพื่อตรวจร้านถัดไป
+      document.getElementById('storeSelect').value = '';
+      selectStore('');
+      document.getElementById('noteText').value = '';
+      document.getElementById('deadlineInput').value = '';
+      State.pendingRecord = null;
+    })
+    .catch(err=>{
+      showToast('เกิดข้อผิดพลาดในการส่งข้อมูล: ' + (err.message||'ไม่ทราบสาเหตุ'), 'error');
+    })
+    .finally(()=>{
+      if (btn){ btn.disabled = false; btn.innerHTML = '✅ ยืนยันบันทึกผล'; }
+    });
+}
+
+/* ---------- เชื่อมต่อ Google Apps Script Backend ---------- */
+function postInspectionToBackend(record, tenant){
+  // แนบชื่อร้าน/โซนไปด้วย เพื่อให้อีเมลแจ้งเตือนฝั่ง server อ่านรู้เรื่องโดยไม่ต้อง join ข้อมูลเอง
+  const payload = Object.assign({}, record, {
+    storeName: tenant ? tenant.name : record.storeId,
+    zone: tenant ? tenant.zone : '',
+  });
+  return postToBackend('submitInspection', payload).catch(err=>{
+    // ถ้ายังไม่ได้ deploy หรือสัญญาณขาด ระบบยังทำงานต่อได้แบบ local-only
+    console.warn('ส่งข้อมูลไป Apps Script ไม่สำเร็จ:', err);
+  });
+}
+function sendMajorDefectAlert(record, tenant){
+  // การส่ง Email/แจ้งเตือนจริงเกิดขึ้นฝั่ง Code.gs — ฝั่ง client ยิงซ้ำเพื่อความไวเท่านั้น
+  postToBackend('majorDefectAlert', {
+    recordId:record.id, storeId:record.storeId,
+    storeName:tenant?.name, zone:tenant?.zone, date:record.date
+  }).catch(()=>{});
+  showToast(`🚨 แจ้งเตือน Major Defect: ${tenant?.name} — ส่งแจ้งเตือนถึงทีมงานแล้ว`, 'warning');
+}
+
+/* ================================================================
+   ===============  หน้ารายงาน/ประวัติ  ============================
+   ================================================================ */
+let historyDT = null;
+function renderHistoryTable(){
+  const body = document.getElementById('historyBody');
+  body.innerHTML = INSPECTION_HISTORY.map(h=>{
+    const tenant = TENANTS.find(t=>t.storeId===h.storeId) || {};
+    const g = gradeMeta(h.grade);
+    const typeLabel = { weekly:'ประจำสัปดาห์/เดือน', preopening:'ก่อนเปิดร้าน', incident:'ฉุกเฉิน' }[h.type] || h.type;
+    return `<tr>
+      <td>${toBuddhistDateStr(parseBEDateStr(h.date))}</td>
+      <td class="font-semibold">${tenant.name||h.storeId}</td>
+      <td>${tenant.zone||'-'}</td>
+      <td>${typeLabel}</td>
+      <td><span class="chip" style="background:${g.bg};color:${g.color};">${g.label}</span></td>
+      <td>${h.inspector}</td>
+      <td class="whitespace-nowrap">
+        <button class="btn btn-soft !min-h-[32px] !py-1 !px-3 text-xs" title="ดูตัวอย่างใบรายงาน" onclick="previewHistoryReport('${h.id}')">👁️ ดู</button>
+        <button class="btn btn-soft !min-h-[32px] !py-1 !px-3 text-xs" title="พิมพ์ / บันทึกเป็น PDF" onclick="exportSingleReportPDF('${h.id}')">🖨️ PDF</button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  if (historyDT) { historyDT.destroy(); }
+  historyDT = $('#historyTable').DataTable({
+    order:[[0,'desc']],
+    language:{ search:'ค้นหา:', lengthMenu:'แสดง _MENU_ รายการ', info:'แสดง _START_ ถึง _END_ จาก _TOTAL_ รายการ', paginate:{previous:'ก่อนหน้า',next:'ถัดไป'}, zeroRecords:'ไม่พบข้อมูล', infoEmpty:'ไม่มีข้อมูล' }
+  });
+}
+
+/* ---------- ดูตัวอย่างใบรายงานจากประวัติ (ไม่ต้องรอ Export ก็เห็นหน้ารายงานได้ทันที) ---------- */
+async function previewHistoryReport(recordId){
+  const h = INSPECTION_HISTORY.find(r=>r.id===recordId);
+  if (!h) return;
+  const tenant = TENANTS.find(t=>t.storeId===h.storeId) || {};
+
+  // ถ้ารายการนี้มาจาก Google Sheets รูปจะยังเป็นลิงก์ Drive อยู่
+  // ต้องดึงเป็น base64 ก่อน ไม่เช่นนั้นรูปจะหายตอนแปลงเป็น PDF (canvas ถูก taint)
+  if (h.photosAreLinks && (h.photoIds?.length || h.sigInspector || h.sigStore)){
+    showDataLoading(true);
+    await ensureRecordPhotos(h);
+    showDataLoading(false);
+  }
+
+  openReportPreview({
+    record: h, tenant, mode:'view',
+    title: `📄 ตัวอย่างใบรายงาน — ${tenant.name||h.storeId}`,
+    actionsHtml: `
+      <button class="btn btn-outline" onclick="closeReportPreview()">ปิด</button>
+      <button class="btn btn-grad" style="--g1:var(--grad-1a);--g2:var(--grad-1b);" onclick="exportSingleReportPDF('${h.id}')">🖨️ พิมพ์ / บันทึกเป็น PDF</button>`
+  });
+}
+
+/* ================================================================
+   ===============  โมดัลตัวอย่างใบรายงาน (ใช้ร่วมกันทุกจุด)  ========
+   ใช้ทั้งตอน: (1) ดูตัวอย่างก่อนบันทึกผลตรวจ (2) ดู/พิมพ์จากประวัติ
+   (3) ดูตัวอย่างรายงานสรุปแดชบอร์ดก่อน Export PDF
+   ================================================================ */
+function openReportPreview({ record, tenant, mode, title, actionsHtml }){
+  const contentHtml = mode==='dashboard'
+    ? renderDashboardReportContent(record) // ในโหมดนี้ "record" คือ stats ของแดชบอร์ด
+    : renderInspectionReportContent(record, tenant);
+  document.getElementById('reportPreviewTitle').textContent = title;
+  document.getElementById('reportPreviewContent').innerHTML = contentHtml;
+  document.getElementById('reportPreviewActions').innerHTML = actionsHtml;
+  document.getElementById('reportPreviewModal').classList.remove('js-hidden');
+  requestAnimationFrame(fitReportPreviewScale);
+}
+function closeReportPreview(){
+  document.getElementById('reportPreviewModal').classList.add('js-hidden');
+}
+// ย่อ/ขยายตัวอย่างใบรายงาน (กว้างจริง 1123px) ให้พอดีกับความกว้างของโมดัลเสมอ ไม่ว่าจะเปิดจากจอไหน
+function fitReportPreviewScale(){
+  const scrollArea = document.getElementById('reportPreviewScrollArea');
+  const wrap = document.getElementById('reportPreviewScaleWrap');
+  const content = document.getElementById('reportPreviewContent');
+  if (!scrollArea || !content.firstElementChild) return;
+  const naturalWidth = 1123, naturalHeight = 794;
+  const availW = scrollArea.clientWidth - 4;
+  const scale = Math.min(1, availW / naturalWidth);
+  content.style.transform = `scale(${scale})`;
+  content.style.transformOrigin = 'top left';
+  wrap.style.width = (naturalWidth*scale) + 'px';
+  wrap.style.height = (naturalHeight*scale) + 'px';
+}
+window.addEventListener('resize', ()=>{
+  if (!document.getElementById('reportPreviewModal').classList.contains('js-hidden')) fitReportPreviewScale();
+});
+
+/* ================================================================
+   ===============  หน้าจัดการร้านค้า (ADMIN)  ======================
+   ================================================================ */
+let tenantsDT = null;
+function renderTenantsTable(){
+  const body = document.getElementById('tenantsBody');
+  body.innerHTML = TENANTS.map(t=>`
+    <tr>
+      <td class="font-semibold">${t.storeId}</td><td>${t.name}</td><td>${t.type}</td>
+      <td>${t.zone} / ${t.floor}</td><td>${t.contact}</td><td>${t.phone}</td>
+      <td><span class="chip" style="background:${t.status==='Active'?'rgba(16,185,129,.12)':'rgba(107,98,128,.15)'}; color:${t.status==='Active'?'#10B981':'#6b6280'};">${t.status}</span></td>
+      <td class="whitespace-nowrap">
+        <button class="btn btn-soft !min-h-[30px] !py-1 !px-3 text-xs" onclick="openTenantModal('${t.storeId}')">แก้ไข</button>
+        <button class="btn btn-soft !min-h-[30px] !py-1 !px-3 text-xs" onclick="deleteTenant('${t.storeId}')">ลบ</button>
+      </td>
+    </tr>`).join('');
+  if (tenantsDT) tenantsDT.destroy();
+  tenantsDT = $('#tenantsTable').DataTable({
+    language:{ search:'ค้นหา:', lengthMenu:'แสดง _MENU_ รายการ', info:'แสดง _START_ ถึง _END_ จาก _TOTAL_ รายการ', paginate:{previous:'ก่อนหน้า',next:'ถัดไป'}, zeroRecords:'ไม่พบข้อมูล', infoEmpty:'ไม่มีข้อมูล' }
+  });
+}
+
+function openTenantModal(storeId){
+  State.editingTenantId = storeId || null;
+  document.getElementById('tenantModalTitle').textContent = storeId ? 'แก้ไขข้อมูลร้านค้า' : 'เพิ่มร้านค้าใหม่';
+  const t = storeId ? TENANTS.find(x=>x.storeId===storeId) : null;
+  document.getElementById('t_storeId').value = t?.storeId || '';
+  document.getElementById('t_storeId').disabled = !!t;
+  document.getElementById('t_name').value = t?.name || '';
+  document.getElementById('t_type').value = t?.type || '';
+  document.getElementById('t_zone').value = t?.zone || 'โซนอาหาร';
+  document.getElementById('t_floor').value = t?.floor || '';
+  document.getElementById('t_contact').value = t?.contact || '';
+  document.getElementById('t_phone').value = t?.phone || '';
+  document.getElementById('t_status').value = t?.status || 'Active';
+  document.getElementById('tenantModal').classList.remove('js-hidden');
+}
+function closeTenantModal(){ document.getElementById('tenantModal').classList.add('js-hidden'); }
+
+function saveTenant(){
+  const storeId = document.getElementById('t_storeId').value.trim();
+  const name = document.getElementById('t_name').value.trim();
+  if (!storeId || !name){ showToast('กรุณากรอกรหัสร้านและชื่อร้านให้ครบถ้วน', 'error'); return; }
+
+  const data = {
+    storeId, name,
+    type: document.getElementById('t_type').value.trim(),
+    zone: document.getElementById('t_zone').value,
+    floor: document.getElementById('t_floor').value.trim(),
+    contact: document.getElementById('t_contact').value.trim(),
+    phone: document.getElementById('t_phone').value.trim(),
+    status: document.getElementById('t_status').value,
+  };
+
+  if (!State.editingTenantId && TENANTS.some(t=>t.storeId===storeId)){
+    showToast('รหัสร้านนี้มีอยู่ในระบบแล้ว','error'); return;
+  }
+
+  // โหมดสาธิต (ยังไม่ได้ต่อ backend) — แก้ในหน่วยความจำอย่างเดียว
+  if (!BACKEND_READY){
+    applyTenantLocally(data);
+    closeTenantModal();
+    showToast('บันทึกข้อมูลร้านค้าสำเร็จ (โหมดสาธิต)', 'success');
+    return;
+  }
+
+  const btn = document.getElementById('saveTenantBtn');
+  if (btn){ btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> กำลังบันทึก...'; }
+
+  jsonpRequest({ action:'saveTenant', payload: JSON.stringify(data) })
+    .then(res=>{
+      if (!res || !res.success) throw new Error(res && res.message ? res.message : 'บันทึกไม่สำเร็จ');
+      applyTenantLocally(data);            // อัปเดตหน้าจอทันทีเพื่อให้ผู้ใช้เห็นผลไว
+      closeTenantModal();
+      showToast(res.message || 'บันทึกข้อมูลร้านค้าลง Google Sheets สำเร็จ', 'success');
+      return loadAllData({ silent:true }); // แล้วดึงของจริงจากเซิร์ฟเวอร์มายืนยันอีกครั้ง
+    })
+    .catch(err=>{
+      showToast('บันทึกข้อมูลร้านค้าไม่สำเร็จ: ' + (err.message||'ไม่ทราบสาเหตุ'), 'error');
+    })
+    .finally(()=>{
+      if (btn){ btn.disabled = false; btn.innerHTML = '💾 บันทึกข้อมูล'; }
+    });
+}
+
+/** อัปเดตข้อมูลร้านในหน่วยความจำ + วาดหน้าจอใหม่ (ใช้ร่วมกันทั้งโหมดสาธิตและโหมดจริง) */
+function applyTenantLocally(data){
+  if (State.editingTenantId){
+    const idx = TENANTS.findIndex(t=>t.storeId===State.editingTenantId);
+    if (idx>-1) TENANTS[idx] = data; else TENANTS.push(data);
+  } else {
+    TENANTS.push(data);
+  }
+  renderTenantsTable();
+  populateStoreSelect();
+}
+
+function deleteTenant(storeId){
+  Swal.fire({ icon:'warning', title:'ยืนยันการลบร้านค้า?', text:storeId, showCancelButton:true, confirmButtonText:'ลบ', cancelButtonText:'ยกเลิก', confirmButtonColor:'#EF4444' })
+    .then(res=>{
+      if (!res.isConfirmed) return;
+
+      if (!BACKEND_READY){
+        TENANTS = TENANTS.filter(t=>t.storeId!==storeId);
+        renderTenantsTable();
+        populateStoreSelect();
+        showToast('ลบข้อมูลร้านค้าเรียบร้อย (โหมดสาธิต)', 'success');
+        return;
+      }
+
+      showDataLoading(true);
+      jsonpRequest({ action:'deleteTenant', storeId })
+        .then(r=>{
+          if (!r || !r.success) throw new Error(r && r.message ? r.message : 'ลบไม่สำเร็จ');
+          TENANTS = TENANTS.filter(t=>t.storeId!==storeId);
+          renderTenantsTable();
+          populateStoreSelect();
+          showToast(r.message || 'ลบข้อมูลร้านค้าเรียบร้อย', 'success');
+          return loadAllData({ silent:true });
+        })
+        .catch(err=> showToast('ลบข้อมูลไม่สำเร็จ: ' + (err.message||'ไม่ทราบสาเหตุ'), 'error'))
+        .finally(()=> showDataLoading(false));
+    });
+}
+
+/* ================================================================
+   ===============  EXPORT: PDF / EXCEL / CSV  =====================
+   ================================================================ */
+async function capturePdfElementToPdf(elementId, filename){
+  const el = document.getElementById(elementId);
+  await document.fonts.ready; // รอฟอนต์ไทยโหลดเสร็จก่อน capture กันตัวอักษรเพี้ยน
+  // useCORS:true เป็นตาข่ายกันพลาดกรณีที่ยังมีรูปจาก Drive หลุดมาเป็นลิงก์
+  // (ปกติเราดึงเป็น base64 มาก่อนแล้วผ่าน ensureRecordPhotos)
+  const canvas = await html2canvas(el, { scale:2, backgroundColor:'#ffffff', useCORS:true });
+  const imgData = canvas.toDataURL('image/jpeg', 0.95);
+  const { jsPDF } = window.jspdf;
+  // ใช้ขนาดจริงของเนื้อหาที่ capture ได้ (หาร 2 กลับเพราะ scale:2) กัน PDF ยืด/บีบเพี้ยน
+  // ในกรณีที่เนื้อหายาวกว่าปกติ (เช่น แนบรูปหลักฐานเยอะ) แต่ยังคงพยายามให้จบในหน้าเดียวเสมอ
+  const pxWidth = canvas.width / 2, pxHeight = canvas.height / 2;
+  const pdf = new jsPDF({ orientation: pxWidth >= pxHeight ? 'landscape' : 'portrait', unit:'px', format:[pxWidth, pxHeight] });
+  pdf.addImage(imgData, 'JPEG', 0, 0, pxWidth, pxHeight);
+  pdf.save(filename);
+}
+
+// ป้ายชื่อประเภทการตรวจ (ใช้ร่วมกันหลายจุด)
+function typeLabelOf(type){
+  return { weekly:'ตรวจประจำสัปดาห์/เดือน', preopening:'ตรวจก่อนเปิดร้านใหม่', incident:'ตรวจกรณีฉุกเฉิน/เร่งด่วน' }[type] || type;
+}
+
+/* ================================================================
+   ===============  เนื้อหาใบรายงานทันสมัย — หน้าเดียวพร้อมบทสรุป  ====
+   ใช้ร่วมกันทั้งตอน "ดูตัวอย่าง" (ในโมดัล) และตอน "Export เป็น PDF"
+   เพื่อให้สิ่งที่เห็นตอนพรีวิวตรงกับไฟล์ PDF จริงทุกประการ
+   ================================================================ */
+function renderInspectionReportContent(record, tenant){
+  tenant = tenant || {};
+  const g = gradeMeta(record.grade);
+  let passCount = 0, totalCount = 0;
+  const catCards = CHECKLIST_CATEGORIES.map(cat=>{
+    const rows = cat.items.map(item=>{
+      totalCount++;
+      const v = record.checks ? record.checks[item.id] : null;
+      const ok = v === 'pass';
+      if (ok) passCount++;
+      const bg = v==null ? '#F3F4F6' : (ok ? '#ECFDF5' : '#FEF2F2');
+      const color = v==null ? '#9CA3AF' : (ok ? '#10B981' : '#EF4444');
+      const label = v==null ? 'ยังไม่ประเมิน' : (ok ? '✓ ผ่าน' : '✕ แก้ไข');
+      return `<div class="report-check-row" style="background:${bg};">
+        <span>${item.text}</span><span style="font-weight:700;color:${color};white-space:nowrap;">${label}</span>
+      </div>`;
+    }).join('');
+    return `<div class="report-cat-card"><div class="report-cat-title">${cat.icon} ${cat.name}</div>${rows}</div>`;
+  }).join('');
+
+  const photosHtml = (record.photos && record.photos.length) ? `
+    <div style="font-weight:700;font-size:13px;margin-bottom:8px;">📸 หลักฐานภาพถ่าย (${record.photos.length} รูป)</div>
+    <div class="report-photos-grid">${record.photos.slice(0,6).map(p=>`<img src="${p}">`).join('')}</div>` : '';
+
+  const noteHtml = record.notes ? `
+    <div class="report-note-box">
+      <b>📝 ข้อเสนอแนะ / คำสั่งปรับปรุงงาน:</b> ${record.notes}
+      ${record.deadline ? `<br><b>⏰ กำหนดเดดไลน์แก้ไข:</b> ${record.deadline}` : ''}
+    </div>` : '';
+
+  const sigInspectorImg = record.sigInspector ? `<img class="report-sign-img" src="${record.sigInspector}">` : `<div style="height:64px;border-bottom:1px solid #ccc;margin-bottom:4px;"></div>`;
+  const sigStoreImg = record.sigStore ? `<img class="report-sign-img" src="${record.sigStore}">` : `<div style="height:64px;border-bottom:1px solid #ccc;margin-bottom:4px;"></div>`;
+
+  return `
+  <div class="report-page">
+    <div class="report-header">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <div class="report-logo">MG</div>
+        <div>
+          <div style="font-size:21px;font-weight:800;">ใบรายงานผลการตรวจประเมินร้านค้า</div>
+          <div style="font-size:12.5px;opacity:.9;">MallGuard · ระบบตรวจประเมินความปลอดภัยและมาตรฐานร้านค้า</div>
+        </div>
+      </div>
+      <div style="text-align:right;font-size:12.5px;opacity:.95;">เลขที่รายงาน: <b>${record.id}</b><br>วันที่ตรวจ: <b>${toBuddhistDateStr(parseBEDateStr(record.date))}</b></div>
+    </div>
+
+    <div class="report-summary-strip">
+      <div class="report-store-block">
+        <div style="font-size:17px;font-weight:800;margin-bottom:4px;">${tenant.name || record.storeId}</div>
+        <div style="font-size:12px;color:#6b6280;">${record.storeId} · ${tenant.type||'-'} · ${tenant.zone||'-'} ${tenant.floor||''}</div>
+        <div style="font-size:12px;color:#6b6280;margin-top:6px;">ผู้ติดต่อ: ${tenant.contact||'-'} (${tenant.phone||'-'})</div>
+      </div>
+      <div class="report-grade-block" style="background:${g.bg};">
+        <div style="font-size:12px;font-weight:700;color:${g.color};margin-bottom:2px;">ผลสรุปการตรวจ</div>
+        <div style="font-size:15px;font-weight:800;color:${g.color};margin-bottom:6px;">${g.label}</div>
+        <div style="font-size:30px;font-weight:800;color:${g.color};line-height:1;">${record.score}<span style="font-size:14px;">/100</span></div>
+      </div>
+      <div class="report-mini-stats">
+        <div class="report-mini-stat"><span>ประเภทการตรวจ</span><b>${typeLabelOf(record.type)}</b></div>
+        <div class="report-mini-stat"><span>ผู้ตรวจ</span><b>${record.inspector}</b></div>
+        <div class="report-mini-stat"><span>ผลรวมข้อตรวจ</span><b>ผ่าน ${passCount}/${totalCount} ข้อ</b></div>
+      </div>
+    </div>
+
+    <div class="report-checklist-grid">${catCards}</div>
+    ${photosHtml}
+    ${noteHtml}
+
+    <div class="report-sign-row">
+      <div class="report-sign-box">${sigInspectorImg}<div>ลงชื่อผู้ตรวจสอบ (Inspector)</div></div>
+      <div class="report-sign-box">${sigStoreImg}<div>ลงชื่อผู้แทนร้านค้า (Store Rep.)</div></div>
+    </div>
+
+    <div class="report-footer"><span>ออกโดยระบบ MallGuard · พิมพ์เมื่อ ${toBuddhistDateStr(new Date())}</span><span>หน้า 1/1</span></div>
+  </div>`;
+}
+
+/* เนื้อหารายงานสรุปแดชบอร์ด — ใช้ทั้งตอนดูตัวอย่างและ Export PDF เช่นกัน */
+function renderDashboardReportContent(s){
+  const kpis = [
+    ['ร้านค้าทั้งหมด', s.total, '#3B82F6'],
+    ['ตรวจแล้วรอบนี้', s.inspected, '#06B6D4'],
+    ['ข้อแก้ไขเล็กน้อย', s.counts.minor, '#F59E0B'],
+    ['ไม่ผ่านขั้นวิกฤต', s.counts.major, '#EF4444'],
+  ];
+  const top5Rows = s.top5.map((h,i)=>{
+    const tenant = TENANTS.find(t=>t.storeId===h.storeId)||{};
+    const g = gradeMeta(h.grade);
+    return `<tr>
+      <td style="padding:8px;border-bottom:1px solid #eee;">#${i+1}</td>
+      <td style="padding:8px;border-bottom:1px solid #eee;">${tenant.name||h.storeId}</td>
+      <td style="padding:8px;border-bottom:1px solid #eee;">${tenant.zone||'-'}</td>
+      <td style="padding:8px;border-bottom:1px solid #eee;color:${g.color};font-weight:700;">${g.label}</td>
+      <td style="padding:8px;border-bottom:1px solid #eee;font-weight:700;">${h.score}</td>
+    </tr>`;
+  }).join('');
+  const zoneRows = s.zoneLabels.map((z,i)=>`<div class="report-mini-stat"><span>${z}</span><b>${s.zoneAvgs[i]} คะแนน</b></div>`).join('');
+
+  return `
+  <div class="report-page">
+    <div class="report-header">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <div class="report-logo">MG</div>
+        <div>
+          <div style="font-size:21px;font-weight:800;">รายงานสรุปผลการตรวจประเมินร้านค้า</div>
+          <div style="font-size:12.5px;opacity:.9;">MallGuard · ภาพรวมทั้งศูนย์การค้า</div>
+        </div>
+      </div>
+      <div style="text-align:right;font-size:12.5px;opacity:.95;">วันที่ออกรายงาน<br><b>${toBuddhistDateStr(new Date())}</b></div>
+    </div>
+
+    <div style="display:flex;gap:14px;margin-bottom:16px;">
+      ${kpis.map(([label,val,color])=>`
+        <div style="flex:1;background:${color};color:#fff;border-radius:16px;padding:16px;">
+          <div style="font-size:12px;opacity:.9;">${label}</div><div style="font-size:26px;font-weight:800;">${val}</div>
+        </div>`).join('')}
+    </div>
+
+    <div style="display:flex;gap:16px;">
+      <div style="flex:1.4;">
+        <div style="font-weight:700;font-size:13px;margin-bottom:8px;">🔥 Top 5 ร้านค้าที่ต้องปรับปรุงด่วนที่สุด</div>
+        <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
+          <thead><tr style="background:#F8FAFC;text-align:left;">
+            <th style="padding:8px;border-bottom:2px solid #E6E1FA;">อันดับ</th><th style="padding:8px;border-bottom:2px solid #E6E1FA;">ร้านค้า</th>
+            <th style="padding:8px;border-bottom:2px solid #E6E1FA;">โซน</th><th style="padding:8px;border-bottom:2px solid #E6E1FA;">สถานะ</th>
+            <th style="padding:8px;border-bottom:2px solid #E6E1FA;">คะแนน</th>
+          </tr></thead>
+          <tbody>${top5Rows || `<tr><td colspan="5" style="padding:12px;text-align:center;color:#9691ab;">ยังไม่มีข้อมูล</td></tr>`}</tbody>
+        </table>
+      </div>
+      <div style="flex:1;">
+        <div style="font-weight:700;font-size:13px;margin-bottom:8px;">📊 คะแนนเฉลี่ยแยกโซน</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">${zoneRows}</div>
+      </div>
+    </div>
+
+    <div class="report-sign-row" style="margin-top:36px;">
+      <div class="report-sign-box"><div style="border-bottom:1px solid #ccc;margin-bottom:8px;height:1px;"></div>ผู้จัดทำรายงาน</div>
+      <div class="report-sign-box"><div style="border-bottom:1px solid #ccc;margin-bottom:8px;height:1px;"></div>ผู้ตรวจสอบ/อนุมัติ</div>
+    </div>
+
+    <div class="report-footer"><span>ออกโดยระบบ MallGuard</span><span>หน้า 1/1</span></div>
+  </div>`;
+}
+
+/* ดูตัวอย่างรายงานสรุปแดชบอร์ดก่อนดาวน์โหลด PDF จริง */
+function previewDashboardReport(){
+  const s = computeDashboardStats();
+  openReportPreview({
+    record: s, tenant:null, mode:'dashboard',
+    title: '📄 ตัวอย่างรายงานสรุปแดชบอร์ด',
+    actionsHtml: `
+      <button class="btn btn-outline" onclick="closeReportPreview()">ปิด</button>
+      <button class="btn btn-grad" style="--g1:var(--grad-1a);--g2:var(--grad-1b);" onclick="exportDashboardPDF()">📥 ดาวน์โหลด PDF</button>`
+  });
+}
+
+function exportDashboardPDF(){
+  const s = computeDashboardStats();
+  const root = document.getElementById('pdfDashboardReport');
+  root.innerHTML = renderDashboardReportContent(s);
+  capturePdfElementToPdf('pdfDashboardReport', `MallGuard-Dashboard-${Date.now()}.pdf`).then(()=>showToast('Export PDF สำเร็จ','success'));
+}
+
+async function exportSingleReportPDF(recordId){
+  const h = INSPECTION_HISTORY.find(r=>r.id===recordId);
+  if (!h) return;
+  const tenant = TENANTS.find(t=>t.storeId===h.storeId) || {};
+
+  // ดึงรูปจริงจาก Drive ก่อน (ถ้ายังเป็นลิงก์) เพื่อให้รูปไม่หายไปจากไฟล์ PDF
+  showDataLoading(true);
+  try{
+    if (h.photosAreLinks && (h.photoIds?.length || h.sigInspector || h.sigStore)){
+      await ensureRecordPhotos(h);
+    }
+    const root = document.getElementById('pdfInspectionReport');
+    root.innerHTML = renderInspectionReportContent(h, tenant);
+    await capturePdfElementToPdf('pdfInspectionReport', `MallGuard-Report-${h.storeId}-${h.date}.pdf`);
+    showToast('Export PDF สำเร็จ','success');
+  }catch(err){
+    showToast('Export PDF ไม่สำเร็จ: ' + (err.message||'ไม่ทราบสาเหตุ'), 'error');
+  }finally{
+    showDataLoading(false);
+  }
+}
+
+function exportDashboardExcel(){
+  const rows = INSPECTION_HISTORY.map(h=>{
+    const t = TENANTS.find(x=>x.storeId===h.storeId)||{};
+    return { 'วันที่ตรวจ': toBuddhistDateStr(parseBEDateStr(h.date)), 'รหัสร้าน':h.storeId, 'ชื่อร้าน':t.name||'', 'โซน':t.zone||'', 'สถานะ':gradeMeta(h.grade).label, 'คะแนน':h.score, 'ผู้ตรวจ':h.inspector };
+  });
+  const ws = XLSX.utils.json_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'สรุปผลตรวจ');
+  XLSX.writeFile(wb, `MallGuard-Dashboard-${Date.now()}.xlsx`);
+  showToast('Export Excel สำเร็จ','success');
+}
+function exportHistoryExcel(){ exportDashboardExcel(); }
+
+function exportHistoryCSV(){
+  const rows = INSPECTION_HISTORY.map(h=>{
+    const t = TENANTS.find(x=>x.storeId===h.storeId)||{};
+    return { 'วันที่ตรวจ': toBuddhistDateStr(parseBEDateStr(h.date)), 'รหัสร้าน':h.storeId, 'ชื่อร้าน':t.name||'', 'โซน':t.zone||'', 'สถานะ':gradeMeta(h.grade).label, 'คะแนน':h.score, 'ผู้ตรวจ':h.inspector };
+  });
+  const ws = XLSX.utils.json_to_sheet(rows);
+  const csv = XLSX.utils.sheet_to_csv(ws);
+  const blob = new Blob(['\uFEFF'+csv], { type:'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = `MallGuard-History-${Date.now()}.csv`; a.click();
+  showToast('Export CSV สำเร็จ','success');
+}
+
+/* ปิด modal เมื่อคลิกพื้นหลัง */
+document.querySelectorAll('.modal-backdrop').forEach(m=>{
+  m.addEventListener('click', e=>{ if (e.target===m) m.classList.add('js-hidden'); });
+});
+</script>
+</body>
+</html>
