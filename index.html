@@ -11,15 +11,6 @@
      พร้อมเส้นเป้าหมาย 85 คะแนนบนกราฟแท่งแยกโซน
   5. กราฟทั้งหมด responsive จริง (maintainAspectRatio:false + chart-box)
      รองรับมือถือ / แท็บเลต / จอคอมพิวเตอร์
-
-  v3.1 — เชื่อมต่อ Google Sheets ของจริง (ใช้คู่กับ Code_v2.gs):
-  6. ชั้นเชื่อมต่อข้อมูลใหม่ (Data Layer) อ่านข้อมูลจริงผ่าน JSONP
-     ทำให้รีเฟรชหน้าจอแล้วข้อมูลไม่หายอีกต่อไป
-  7. เพิ่ม/แก้/ลบร้านค้า บันทึกลง Google Sheets จริง พร้อม loading state
-  8. ป้ายสถานะการเชื่อมต่อบนแถบหัวเว็บ + ปุ่มซิงก์ข้อมูลบนแดชบอร์ด
-  9. แคชข้อมูลลงเครื่อง ใช้ดูต่อได้เมื่อสัญญาณขาด + ซิงก์อัตโนมัติเมื่อกลับมาออนไลน์
- 10. ดึงรูปหลักฐานจาก Drive เป็น base64 ก่อนออก PDF เพื่อไม่ให้รูปหายจากไฟล์รายงาน
- 11. ถ้ายังไม่ตั้งค่า URL ของ Apps Script ระบบจะทำงานใน "โหมดสาธิต" อัตโนมัติ
 ============================================================ -->
 <html lang="th">
 <head>
@@ -31,7 +22,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="MallGuard">
 <link rel="apple-touch-icon" id="appleTouchIcon" href="">
-<link rel="icon" id="faviconLink" href="">
+<link rel="apple-touch-icon" sizes="152x152" id="appleTouchIcon152" href="">
+<link rel="apple-touch-icon" sizes="167x167" id="appleTouchIcon167" href="">
+<link rel="apple-touch-icon" sizes="180x180" id="appleTouchIcon180" href="">
+<link rel="icon" type="image/png" id="faviconLink" href="">
 <link rel="manifest" id="manifestLink" href="">
 
 <!-- ===================== CDN LIBRARIES ===================== -->
@@ -329,26 +323,6 @@ table.dataTable tbody td{ border-color:var(--border) !important; }
   .splash-logo{ width:112px; height:112px; }
 }
 
-/* ---------- ป้ายสถานะการเชื่อมต่อ backend (บนแถบหัวเว็บ) ---------- */
-.conn-badge{
-  display:inline-flex; align-items:center; gap:7px; height:44px; padding:0 12px;
-  border-radius:14px; font-size:12px; font-weight:600; color:#fff; white-space:nowrap;
-  background:rgba(255,255,255,.18); border:1.5px solid rgba(255,255,255,.35); backdrop-filter:blur(4px);
-}
-.conn-dot{ width:9px; height:9px; border-radius:50%; box-shadow:0 0 0 3px rgba(255,255,255,.18); animation: connPulse 2s ease-in-out infinite; }
-@keyframes connPulse{ 0%,100%{ opacity:1; } 50%{ opacity:.45; } }
-
-/* ---------- ม่านโหลดข้อมูลระหว่างซิงก์กับ Google Sheets ---------- */
-#dataLoadingOverlay{
-  position:fixed; inset:0; z-index:150; display:flex; align-items:center; justify-content:center;
-  background:rgba(15,10,30,.45); backdrop-filter:blur(3px);
-}
-.data-loading-box{
-  background:var(--surface); color:var(--text); border-radius:20px; padding:26px 34px;
-  display:flex; flex-direction:column; align-items:center; gap:12px; text-align:center;
-  box-shadow:0 26px 50px -18px rgba(0,0,0,.5); border:1px solid var(--border);
-}
-
 /* กล่องกราฟ: กำหนดความสูงคงที่ + ให้ Chart.js ยืดเต็ม (maintainAspectRatio:false)
    เพื่อให้ layout แดชบอร์ดเต็มจอสวยงามเท่ากันทุกจอ ไม่ยืดหดตามสัดส่วน canvas */
 .chart-box{ position:relative; height:280px; }
@@ -384,15 +358,6 @@ table.dataTable tbody td{ border-color:var(--border) !important; }
   <div class="splash-footer">เพื่อความปลอดภัยของข้อมูล ระบบจะกลับสู่หน้านี้อัตโนมัติเมื่อไม่มีการใช้งานเกิน 1 นาที</div>
 </div>
 
-<!-- ===================== LOADING OVERLAY (ระหว่างซิงก์ข้อมูลจริง) ===================== -->
-<div id="dataLoadingOverlay" class="js-hidden">
-  <div class="data-loading-box">
-    <div class="spinner" style="width:34px;height:34px;border-width:4px;border-color:rgba(59,130,246,.25);border-top-color:#3B82F6;"></div>
-    <div class="font-semibold">กำลังซิงก์ข้อมูลจาก Google Sheets…</div>
-    <div class="text-xs text-muted">การเรียกครั้งแรกอาจใช้เวลาสักครู่</div>
-  </div>
-</div>
-
 <!-- ===================== TOAST CONTAINER ===================== -->
 <div class="toast-wrap" id="toastWrap"></div>
 
@@ -410,16 +375,15 @@ table.dataTable tbody td{ border-color:var(--border) !important; }
       <select id="roleSwitch" class="header-select !w-auto !py-2 !text-xs font-semibold hidden sm:block">
         <option value="inspector">👷 เจ้าหน้าที่ผู้ตรวจ (Inspector)</option>
         <option value="manager">📊 หัวหน้างาน/ผู้บริหาร (Manager)</option>
-        <option value="admin">🛠️ ผู้ดูแลระบบ (Admin)</option>
+        <option value="admin" selected>🛠️ ผู้ดูแลระบบ (Admin)</option>
       </select>
-      <div id="connBadge" class="conn-badge" title="สถานะการเชื่อมต่อ"></div>
       <button id="darkToggle" class="btn header-btn !min-h-[44px] !px-3" title="สลับโหมดสว่าง/มืด">🌙</button>
     </div>
   </div>
   <select id="roleSwitchMobile" class="header-select !w-full !py-2 !text-xs font-semibold sm:hidden !rounded-none">
     <option value="inspector">👷 เจ้าหน้าที่ผู้ตรวจ (Inspector)</option>
     <option value="manager">📊 หัวหน้างาน/ผู้บริหาร (Manager)</option>
-    <option value="admin">🛠️ ผู้ดูแลระบบ (Admin)</option>
+    <option value="admin" selected>🛠️ ผู้ดูแลระบบ (Admin)</option>
   </select>
 </header>
 
@@ -445,10 +409,8 @@ table.dataTable tbody td{ border-color:var(--border) !important; }
         <div>
           <h1 class="text-2xl font-extrabold">ภาพรวมการตรวจประเมิน</h1>
           <p class="text-muted text-sm" id="dashDateLabel"></p>
-          <p class="text-muted text-xs mt-0.5" id="syncLabel"></p>
         </div>
-        <div class="flex flex-wrap gap-2">
-          <button class="btn btn-grad" style="--g1:var(--grad-1a);--g2:var(--grad-1b);" id="refreshBtn" onclick="refreshData()">🔄 ซิงก์ข้อมูล</button>
+        <div class="flex gap-2">
           <button class="btn btn-outline" onclick="previewDashboardReport()">👁️ ดูตัวอย่าง/PDF</button>
           <button class="btn btn-outline" onclick="exportDashboardExcel()">📊 Export Excel</button>
         </div>
@@ -598,7 +560,10 @@ table.dataTable tbody td{ border-color:var(--border) !important; }
     <section id="page-tenants" class="page js-hidden space-y-5">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <h1 class="text-2xl font-extrabold">ข้อมูลหลักร้านค้า (Tenant Master Data)</h1>
-        <button class="btn btn-grad" style="--g1:var(--grad-4a);--g2:var(--grad-4b);" onclick="openTenantModal()">➕ เพิ่มร้านค้าใหม่</button>
+        <div class="flex flex-wrap gap-2">
+          <button class="btn btn-outline" onclick="openTenantImportModal()">📥 นำเข้าไฟล์ร้านค้า</button>
+          <button class="btn btn-grad" style="--g1:var(--grad-4a);--g2:var(--grad-4b);" onclick="openTenantModal()">➕ เพิ่มร้านค้าใหม่</button>
+        </div>
       </div>
       <div class="surface rounded-2xl p-4 overflow-x-auto">
         <table id="tenantsTable" class="w-full text-sm" style="width:100%">
@@ -668,8 +633,26 @@ table.dataTable tbody td{ border-color:var(--border) !important; }
         <div><label class="field-label">เบอร์โทรศัพท์</label><input id="t_phone"></div>
       </div>
       <div><label class="field-label">สถานะ</label><select id="t_status"><option value="Active">Active (เปิดดำเนินการ)</option><option value="Closed">Closed (ปิดร้าน)</option></select></div>
-      <button class="btn btn-grad w-full" style="--g1:var(--grad-1a);--g2:var(--grad-1b);" id="saveTenantBtn" onclick="saveTenant()">💾 บันทึกข้อมูล</button>
+      <button class="btn btn-grad w-full" style="--g1:var(--grad-1a);--g2:var(--grad-1b);" onclick="saveTenant()">💾 บันทึกข้อมูลร้านค้า</button>
     </div>
+  </div>
+</div>
+
+<div id="tenantImportModal" class="modal-backdrop js-hidden">
+  <div class="modal-box p-5" style="max-width:760px;">
+    <div class="flex justify-between items-center mb-3">
+      <h3 class="font-bold text-lg">📥 นำเข้ารายชื่อร้านค้าจากไฟล์</h3>
+      <button onclick="closeTenantImportModal()" class="text-2xl leading-none">&times;</button>
+    </div>
+    <div class="surface-2 rounded-xl p-3 text-xs text-muted mb-3 leading-relaxed">
+      รองรับไฟล์ <b>.csv / .xlsx / .xls</b> โดยแถวแรกของไฟล์ต้องเป็นหัวคอลัมน์ เช่น <i>รหัสร้าน, ชื่อร้าน, ประเภทธุรกิจ, โซน, ชั้น, ผู้ติดต่อ, เบอร์โทร, สถานะ</i>
+      (รองรับทั้งหัวคอลัมน์ภาษาไทยและอังกฤษ) — ถ้าไม่แน่ใจรูปแบบ
+      <button class="font-semibold underline" style="color:var(--brand-a);" onclick="downloadTenantImportTemplate()">ดาวน์โหลดเทมเพลตตัวอย่างที่นี่</button>
+      ร้านที่มีรหัสซ้ำกับข้อมูลเดิมจะถูก<b>อัปเดตทับ</b> ส่วนรหัสใหม่จะถูก<b>เพิ่มเข้าระบบ</b>
+    </div>
+    <input type="file" id="importFileInput" accept=".csv,.xlsx,.xls" onchange="handleTenantImportFile(event)" class="mb-3">
+    <div id="importPreviewArea"><p class="text-sm text-muted">เลือกไฟล์ CSV หรือ Excel ที่มีรายชื่อร้านค้าเพื่อดูตัวอย่างก่อนนำเข้าจริง</p></div>
+    <button class="btn btn-grad w-full mt-4 js-hidden" id="importConfirmBtn" style="--g1:var(--grad-2a);--g2:var(--grad-2b);" onclick="confirmTenantImport()">✅ ยืนยันนำเข้าข้อมูล</button>
   </div>
 </div>
 
@@ -700,16 +683,9 @@ table.dataTable tbody td{ border-color:var(--border) !important; }
    ================================================================ */
 const CONFIG = {
   // TODO: แก้เป็น URL ของ Google Apps Script Web App หลัง deploy จริง (ดูคู่มือ DEPLOY_GUIDE.md)
-  // ต้องลงท้ายด้วย /exec เท่านั้น (ไม่ใช่ /dev)
-  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyeEU5_3GOxgL6hMzuClWB_8LHBe0Q44mewCLTYcnvJSvQe0uoSHH4veFFl-P6Y432IIQ/exec',
+  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/REPLACE_WITH_YOUR_DEPLOYMENT_ID/exec',
   APP_NAME: 'MallGuard',
-  REQUEST_TIMEOUT_MS: 20000,   // Apps Script ตอบช้าได้ถึง ~10 วิ ในการเรียกครั้งแรก (cold start)
-  CACHE_KEY: 'mallguard_data_cache_v3',
 };
-
-/* ตรวจว่าตั้งค่า URL จริงแล้วหรือยัง — ถ้ายังเป็นค่า placeholder ให้ทำงานใน
-   "โหมดสาธิต" ด้วยข้อมูลจำลอง เพื่อให้เปิดไฟล์ดูได้ทันทีโดยไม่ต้อง deploy ก่อน */
-const BACKEND_READY = !/REPLACE_WITH_YOUR_DEPLOYMENT_ID/.test(CONFIG.APPS_SCRIPT_URL);
 
 /* หมวดหมู่รายการตรวจสอบ — ตรงตามสเปกโปรเจกต์ 3 หมวด
    severity บอกว่าถ้าข้อในหมวดนี้ "ผิดปกติ" จะถือเป็น major หรือ minor defect */
@@ -777,7 +753,7 @@ function mkHistory(storeId, dateStr, type, grade, checks, score, inspector){
    ===============  STATE ของแอปพลิเคชัน  =========================
    ================================================================ */
 const State = {
-  role: 'inspector',
+  role: 'admin', // ค่าเริ่มต้นเป็น Admin เพื่อให้เห็นเมนูครบทุกอันตั้งแต่เปิดแอปครั้งแรก (สลับเป็นบทบาทอื่นได้จากมุมขวาบน)
   page: 'dashboard',
   draft: null,        // ฟอร์มตรวจที่กำลังกรอกอยู่
   photos: [],          // รูปที่แนบในฟอร์มปัจจุบัน (base64 หลัง compress แล้ว)
@@ -787,10 +763,7 @@ const State = {
   sigPadStore: null,
   editingTenantId: null,
   pendingRecord: null, // ผลตรวจที่ผ่านการตรวจสอบแล้วและกำลังรอดูตัวอย่าง/ยืนยันบันทึก
-  // สถานะการเชื่อมต่อ backend: demo | loading | online | offline
-  connection: BACKEND_READY ? 'loading' : 'demo',
-  lastSync: null,      // เวลาที่ซิงก์ข้อมูลกับ Google Sheets สำเร็จครั้งล่าสุด
-  usingCache: false,   // true = กำลังแสดงข้อมูลจากแคชเพราะเชื่อมต่อไม่ได้
+  importRows: [], // แถวร้านค้าที่พาร์สจากไฟล์นำเข้า รอผู้ใช้กดยืนยัน
 };
 
 /* ================================================================
@@ -850,28 +823,18 @@ function gradeMeta(grade){
 document.addEventListener('DOMContentLoaded', init);
 
 function init(){
-  setupPWAAssets();
-  setupDarkMode();
-  setupNav();
-  setupRoleSwitch();
-  populateStoreSelect();
-  setupInspectionTypeButtons();
-  renderTenantsTable();
-  renderHistoryTable();
-  renderDashboard();
-  document.getElementById('dashDateLabel').textContent = 'ข้อมูล ณ วันที่ ' + toBuddhistDateStr(new Date());
+  // แยกแต่ละขั้นตอนด้วย try-catch ของตัวเอง เพื่อไม่ให้ปัญหาจากขั้นตอนหนึ่ง (เช่น ตารางข้อมูล)
+  // ลามไปทำให้ขั้นตอนสำคัญถัดไป (การแสดงเมนูตามบทบาท, หน้าล็อกจอ) ไม่ถูกเรียกใช้งานตามไปด้วย
+  const steps = [setupPWAAssets, setupDarkMode, setupNav, setupRoleSwitch, populateStoreSelect,
+    setupInspectionTypeButtons, renderTenantsTable, renderHistoryTable, renderDashboard];
+  steps.forEach(fn=>{
+    try { fn(); } catch(err){ console.error('เริ่มต้นระบบส่วน "' + fn.name + '" ผิดพลาด:', err); }
+  });
+  try {
+    document.getElementById('dashDateLabel').textContent = 'ข้อมูล ณ วันที่ ' + toBuddhistDateStr(new Date());
+  } catch(err){ console.error(err); }
   applyRoleVisibility();
   setupSplashAndIdle();
-
-  // โหลดข้อมูลจริงจาก Google Sheets (ถ้าตั้งค่า URL แล้ว)
-  // วางไว้ท้ายสุดเพื่อให้หน้าจอวาดเสร็จก่อน ผู้ใช้จะได้ไม่เห็นจอขาวระหว่างรอเซิร์ฟเวอร์
-  renderConnectionBadge();
-  loadAllData();
-
-  // ซิงก์อัตโนมัติเมื่อเบราว์เซอร์กลับมาออนไลน์ (เช่น เดินออกจากจุดอับสัญญาณ)
-  window.addEventListener('online', ()=>{
-    if (BACKEND_READY && !splashActive) loadAllData({ silent:true });
-  });
 }
 
 /* ================================================================
@@ -962,29 +925,27 @@ function resetIdleTimer(){
   idleTimer = setTimeout(showSplash, IDLE_LIMIT_MS);
 }
 
-/* ---------- PWA: โลโก้ + manifest แบบฝังในไฟล์เดียว (add to home screen) ---------- */
+/* ---------- PWA: โลโก้ + manifest แบบฝังในไฟล์เดียว (add to home screen ทั้งมือถือ/คอมพิวเตอร์) ----------
+   หมายเหตุสำคัญ: iOS Safari ไม่รองรับไอคอนแบบ SVG สำหรับ "เพิ่มไปยังหน้าจอโฮม" อย่างเป็นทางการ —
+   ถ้าใช้ SVG ไอคอนจะไม่ขึ้น (iOS จะแคปหน้าจอมาใช้แทนโลโก้จริง) จึงต้องวาดออกมาเป็นไฟล์ภาพ PNG จริงๆ
+   โค้ดนี้วาดโลโก้ด้วย Canvas API ล้วนๆ (ไม่พึ่งไฟล์ภาพภายนอก ยังคงเป็น single-file HTML เดิม)
+   แล้วแปลงเป็น PNG data URI ในหลายขนาดให้ครบตามที่ iOS/Android/เดสก์ท็อปต้องการ */
 function setupPWAAssets(){
-  // สร้างโลโก้แอปเป็น SVG แบบ data URI (ไม่ต้องพึ่งไฟล์ภายนอก ยังคงเป็น single-file HTML)
-  const svgLogo = `
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
-      <defs>
-        <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="#3B82F6"/>
-          <stop offset="1" stop-color="#EC4899"/>
-        </linearGradient>
-      </defs>
-      <rect width="192" height="192" rx="42" fill="url(#g)"/>
-      <path d="M96 30 L150 52 V96 C150 130 128 154 96 166 C64 154 42 130 42 96 V52 Z" fill="rgba(255,255,255,.16)"/>
-      <path d="M96 46 L136 62 V96 C136 122 118 140 96 150 C74 140 56 122 56 96 V62 Z" fill="none" stroke="#fff" stroke-width="6"/>
-      <path d="M78 98 L91 111 L118 82" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
-      <text x="96" y="182" text-anchor="middle" font-family="Prompt, sans-serif" font-size="16" font-weight="700" fill="#fff">MallGuard</text>
-    </svg>`;
-  const svgBlob = new Blob([svgLogo], {type:'image/svg+xml'});
-  const logoUrl = URL.createObjectURL(svgBlob);
-  document.getElementById('appleTouchIcon').href = logoUrl;
-  document.getElementById('faviconLink').href = logoUrl;
+  const icon152 = generateAppIconDataURL(152); // iPad (รุ่นเก่า)
+  const icon167 = generateAppIconDataURL(167); // iPad Pro
+  const icon180 = generateAppIconDataURL(180); // iPhone — ขนาดมาตรฐานของ apple-touch-icon
+  const icon192 = generateAppIconDataURL(192); // Android/Chrome + favicon แท็บเบราว์เซอร์
+  const icon512 = generateAppIconDataURL(512); // ไอคอนความละเอียดสูง/หน้าจอ Splash ของ Android
 
-  // สร้าง Web App Manifest แบบ dynamic (Blob URL) เพื่อรองรับ "Add to Home Screen"
+  // apple-touch-icon หลายขนาด ให้ iOS เลือกไฟล์ที่ตรงกับอุปกรณ์ที่สุดเอง
+  document.getElementById('appleTouchIcon').href = icon180;
+  document.getElementById('appleTouchIcon152').href = icon152;
+  document.getElementById('appleTouchIcon167').href = icon167;
+  document.getElementById('appleTouchIcon180').href = icon180;
+  document.getElementById('faviconLink').href = icon192;
+
+  // Web App Manifest (Blob URL) — ใช้ตอนกด "ติดตั้งแอป/ปักหมุด" บน Android และ Chrome/Edge บนคอมพิวเตอร์
+  // ใส่ทั้งไอคอนแบบ "any" (แสดงเต็มรูปตามที่วาด) และ "maskable" (ให้ระบบ Android ตัดขอบเป็นวงกลม/สี่เหลี่ยมมนได้เอง)
   const manifest = {
     name: 'MallGuard - ระบบตรวจประเมินความปลอดภัยร้านค้า',
     short_name: 'MallGuard',
@@ -992,10 +953,65 @@ function setupPWAAssets(){
     display: 'standalone',
     background_color: '#120f1e',
     theme_color: '#3B82F6',
-    icons: [{ src: logoUrl, sizes:'192x192', type:'image/svg+xml' }]
+    icons: [
+      { src: icon192, sizes:'192x192', type:'image/png', purpose:'any' },
+      { src: icon512, sizes:'512x512', type:'image/png', purpose:'any' },
+      { src: icon192, sizes:'192x192', type:'image/png', purpose:'maskable' },
+      { src: icon512, sizes:'512x512', type:'image/png', purpose:'maskable' },
+    ],
   };
   const manifestBlob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
   document.getElementById('manifestLink').href = URL.createObjectURL(manifestBlob);
+}
+
+// วาดโลโก้แอป (โล่ + เครื่องหมายถูก บนพื้นไล่สีฟ้า-ชมพู) ด้วย Canvas ล้วนๆ แล้วคืนค่าเป็น PNG data URI
+// วาดจากพิกัดสัดส่วนเดียวกันทุกขนาด จึงคมชัดในทุกความละเอียด ไม่ใช่การย่อภาพเล็กมาขยาย
+// ตัดคำว่า "MallGuard" ออกจากตัวไอคอนโดยตั้งใจ เพราะไอคอนหน้าจอโฮมจริงจะเล็กมาก (~40-60px)
+// ตัวหนังสือขนาดนั้นจะอ่านไม่ออก จึงเหลือแค่สัญลักษณ์โล่ให้จำง่ายและคมชัดกว่า
+function generateAppIconDataURL(size){
+  const canvas = document.createElement('canvas');
+  canvas.width = size; canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  const k = size / 192; // อัตราส่วนย่อ/ขยายจากพิกัดต้นแบบ 192x192
+  ctx.save();
+  ctx.scale(k, k);
+
+  // พื้นหลังไล่สีฟ้า -> ชมพู มุมโค้งแบบ squircle ให้เข้าธีมของแอป
+  const grad = ctx.createLinearGradient(0, 0, 192, 192);
+  grad.addColorStop(0, '#3B82F6');
+  grad.addColorStop(1, '#EC4899');
+  ctx.fillStyle = grad;
+  roundRectPath(ctx, 0, 0, 192, 192, 42);
+  ctx.fill();
+
+  // โล่โปร่งแสงเป็นพื้นหลังของสัญลักษณ์ (ให้ความลึก)
+  ctx.fillStyle = 'rgba(255,255,255,.18)';
+  ctx.fill(new Path2D('M96 26 L152 50 V96 C152 132 129 157 96 170 C63 157 40 132 40 96 V50 Z'));
+
+  // เส้นขอบโล่สีขาว
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 7;
+  ctx.lineJoin = 'round';
+  ctx.stroke(new Path2D('M96 42 L138 60 V96 C138 124 119 143 96 154 C73 143 54 124 54 96 V60 Z'));
+
+  // เครื่องหมายถูกตรงกลาง สื่อถึง "ผ่านการตรวจสอบ/ปลอดภัย"
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 12;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.stroke(new Path2D('M72 98 L88 114 L124 76'));
+
+  ctx.restore();
+  return canvas.toDataURL('image/png');
+}
+function roundRectPath(ctx, x, y, w, h, r){
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.arcTo(x+w, y, x+w, y+h, r);
+  ctx.arcTo(x+w, y+h, x, y+h, r);
+  ctx.arcTo(x, y+h, x, y, r);
+  ctx.arcTo(x, y, x+w, y, r);
+  ctx.closePath();
 }
 
 /* ---------- Dark Mode ---------- */
@@ -1049,248 +1065,6 @@ function applyRoleVisibility(){
   const isAdmin = State.role === 'admin';
   document.querySelectorAll('.nav-admin-only').forEach(el=> el.classList.toggle('js-hidden', !isAdmin));
   if (!isAdmin && State.page==='tenants') goToPage('dashboard');
-}
-
-/* ================================================================
-   ===============  ชั้นเชื่อมต่อข้อมูล (DATA LAYER) v3  ===========
-   เชื่อมกับ Google Apps Script + Google Sheets ของจริง
-   - อ่านข้อมูล: ใช้ JSONP (แทรก <script>) เพราะ Apps Script ไม่ส่ง CORS header
-     ที่เบราว์เซอร์อ่าน response ได้ — วิธีนี้อ่านผลลัพธ์ได้จริงโดยไม่ต้องมี proxy
-   - เขียนข้อมูลก้อนใหญ่ (ผลตรวจ + รูป base64): ใช้ POST no-cors แล้วโหลดข้อมูลใหม่
-     จากเซิร์ฟเวอร์เพื่อยืนยันผล (self-verifying) เพราะ no-cors อ่าน response ไม่ได้
-   ================================================================ */
-let jsonpSeq = 0;
-
-/**
- * เรียก backend แบบ JSONP พร้อม timeout และเก็บกวาด element ให้เรียบร้อยเสมอ
- * เหตุผลที่ต้อง cleanup: ถ้าปล่อย <script> ค้างไว้ทุกครั้งที่เรียก DOM จะบวมขึ้นเรื่อยๆ
- */
-function jsonpRequest(params){
-  return new Promise((resolve, reject)=>{
-    if (!BACKEND_READY){ reject(new Error('ยังไม่ได้ตั้งค่า URL ของ Apps Script')); return; }
-
-    const cbName = '__mgcb_' + (++jsonpSeq) + '_' + Date.now();
-    const qs = Object.keys(params)
-      .map(k=> encodeURIComponent(k) + '=' + encodeURIComponent(params[k]))
-      .join('&');
-    const script = document.createElement('script');
-    let done = false;
-
-    const cleanup = ()=>{
-      done = true;
-      clearTimeout(timer);
-      delete window[cbName];
-      if (script.parentNode) script.parentNode.removeChild(script);
-    };
-    const timer = setTimeout(()=>{
-      if (done) return;
-      cleanup();
-      reject(new Error('หมดเวลารอการตอบกลับจากเซิร์ฟเวอร์'));
-    }, CONFIG.REQUEST_TIMEOUT_MS);
-
-    window[cbName] = (res)=>{ if (done) return; cleanup(); resolve(res); };
-    script.onerror = ()=>{ if (done) return; cleanup(); reject(new Error('เชื่อมต่อเซิร์ฟเวอร์ไม่สำเร็จ')); };
-
-    script.src = CONFIG.APPS_SCRIPT_URL + '?' + qs + '&callback=' + cbName + '&_=' + Date.now();
-    document.body.appendChild(script);
-  });
-}
-
-/** ส่งข้อมูลก้อนใหญ่ด้วย POST (no-cors) — ใช้กับผลตรวจที่มีรูป base64 */
-function postToBackend(action, payload){
-  if (!BACKEND_READY) return Promise.resolve({ success:true, demo:true });
-  return fetch(CONFIG.APPS_SCRIPT_URL, {
-    method:'POST', mode:'no-cors',
-    // ใช้ text/plain เพื่อเลี่ยง CORS preflight ซึ่ง Apps Script ไม่รองรับ
-    headers:{ 'Content-Type':'text/plain;charset=utf-8' },
-    body: JSON.stringify({ action, payload })
-  });
-}
-
-/**
- * แปลงวันที่ทุกรูปแบบที่อาจได้จาก Sheets ให้เป็น "พ.ศ.-MM-DD" ที่แอปใช้
- * (ฝั่ง backend normalize มาแล้วชั้นหนึ่ง — ตรงนี้เป็นตาข่ายกันพลาดอีกชั้น
- *  เผื่อกรณีที่มีคนแก้ข้อมูลในชีตด้วยมือแล้วใส่เป็น ค.ศ.)
- */
-function normalizeToBEDate(v){
-  if (!v) return '';
-  const s = String(v).replace(/^'/,'').trim();
-  const m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
-  if (m){
-    let y = Number(m[1]);
-    if (y < 2400) y += 543;
-    return `${y}-${String(Number(m[2])).padStart(2,'0')}-${String(Number(m[3])).padStart(2,'0')}`;
-  }
-  const d = new Date(s);
-  if (!isNaN(d.getTime())){
-    return `${d.getFullYear()+543}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-  }
-  return s;
-}
-
-/** โหลดข้อมูลจริงทั้งหมดจาก Google Sheets แล้ววาดหน้าจอใหม่ */
-async function loadAllData({ silent=false } = {}){
-  if (!BACKEND_READY){
-    setConnectionState('demo');
-    return false;
-  }
-
-  setConnectionState('loading');
-  if (!silent) showDataLoading(true);
-
-  try{
-    const res = await jsonpRequest({ action:'getAll' });
-    if (!res || !res.success) throw new Error(res && res.message ? res.message : 'เซิร์ฟเวอร์ตอบกลับผิดพลาด');
-
-    applyServerData(res.data);
-    saveDataCache(res.data);
-    State.usingCache = false;
-    State.lastSync = new Date();
-    setConnectionState('online');
-    if (!silent) showToast('ซิงก์ข้อมูลจาก Google Sheets สำเร็จ', 'success');
-    return true;
-
-  }catch(err){
-    console.warn('โหลดข้อมูลจากเซิร์ฟเวอร์ไม่สำเร็จ:', err);
-    setConnectionState('offline');
-    // ใช้ข้อมูลที่แคชไว้ครั้งล่าสุดแทน เพื่อให้เจ้าหน้าที่ยังดูข้อมูลเดิมได้ขณะสัญญาณขาด
-    const cached = loadDataCache();
-    if (cached){
-      applyServerData(cached.data);
-      State.usingCache = true;
-      State.lastSync = cached.savedAt ? new Date(cached.savedAt) : null;
-      showToast('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ — กำลังแสดงข้อมูลที่บันทึกไว้ล่าสุด', 'warning');
-    } else {
-      showToast('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้: ' + err.message, 'error');
-    }
-    return false;
-
-  }finally{
-    if (!silent) showDataLoading(false);
-    renderConnectionBadge();
-  }
-}
-
-/** นำข้อมูลจากเซิร์ฟเวอร์มาแทนที่ข้อมูลในหน่วยความจำ แล้ว re-render ทุกหน้า */
-function applyServerData(data){
-  if (!data) return;
-
-  if (Array.isArray(data.tenants) && data.tenants.length){
-    TENANTS = data.tenants.map(t=>({
-      storeId: t.storeId, name: t.name, type: t.type || '',
-      zone: t.zone || 'ไม่ระบุโซน', floor: t.floor || '',
-      contact: t.contact || '', phone: t.phone || '',
-      status: t.status || 'Active',
-      lat: (t.lat ?? null), lng: (t.lng ?? null),
-    }));
-  }
-
-  if (Array.isArray(data.inspections)){
-    INSPECTION_HISTORY = data.inspections.map(h=>({
-      id: h.id, storeId: h.storeId,
-      date: normalizeToBEDate(h.date),
-      type: h.type || 'weekly',
-      grade: h.grade || 'compliant',
-      score: Number(h.score) || 0,
-      checks: h.checks || {},
-      inspector: h.inspector || '',
-      notes: h.notes || '',
-      deadline: h.deadline ? normalizeToBEDate(h.deadline) : '',
-      photos: Array.isArray(h.photos) ? h.photos : [],
-      photoIds: Array.isArray(h.photoIds) ? h.photoIds : [],
-      sigInspector: h.sigInspector || null,
-      sigStore: h.sigStore || null,
-      // ธงบอกว่ารูปยังเป็น "ลิงก์" อยู่ ต้องดึง base64 ก่อนทำ PDF (กัน canvas ถูก taint)
-      photosAreLinks: true,
-    }))
-    // เรียงใหม่สุดขึ้นก่อนเสมอ เพื่อให้หน้ารายงานและ Top 5 อ่านง่าย
-    .sort((a,b)=> parseBEDateStr(b.date) - parseBEDateStr(a.date));
-  }
-
-  populateStoreSelect();
-  renderTenantsTable();
-  renderHistoryTable();
-  renderDashboard();
-}
-
-/** ดึงรูป base64 ของผลตรวจ 1 รายการ (เรียกเมื่อจะดูตัวอย่าง/ออก PDF เท่านั้น)
-    เหตุผล: รูปจาก Drive เป็น cross-origin ทำให้ html2canvas เก็บภาพลง PDF ไม่ได้ */
-async function ensureRecordPhotos(record){
-  if (!record || !record.photosAreLinks) return record;
-  if (!BACKEND_READY) return record;
-  try{
-    const res = await jsonpRequest({ action:'getPhotos', recordId: record.id });
-    if (res && res.success && res.data){
-      record.photos = res.data.photos || [];
-      if (res.data.sigInspector) record.sigInspector = res.data.sigInspector;
-      if (res.data.sigStore) record.sigStore = res.data.sigStore;
-      record.photosAreLinks = false;   // ดึงมาแล้วครั้งเดียวพอ ครั้งต่อไปใช้ของที่แคชในหน่วยความจำ
-    }
-  }catch(err){
-    console.warn('ดึงรูปหลักฐานไม่สำเร็จ:', err);
-    showToast('ดึงรูปหลักฐานจากเซิร์ฟเวอร์ไม่สำเร็จ รายงานอาจแสดงรูปไม่ครบ', 'warning');
-  }
-  return record;
-}
-
-/* ---------- แคชข้อมูลไว้ในเครื่อง กันสัญญาณขาดหน้างาน ---------- */
-function saveDataCache(data){
-  try{
-    localStorage.setItem(CONFIG.CACHE_KEY, JSON.stringify({ savedAt: new Date().toISOString(), data }));
-  }catch(err){
-    // localStorage เต็มหรือถูกปิด — ไม่ใช่เรื่องคอขาดบาดตาย ทำงานต่อได้
-    console.warn('บันทึกแคชไม่สำเร็จ:', err);
-  }
-}
-function loadDataCache(){
-  try{
-    const raw = localStorage.getItem(CONFIG.CACHE_KEY);
-    return raw ? JSON.parse(raw) : null;
-  }catch(err){ return null; }
-}
-
-/* ---------- แสดงสถานะการเชื่อมต่อให้ผู้ใช้เห็นตลอดเวลา ---------- */
-function setConnectionState(state){
-  State.connection = state;
-  renderConnectionBadge();
-}
-function renderConnectionBadge(){
-  const el = document.getElementById('connBadge');
-  if (!el) return;
-  const map = {
-    demo:    { text:'โหมดสาธิต',   dot:'#F59E0B', title:'ยังไม่ได้ตั้งค่า URL ของ Apps Script — ข้อมูลที่แสดงเป็นข้อมูลจำลอง' },
-    loading: { text:'กำลังซิงก์…', dot:'#3B82F6', title:'กำลังโหลดข้อมูลจาก Google Sheets' },
-    online:  { text:'เชื่อมต่อแล้ว', dot:'#10B981', title:'เชื่อมต่อ Google Sheets สำเร็จ' },
-    offline: { text: State.usingCache ? 'ออฟไลน์ (ข้อมูลแคช)' : 'ออฟไลน์', dot:'#EF4444', title:'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้' },
-  };
-  const m = map[State.connection] || map.demo;
-  el.title = m.title + (State.lastSync ? ` | ซิงก์ล่าสุด ${State.lastSync.toLocaleTimeString('th-TH')}` : '');
-  el.innerHTML = `<span class="conn-dot" style="background:${m.dot}"></span><span class="hidden sm:inline">${m.text}</span>`;
-
-  const syncLabel = document.getElementById('syncLabel');
-  if (syncLabel){
-    syncLabel.textContent = State.lastSync
-      ? `ซิงก์ล่าสุด ${State.lastSync.toLocaleTimeString('th-TH')}${State.usingCache ? ' (จากแคช)' : ''}`
-      : (BACKEND_READY ? 'ยังไม่ได้ซิงก์ข้อมูล' : 'โหมดสาธิต — ข้อมูลจำลอง');
-  }
-}
-
-/** ม่านโหลดข้อมูล (Loading state) ระหว่างรอเซิร์ฟเวอร์ */
-function showDataLoading(show){
-  const el = document.getElementById('dataLoadingOverlay');
-  if (el) el.classList.toggle('js-hidden', !show);
-}
-
-/** ปุ่มรีเฟรชข้อมูลบนแดชบอร์ด */
-async function refreshData(){
-  const btn = document.getElementById('refreshBtn');
-  if (!BACKEND_READY){
-    showToast('ยังไม่ได้ตั้งค่า URL ของ Apps Script — ดูขั้นตอนในคู่มือติดตั้ง', 'warning');
-    return;
-  }
-  if (btn){ btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> กำลังซิงก์...'; }
-  await loadAllData();
-  if (btn){ btn.disabled = false; btn.innerHTML = '🔄 ซิงก์ข้อมูล'; }
 }
 
 /* ================================================================
@@ -1486,17 +1260,9 @@ function renderDashboard(){
    ================================================================ */
 function populateStoreSelect(){
   const sel = document.getElementById('storeSelect');
-  const current = sel.value; // จำร้านที่เลือกอยู่ไว้ เผื่อฟังก์ชันนี้ถูกเรียกซ้ำตอนซิงก์ข้อมูล
-  const actives = TENANTS.filter(t=>t.status==='Active');
-  sel.innerHTML = (actives.length
-      ? '<option value="">-- เลือกร้านค้า --</option>'
-      : '<option value="">-- ยังไม่มีข้อมูลร้านค้าในระบบ --</option>')
-    + actives.map(t=> `<option value="${t.storeId}">${t.storeId} — ${t.name} (${t.zone})</option>`).join('');
-  if (current && actives.some(t=>t.storeId===current)) sel.value = current;
-
-  // ใช้ onchange (property) แทน addEventListener เพราะฟังก์ชันนี้ถูกเรียกซ้ำทุกครั้งที่ซิงก์ข้อมูล
-  // ถ้าใช้ addEventListener จะสะสม listener ซ้อนกันจนเรียก selectStore หลายรอบต่อการเลือก 1 ครั้ง
-  sel.onchange = ()=> selectStore(sel.value);
+  sel.innerHTML = '<option value="">-- เลือกร้านค้า --</option>' +
+    TENANTS.filter(t=>t.status==='Active').map(t=> `<option value="${t.storeId}">${t.storeId} — ${t.name} (${t.zone})</option>`).join('');
+  sel.addEventListener('change', ()=> selectStore(sel.value));
 }
 
 function setupInspectionTypeButtons(){
@@ -1777,19 +1543,13 @@ function finalizeSubmit(){
   if (btn){ btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> กำลังบันทึกข้อมูล...'; }
 
   // ส่งข้อมูลไปยัง Google Apps Script backend (no-cors: อ่าน response ไม่ได้ จึงถือว่าสำเร็จเมื่อ fetch ไม่ throw)
-  postInspectionToBackend(record, tenant)
+  postInspectionToBackend(record)
     .then(()=>{
       INSPECTION_HISTORY.unshift(record);
       renderDashboard();
       renderHistoryTable();
       closeReportPreview();
-      showToast(BACKEND_READY ? 'บันทึกผลการตรวจลง Google Sheets สำเร็จ' : 'บันทึกผลการตรวจประเมินสำเร็จ (โหมดสาธิต)', 'success');
-
-      // ดึงข้อมูลจากเซิร์ฟเวอร์มายืนยันอีกครั้ง — จำเป็นเพราะ POST no-cors อ่าน response ไม่ได้
-      // ถ้าข้อมูลขึ้นชีตจริง รายการที่ซิงก์กลับมาจะมี record นี้อยู่ด้วย
-      if (BACKEND_READY){
-        setTimeout(()=> loadAllData({ silent:true }), 2500);
-      }
+      showToast('บันทึกผลการตรวจประเมินสำเร็จ', 'success');
 
       if (record.grade === 'major'){
         // แจ้งเตือนอัตโนมัติทันทีเมื่อพบ Major Defect (ไม่ต้องรอ batch)
@@ -1819,29 +1579,48 @@ function finalizeSubmit(){
 }
 
 /* ---------- เชื่อมต่อ Google Apps Script Backend ---------- */
-function postInspectionToBackend(record, tenant){
-  // แนบชื่อร้าน/โซนไปด้วย เพื่อให้อีเมลแจ้งเตือนฝั่ง server อ่านรู้เรื่องโดยไม่ต้อง join ข้อมูลเอง
-  const payload = Object.assign({}, record, {
-    storeName: tenant ? tenant.name : record.storeId,
-    zone: tenant ? tenant.zone : '',
-  });
-  return postToBackend('submitInspection', payload).catch(err=>{
-    // ถ้ายังไม่ได้ deploy หรือสัญญาณขาด ระบบยังทำงานต่อได้แบบ local-only
-    console.warn('ส่งข้อมูลไป Apps Script ไม่สำเร็จ:', err);
+function postInspectionToBackend(record){
+  // ใช้ no-cors เพราะ Apps Script Web App ไม่ส่ง CORS header กลับมาให้อ่าน response ได้
+  // ฝั่ง Code.gs จะเป็นผู้ตัดสินใจเรื่อง Major Defect alert เองอีกชั้นด้วย (กันกรณี alert ไม่ยิงจาก client)
+  return fetch(CONFIG.APPS_SCRIPT_URL, {
+    method:'POST', mode:'no-cors',
+    headers:{ 'Content-Type':'text/plain;charset=utf-8' }, // ใช้ text/plain เพื่อเลี่ยง CORS preflight ตามข้อจำกัดของ Apps Script
+    body: JSON.stringify({ action:'submitInspection', payload: record })
+  }).catch(err=>{
+    // ถ้ายังไม่ได้ตั้งค่า APPS_SCRIPT_URL จริง ระบบจะยัง demo ต่อได้แบบ local-only
+    console.warn('ส่งข้อมูลไป Apps Script ไม่สำเร็จ (อาจยังไม่ได้ deploy):', err);
   });
 }
 function sendMajorDefectAlert(record, tenant){
-  // การส่ง Email/แจ้งเตือนจริงเกิดขึ้นฝั่ง Code.gs — ฝั่ง client ยิงซ้ำเพื่อความไวเท่านั้น
-  postToBackend('majorDefectAlert', {
-    recordId:record.id, storeId:record.storeId,
-    storeName:tenant?.name, zone:tenant?.zone, date:record.date
+  // การส่ง Email/LINE Notify จริงเกิดขึ้นฝั่ง Code.gs (ดู DEPLOY_GUIDE) — ฝั่ง client แค่ยิง flag แจ้งเตือนซ้ำเพื่อความไว
+  fetch(CONFIG.APPS_SCRIPT_URL, {
+    method:'POST', mode:'no-cors',
+    headers:{ 'Content-Type':'text/plain;charset=utf-8' },
+    body: JSON.stringify({ action:'majorDefectAlert', payload:{ recordId:record.id, storeId:record.storeId, storeName:tenant?.name, zone:tenant?.zone, date:record.date } })
   }).catch(()=>{});
-  showToast(`🚨 แจ้งเตือน Major Defect: ${tenant?.name} — ส่งแจ้งเตือนถึงทีมงานแล้ว`, 'warning');
+  showToast(`🚨 แจ้งเตือน Major Defect: ${tenant?.name} — ส่ง Email/LINE ถึงทีมงานแล้ว`, 'warning');
 }
 
 /* ================================================================
    ===============  หน้ารายงาน/ประวัติ  ============================
    ================================================================ */
+
+// เรียกใช้ DataTables อย่างปลอดภัย — บางเครือข่าย/ส่วนขยายเบราว์เซอร์บล็อก cdn.datatables.net
+// ทำให้ปลั๊กอินโหลดไม่สำเร็จ (jQuery ทำงานได้ปกติแต่ $.fn.DataTable ไม่มีอยู่จริง)
+// ถ้าเจอกรณีนี้จะไม่ทำให้ทั้งแอปพัง แค่ตารางจะแสดงข้อมูลแบบปกติโดยไม่มีช่องค้นหา/แบ่งหน้าเท่านั้น
+let _dataTableUnavailableWarned = false;
+function initDataTable(selector, options){
+  if (typeof $ === 'undefined' || !$.fn || typeof $.fn.DataTable !== 'function'){
+    if (!_dataTableUnavailableWarned){
+      console.warn('ปลั๊กอิน DataTables โหลดไม่สำเร็จ (อาจถูกบล็อกโดยเครือข่าย/ส่วนขยายเบราว์เซอร์) — ตารางจะยังแสดงข้อมูลได้ปกติ เพียงแต่ไม่มีช่องค้นหา/แบ่งหน้า');
+      _dataTableUnavailableWarned = true;
+    }
+    return null;
+  }
+  try { return $(selector).DataTable(options); }
+  catch(err){ console.warn('เริ่มต้น DataTable สำหรับ ' + selector + ' ไม่สำเร็จ:', err); return null; }
+}
+
 let historyDT = null;
 function renderHistoryTable(){
   const body = document.getElementById('historyBody');
@@ -1863,33 +1642,45 @@ function renderHistoryTable(){
     </tr>`;
   }).join('');
 
-  if (historyDT) { historyDT.destroy(); }
-  historyDT = $('#historyTable').DataTable({
+  if (historyDT) { try{ historyDT.destroy(); }catch(e){} }
+  historyDT = initDataTable('#historyTable', {
     order:[[0,'desc']],
     language:{ search:'ค้นหา:', lengthMenu:'แสดง _MENU_ รายการ', info:'แสดง _START_ ถึง _END_ จาก _TOTAL_ รายการ', paginate:{previous:'ก่อนหน้า',next:'ถัดไป'}, zeroRecords:'ไม่พบข้อมูล', infoEmpty:'ไม่มีข้อมูล' }
   });
 }
 
 /* ---------- ดูตัวอย่างใบรายงานจากประวัติ (ไม่ต้องรอ Export ก็เห็นหน้ารายงานได้ทันที) ---------- */
-async function previewHistoryReport(recordId){
+function previewHistoryReport(recordId){
   const h = INSPECTION_HISTORY.find(r=>r.id===recordId);
   if (!h) return;
   const tenant = TENANTS.find(t=>t.storeId===h.storeId) || {};
-
-  // ถ้ารายการนี้มาจาก Google Sheets รูปจะยังเป็นลิงก์ Drive อยู่
-  // ต้องดึงเป็น base64 ก่อน ไม่เช่นนั้นรูปจะหายตอนแปลงเป็น PDF (canvas ถูก taint)
-  if (h.photosAreLinks && (h.photoIds?.length || h.sigInspector || h.sigStore)){
-    showDataLoading(true);
-    await ensureRecordPhotos(h);
-    showDataLoading(false);
-  }
-
+  const warningBtn = h.grade !== 'compliant'
+    ? `<button class="btn btn-outline" onclick="previewWarningNotice('${h.id}')">⚠️ ดูใบแจ้งเตือน</button>` : '';
   openReportPreview({
     record: h, tenant, mode:'view',
     title: `📄 ตัวอย่างใบรายงาน — ${tenant.name||h.storeId}`,
     actionsHtml: `
       <button class="btn btn-outline" onclick="closeReportPreview()">ปิด</button>
+      ${warningBtn}
+      <button class="btn btn-outline" onclick="exportSingleReportPNG('${h.id}')">🖼️ บันทึกเป็น PNG</button>
       <button class="btn btn-grad" style="--g1:var(--grad-1a);--g2:var(--grad-1b);" onclick="exportSingleReportPDF('${h.id}')">🖨️ พิมพ์ / บันทึกเป็น PDF</button>`
+  });
+}
+
+/* ---------- ดูตัวอย่าง "ใบแจ้งเตือน" (เฉพาะเมื่อมีข้อบกพร่อง — เอกสารสั้น เน้นสีแดง/ส้ม สำหรับพิมพ์แจ้งร้าน) ---------- */
+function previewWarningNotice(recordId){
+  const h = INSPECTION_HISTORY.find(r=>r.id===recordId);
+  if (!h) return;
+  if (h.grade === 'compliant'){ showToast('รายการนี้ผ่านมาตรฐานทุกข้อ ไม่มีข้อบกพร่องที่ต้องแจ้งเตือน', 'info'); return; }
+  const tenant = TENANTS.find(t=>t.storeId===h.storeId) || {};
+  openReportPreview({
+    record: h, tenant, mode:'warning',
+    title: `⚠️ ตัวอย่างใบแจ้งเตือน — ${tenant.name||h.storeId}`,
+    actionsHtml: `
+      <button class="btn btn-outline" onclick="closeReportPreview()">ปิด</button>
+      <button class="btn btn-outline" onclick="previewHistoryReport('${h.id}')">📄 ดูใบรายงานฉบับเต็ม</button>
+      <button class="btn btn-outline" onclick="exportWarningNoticePNG('${h.id}')">🖼️ บันทึกเป็น PNG</button>
+      <button class="btn btn-grad" style="--g1:#EF4444;--g2:#F97316;" onclick="exportWarningNoticePDF('${h.id}')">🖨️ พิมพ์ / บันทึกเป็น PDF</button>`
   });
 }
 
@@ -1899,8 +1690,8 @@ async function previewHistoryReport(recordId){
    (3) ดูตัวอย่างรายงานสรุปแดชบอร์ดก่อน Export PDF
    ================================================================ */
 function openReportPreview({ record, tenant, mode, title, actionsHtml }){
-  const contentHtml = mode==='dashboard'
-    ? renderDashboardReportContent(record) // ในโหมดนี้ "record" คือ stats ของแดชบอร์ด
+  const contentHtml = mode==='dashboard' ? renderDashboardReportContent(record) // ในโหมดนี้ "record" คือ stats ของแดชบอร์ด
+    : mode==='warning' ? renderWarningNoticeContent(record, tenant)
     : renderInspectionReportContent(record, tenant);
   document.getElementById('reportPreviewTitle').textContent = title;
   document.getElementById('reportPreviewContent').innerHTML = contentHtml;
@@ -1945,8 +1736,8 @@ function renderTenantsTable(){
         <button class="btn btn-soft !min-h-[30px] !py-1 !px-3 text-xs" onclick="deleteTenant('${t.storeId}')">ลบ</button>
       </td>
     </tr>`).join('');
-  if (tenantsDT) tenantsDT.destroy();
-  tenantsDT = $('#tenantsTable').DataTable({
+  if (tenantsDT) { try{ tenantsDT.destroy(); }catch(e){} }
+  tenantsDT = initDataTable('#tenantsTable', {
     language:{ search:'ค้นหา:', lengthMenu:'แสดง _MENU_ รายการ', info:'แสดง _START_ ถึง _END_ จาก _TOTAL_ รายการ', paginate:{previous:'ก่อนหน้า',next:'ถัดไป'}, zeroRecords:'ไม่พบข้อมูล', infoEmpty:'ไม่มีข้อมูล' }
   });
 }
@@ -1983,75 +1774,148 @@ function saveTenant(){
     status: document.getElementById('t_status').value,
   };
 
-  if (!State.editingTenantId && TENANTS.some(t=>t.storeId===storeId)){
-    showToast('รหัสร้านนี้มีอยู่ในระบบแล้ว','error'); return;
-  }
-
-  // โหมดสาธิต (ยังไม่ได้ต่อ backend) — แก้ในหน่วยความจำอย่างเดียว
-  if (!BACKEND_READY){
-    applyTenantLocally(data);
-    closeTenantModal();
-    showToast('บันทึกข้อมูลร้านค้าสำเร็จ (โหมดสาธิต)', 'success');
-    return;
-  }
-
-  const btn = document.getElementById('saveTenantBtn');
-  if (btn){ btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> กำลังบันทึก...'; }
-
-  jsonpRequest({ action:'saveTenant', payload: JSON.stringify(data) })
-    .then(res=>{
-      if (!res || !res.success) throw new Error(res && res.message ? res.message : 'บันทึกไม่สำเร็จ');
-      applyTenantLocally(data);            // อัปเดตหน้าจอทันทีเพื่อให้ผู้ใช้เห็นผลไว
-      closeTenantModal();
-      showToast(res.message || 'บันทึกข้อมูลร้านค้าลง Google Sheets สำเร็จ', 'success');
-      return loadAllData({ silent:true }); // แล้วดึงของจริงจากเซิร์ฟเวอร์มายืนยันอีกครั้ง
-    })
-    .catch(err=>{
-      showToast('บันทึกข้อมูลร้านค้าไม่สำเร็จ: ' + (err.message||'ไม่ทราบสาเหตุ'), 'error');
-    })
-    .finally(()=>{
-      if (btn){ btn.disabled = false; btn.innerHTML = '💾 บันทึกข้อมูล'; }
-    });
-}
-
-/** อัปเดตข้อมูลร้านในหน่วยความจำ + วาดหน้าจอใหม่ (ใช้ร่วมกันทั้งโหมดสาธิตและโหมดจริง) */
-function applyTenantLocally(data){
   if (State.editingTenantId){
     const idx = TENANTS.findIndex(t=>t.storeId===State.editingTenantId);
-    if (idx>-1) TENANTS[idx] = data; else TENANTS.push(data);
+    if (idx>-1) TENANTS[idx] = data;
   } else {
+    if (TENANTS.some(t=>t.storeId===storeId)){ showToast('รหัสร้านนี้มีอยู่ในระบบแล้ว','error'); return; }
     TENANTS.push(data);
   }
   renderTenantsTable();
   populateStoreSelect();
+  closeTenantModal();
+  showToast('บันทึกข้อมูลร้านค้าสำเร็จ', 'success');
 }
 
 function deleteTenant(storeId){
   Swal.fire({ icon:'warning', title:'ยืนยันการลบร้านค้า?', text:storeId, showCancelButton:true, confirmButtonText:'ลบ', cancelButtonText:'ยกเลิก', confirmButtonColor:'#EF4444' })
     .then(res=>{
-      if (!res.isConfirmed) return;
-
-      if (!BACKEND_READY){
+      if (res.isConfirmed){
         TENANTS = TENANTS.filter(t=>t.storeId!==storeId);
         renderTenantsTable();
         populateStoreSelect();
-        showToast('ลบข้อมูลร้านค้าเรียบร้อย (โหมดสาธิต)', 'success');
-        return;
+        showToast('ลบข้อมูลร้านค้าเรียบร้อย', 'success');
       }
-
-      showDataLoading(true);
-      jsonpRequest({ action:'deleteTenant', storeId })
-        .then(r=>{
-          if (!r || !r.success) throw new Error(r && r.message ? r.message : 'ลบไม่สำเร็จ');
-          TENANTS = TENANTS.filter(t=>t.storeId!==storeId);
-          renderTenantsTable();
-          populateStoreSelect();
-          showToast(r.message || 'ลบข้อมูลร้านค้าเรียบร้อย', 'success');
-          return loadAllData({ silent:true });
-        })
-        .catch(err=> showToast('ลบข้อมูลไม่สำเร็จ: ' + (err.message||'ไม่ทราบสาเหตุ'), 'error'))
-        .finally(()=> showDataLoading(false));
     });
+}
+
+/* ================================================================
+   ===============  นำเข้ารายชื่อร้านค้าจากไฟล์ CSV/Excel  ==========
+   รองรับหัวคอลัมน์ได้ทั้งภาษาไทยและอังกฤษ แล้วให้ผู้ใช้ดูตัวอย่างก่อนยืนยันนำเข้าจริงเสมอ
+   ================================================================ */
+// คำพ้องของชื่อหัวคอลัมน์ที่ยอมรับได้ (ตัวพิมพ์เล็กทั้งหมดเทียบแบบ normalize แล้ว)
+const TENANT_IMPORT_FIELD_ALIASES = {
+  storeId: ['storeid','store id','store_id','รหัสร้าน','รหัส'],
+  name:    ['name','store name','storename','ชื่อร้าน','ชื่อร้านค้า'],
+  type:    ['type','business type','ประเภท','ประเภทธุรกิจ'],
+  zone:    ['zone','โซน'],
+  floor:   ['floor','ชั้น'],
+  contact: ['contact','contact name','ผู้ติดต่อ','ผู้ติดต่อประจำร้าน'],
+  phone:   ['phone','tel','เบอร์โทร','เบอร์โทรศัพท์'],
+  status:  ['status','สถานะ'],
+};
+function normalizeHeaderKey(h){ return String(h).trim().toLowerCase(); }
+
+function mapImportedRow(row){
+  const keys = Object.keys(row);
+  const out = {};
+  for (const field in TENANT_IMPORT_FIELD_ALIASES){
+    const aliases = TENANT_IMPORT_FIELD_ALIASES[field];
+    const foundKey = keys.find(k => aliases.includes(normalizeHeaderKey(k)));
+    out[field] = foundKey ? String(row[foundKey]).trim() : '';
+  }
+  // แปลงคำว่าสถานะให้เป็นค่ามาตรฐาน Active/Closed เสมอ ไม่ว่าไฟล์จะเขียนเป็นไทยหรืออังกฤษ
+  if (!out.status) out.status = 'Active';
+  else if (/ปิด|closed/i.test(out.status)) out.status = 'Closed';
+  else out.status = 'Active';
+  return out;
+}
+
+function openTenantImportModal(){
+  document.getElementById('tenantImportModal').classList.remove('js-hidden');
+  document.getElementById('importFileInput').value = '';
+  document.getElementById('importPreviewArea').innerHTML = '<p class="text-sm text-muted">เลือกไฟล์ CSV หรือ Excel ที่มีรายชื่อร้านค้าเพื่อดูตัวอย่างก่อนนำเข้าจริง</p>';
+  document.getElementById('importConfirmBtn').classList.add('js-hidden');
+  State.importRows = [];
+}
+function closeTenantImportModal(){
+  document.getElementById('tenantImportModal').classList.add('js-hidden');
+}
+
+function handleTenantImportFile(evt){
+  const file = evt.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e)=>{
+    try {
+      const data = new Uint8Array(e.target.result);
+      const wb = XLSX.read(data, { type:'array' });
+      const firstSheet = wb.Sheets[wb.SheetNames[0]];
+      const rawRows = XLSX.utils.sheet_to_json(firstSheet, { defval:'' });
+      const mapped = rawRows.map(mapImportedRow).filter(r=>r.storeId && r.name);
+      State.importRows = mapped;
+      renderImportPreview(mapped, rawRows.length);
+    } catch(err){
+      showToast('ไม่สามารถอ่านไฟล์นี้ได้: ' + err.message, 'error');
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function renderImportPreview(mapped, totalRaw){
+  const area = document.getElementById('importPreviewArea');
+  const confirmBtn = document.getElementById('importConfirmBtn');
+  if (!mapped.length){
+    area.innerHTML = `<p class="text-sm" style="color:#EF4444;">ไม่พบแถวข้อมูลที่ถูกต้อง (ต้องมีอย่างน้อยคอลัมน์ "รหัสร้าน" และ "ชื่อร้าน") จากทั้งหมด ${totalRaw} แถวในไฟล์</p>`;
+    confirmBtn.classList.add('js-hidden');
+    return;
+  }
+  const existingIds = new Set(TENANTS.map(t=>t.storeId));
+  const newCount = mapped.filter(r=>!existingIds.has(r.storeId)).length;
+  const updateCount = mapped.length - newCount;
+  area.innerHTML = `
+    <p class="text-sm mb-3">พบ <b>${mapped.length}</b> ร้านค้าที่ถูกต้อง — ร้านใหม่ <b style="color:#10B981;">${newCount}</b> ร้าน · จะอัปเดตทับของเดิม <b style="color:#F59E0B;">${updateCount}</b> ร้าน</p>
+    <div class="overflow-x-auto rounded-xl border border-soft" style="max-height:280px; overflow-y:auto;">
+      <table class="w-full text-xs">
+        <thead><tr class="text-left surface-2"><th class="p-2">รหัสร้าน</th><th class="p-2">ชื่อร้าน</th><th class="p-2">ประเภท</th><th class="p-2">โซน/ชั้น</th><th class="p-2">สถานะ</th></tr></thead>
+        <tbody>${mapped.map(r=>`<tr class="border-t border-soft">
+          <td class="p-2 font-semibold">${r.storeId}</td><td class="p-2">${r.name}</td><td class="p-2">${r.type||'-'}</td>
+          <td class="p-2">${r.zone||'-'} ${r.floor||''}</td>
+          <td class="p-2">${existingIds.has(r.storeId)
+            ? '<span class="chip" style="background:rgba(245,158,11,.12);color:#F59E0B;">อัปเดต</span>'
+            : '<span class="chip" style="background:rgba(16,185,129,.12);color:#10B981;">ใหม่</span>'}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>`;
+  confirmBtn.classList.remove('js-hidden');
+}
+
+function confirmTenantImport(){
+  if (!State.importRows || !State.importRows.length) return;
+  let added = 0, updated = 0;
+  State.importRows.forEach(r=>{
+    const idx = TENANTS.findIndex(t=>t.storeId===r.storeId);
+    const record = {
+      storeId: r.storeId, name: r.name, type: r.type || '-', zone: r.zone || 'โซนอาหาร',
+      floor: r.floor || '-', contact: r.contact || '-', phone: r.phone || '-', status: r.status || 'Active',
+    };
+    if (idx > -1){ TENANTS[idx] = record; updated++; } else { TENANTS.push(record); added++; }
+  });
+  renderTenantsTable();
+  populateStoreSelect();
+  renderDashboard();
+  closeTenantImportModal();
+  Swal.fire({ icon:'success', title:'นำเข้าข้อมูลร้านค้าสำเร็จ', html:`เพิ่มร้านใหม่ <b>${added}</b> ร้าน · อัปเดตข้อมูลเดิม <b>${updated}</b> ร้าน`, confirmButtonColor:'#3B82F6' });
+}
+
+function downloadTenantImportTemplate(){
+  const sample = [
+    { 'รหัสร้าน':'A-105', 'ชื่อร้าน':'ตัวอย่างร้านค้า', 'ประเภทธุรกิจ':'ร้านอาหาร', 'โซน':'โซนอาหาร', 'ชั้น':'ชั้น 3', 'ผู้ติดต่อ':'คุณตัวอย่าง', 'เบอร์โทร':'080-000-0000', 'สถานะ':'Active' },
+  ];
+  const ws = XLSX.utils.json_to_sheet(sample);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Tenants');
+  XLSX.writeFile(wb, 'MallGuard-Tenant-Import-Template.xlsx');
 }
 
 /* ================================================================
@@ -2060,9 +1924,7 @@ function deleteTenant(storeId){
 async function capturePdfElementToPdf(elementId, filename){
   const el = document.getElementById(elementId);
   await document.fonts.ready; // รอฟอนต์ไทยโหลดเสร็จก่อน capture กันตัวอักษรเพี้ยน
-  // useCORS:true เป็นตาข่ายกันพลาดกรณีที่ยังมีรูปจาก Drive หลุดมาเป็นลิงก์
-  // (ปกติเราดึงเป็น base64 มาก่อนแล้วผ่าน ensureRecordPhotos)
-  const canvas = await html2canvas(el, { scale:2, backgroundColor:'#ffffff', useCORS:true });
+  const canvas = await html2canvas(el, { scale:2, backgroundColor:'#ffffff' });
   const imgData = canvas.toDataURL('image/jpeg', 0.95);
   const { jsPDF } = window.jspdf;
   // ใช้ขนาดจริงของเนื้อหาที่ capture ได้ (หาร 2 กลับเพราะ scale:2) กัน PDF ยืด/บีบเพี้ยน
@@ -2071,6 +1933,51 @@ async function capturePdfElementToPdf(elementId, filename){
   const pdf = new jsPDF({ orientation: pxWidth >= pxHeight ? 'landscape' : 'portrait', unit:'px', format:[pxWidth, pxHeight] });
   pdf.addImage(imgData, 'JPEG', 0, 0, pxWidth, pxHeight);
   pdf.save(filename);
+}
+
+// บันทึกใบรายงาน/ใบแจ้งเตือนเป็นไฟล์ภาพ PNG ความละเอียดสูง (ใช้ capture เดียวกับ PDF เพื่อให้หน้าตาตรงกันเป๊ะ)
+async function captureElementToPNG(elementId, filename){
+  const el = document.getElementById(elementId);
+  await document.fonts.ready;
+  const canvas = await html2canvas(el, { scale:2, backgroundColor:'#ffffff' });
+  const link = document.createElement('a');
+  link.download = filename;
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+// ใส่ HTML ที่สร้างไว้ลงใน container ที่ซ่อนอยู่ แล้ว capture ออกเป็น PDF หรือ PNG ตามที่เลือก
+async function fillAndExport(rootId, html, filename, format){
+  document.getElementById(rootId).innerHTML = html;
+  if (format === 'png') await captureElementToPNG(rootId, filename);
+  else await capturePdfElementToPdf(rootId, filename);
+  showToast(`Export ${format.toUpperCase()} สำเร็จ`, 'success');
+}
+
+function exportDashboardPDF(){ exportDashboardAs('pdf'); }
+function exportDashboardPNG(){ exportDashboardAs('png'); }
+function exportDashboardAs(format){
+  const s = computeDashboardStats();
+  fillAndExport('pdfDashboardReport', renderDashboardReportContent(s), `MallGuard-Dashboard-${Date.now()}.${format}`, format);
+}
+
+function exportSingleReportPDF(recordId){ exportInspectionReportAs(recordId, 'pdf'); }
+function exportSingleReportPNG(recordId){ exportInspectionReportAs(recordId, 'png'); }
+function exportInspectionReportAs(recordId, format){
+  const h = INSPECTION_HISTORY.find(r=>r.id===recordId);
+  if (!h) return;
+  const tenant = TENANTS.find(t=>t.storeId===h.storeId) || {};
+  fillAndExport('pdfInspectionReport', renderInspectionReportContent(h, tenant), `MallGuard-Report-${h.storeId}-${h.date}.${format}`, format);
+}
+
+function exportWarningNoticePDF(recordId){ exportWarningNoticeAs(recordId, 'pdf'); }
+function exportWarningNoticePNG(recordId){ exportWarningNoticeAs(recordId, 'png'); }
+function exportWarningNoticeAs(recordId, format){
+  const h = INSPECTION_HISTORY.find(r=>r.id===recordId);
+  if (!h) return;
+  if (h.grade === 'compliant'){ showToast('รายการนี้ผ่านมาตรฐานทุกข้อ ไม่มีข้อบกพร่องที่ต้องออกใบแจ้งเตือน', 'info'); return; }
+  const tenant = TENANTS.find(t=>t.storeId===h.storeId) || {};
+  fillAndExport('pdfInspectionReport', renderWarningNoticeContent(h, tenant), `MallGuard-Warning-${h.storeId}-${h.date}.${format}`, format);
 }
 
 // ป้ายชื่อประเภทการตรวจ (ใช้ร่วมกันหลายจุด)
@@ -2160,6 +2067,67 @@ function renderInspectionReportContent(record, tenant){
   </div>`;
 }
 
+/* เนื้อหา "ใบแจ้งเตือน" — เอกสารสั้น เน้นสีแดง/ส้มให้เด่นชัด สำหรับพิมพ์แจ้งร้านค้าที่มีข้อบกพร่อง
+   ต่างจากใบรายงานฉบับเต็ม ตรงที่ใบนี้โฟกัสเฉพาะ "รายการที่ไม่ผ่าน" + กำหนดเวลาแก้ไข เพื่อให้อ่านเข้าใจไว */
+function renderWarningNoticeContent(record, tenant){
+  tenant = tenant || {};
+  const failedItems = [];
+  CHECKLIST_CATEGORIES.forEach(cat=>{
+    cat.items.forEach(item=>{
+      if (record.checks && record.checks[item.id] === 'fail'){
+        failedItems.push({ cat: cat.name, icon: cat.icon, text: item.text });
+      }
+    });
+  });
+  const isMajor = record.grade === 'major';
+  const bannerColor = isMajor ? 'linear-gradient(115deg,#DC2626,#F97316)' : 'linear-gradient(115deg,#F59E0B,#F97316)';
+  const bannerLabel = isMajor ? '🚨 ใบแจ้งเตือนด่วน — พบข้อบกพร่องขั้นวิกฤต' : '⚠️ ใบแจ้งเตือน — พบข้อแก้ไขเล็กน้อย';
+
+  const itemsHtml = failedItems.length ? failedItems.map(f=>`
+    <div style="display:flex;gap:10px;align-items:flex-start;background:#FEF2F2;border:1px solid #FECACA;border-radius:12px;padding:10px 14px;margin-bottom:8px;">
+      <span style="font-size:18px;">${f.icon}</span>
+      <div><div style="font-size:11px;color:#9691ab;">${f.cat}</div><div style="font-weight:600;font-size:13.5px;color:#7F1D1D;">${f.text}</div></div>
+    </div>`).join('') : `<p style="color:#6b6280;font-size:13px;">ไม่พบรายการที่ต้องแก้ไข</p>`;
+
+  const sigStoreImg = record.sigStore ? `<img class="report-sign-img" src="${record.sigStore}">` : `<div style="height:64px;border-bottom:1px solid #ccc;margin-bottom:4px;"></div>`;
+  const sigInspectorImg = record.sigInspector ? `<img class="report-sign-img" src="${record.sigInspector}">` : `<div style="height:64px;border-bottom:1px solid #ccc;margin-bottom:4px;"></div>`;
+
+  return `
+  <div class="report-page">
+    <div style="background-image:${bannerColor};color:#fff;border-radius:18px;padding:22px 26px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center;">
+      <div>
+        <div style="font-size:22px;font-weight:800;">${bannerLabel}</div>
+        <div style="font-size:12.5px;opacity:.9;margin-top:4px;">MallGuard · แจ้งไปยังผู้เช่าเพื่อดำเนินการแก้ไขตามกำหนดเวลา</div>
+      </div>
+      <div style="text-align:right;font-size:12.5px;">เลขที่: <b>${record.id}</b><br>วันที่ตรวจ: <b>${toBuddhistDateStr(parseBEDateStr(record.date))}</b></div>
+    </div>
+
+    <div class="report-store-block" style="margin-bottom:16px;">
+      <div style="font-size:18px;font-weight:800;">${tenant.name || record.storeId}</div>
+      <div style="font-size:12.5px;color:#6b6280;">${record.storeId} · ${tenant.zone||'-'} ${tenant.floor||''} · ผู้ติดต่อ: ${tenant.contact||'-'} (${tenant.phone||'-'})</div>
+    </div>
+
+    <div style="font-weight:700;font-size:14px;margin-bottom:8px;">รายการที่ตรวจพบว่าไม่ผ่านมาตรฐาน (${failedItems.length} ข้อ)</div>
+    ${itemsHtml}
+
+    <div style="background:#FFF7ED;border:2px dashed #FDBA74;border-radius:14px;padding:16px 20px;margin:18px 0;text-align:center;">
+      <div style="font-size:12.5px;color:#9A3412;">กำหนดระยะเวลาดำเนินการแก้ไขภายในวันที่</div>
+      <div style="font-size:26px;font-weight:800;color:#C2410C;">${record.deadline ? toBuddhistDateStr(record.deadline) : 'ตามดุลยพินิจของฝ่ายปฏิบัติการ'}</div>
+    </div>
+
+    ${record.notes ? `<div class="report-note-box"><b>📝 ข้อเสนอแนะ/คำสั่งจากผู้ตรวจ:</b> ${record.notes}</div>` : ''}
+
+    <p style="font-size:11px;color:#6b6280;margin:14px 0;line-height:1.7;">หมายเหตุ: หากไม่ดำเนินการแก้ไขให้แล้วเสร็จภายในกำหนดเวลาข้างต้น ทางศูนย์การค้าขอสงวนสิทธิ์พิจารณาดำเนินการตามระเบียบสัญญาเช่าพื้นที่ต่อไป</p>
+
+    <div class="report-sign-row">
+      <div class="report-sign-box">${sigInspectorImg}<div>ผู้แจ้งเตือน (Inspector)</div></div>
+      <div class="report-sign-box">${sigStoreImg}<div>ผู้รับทราบ (Store Rep.)</div></div>
+    </div>
+
+    <div class="report-footer"><span>ออกโดยระบบ MallGuard · พิมพ์เมื่อ ${toBuddhistDateStr(new Date())}</span><span>หน้า 1/1</span></div>
+  </div>`;
+}
+
 /* เนื้อหารายงานสรุปแดชบอร์ด — ใช้ทั้งตอนดูตัวอย่างและ Export PDF เช่นกัน */
 function renderDashboardReportContent(s){
   const kpis = [
@@ -2236,37 +2204,9 @@ function previewDashboardReport(){
     title: '📄 ตัวอย่างรายงานสรุปแดชบอร์ด',
     actionsHtml: `
       <button class="btn btn-outline" onclick="closeReportPreview()">ปิด</button>
+      <button class="btn btn-outline" onclick="exportDashboardPNG()">🖼️ บันทึกเป็น PNG</button>
       <button class="btn btn-grad" style="--g1:var(--grad-1a);--g2:var(--grad-1b);" onclick="exportDashboardPDF()">📥 ดาวน์โหลด PDF</button>`
   });
-}
-
-function exportDashboardPDF(){
-  const s = computeDashboardStats();
-  const root = document.getElementById('pdfDashboardReport');
-  root.innerHTML = renderDashboardReportContent(s);
-  capturePdfElementToPdf('pdfDashboardReport', `MallGuard-Dashboard-${Date.now()}.pdf`).then(()=>showToast('Export PDF สำเร็จ','success'));
-}
-
-async function exportSingleReportPDF(recordId){
-  const h = INSPECTION_HISTORY.find(r=>r.id===recordId);
-  if (!h) return;
-  const tenant = TENANTS.find(t=>t.storeId===h.storeId) || {};
-
-  // ดึงรูปจริงจาก Drive ก่อน (ถ้ายังเป็นลิงก์) เพื่อให้รูปไม่หายไปจากไฟล์ PDF
-  showDataLoading(true);
-  try{
-    if (h.photosAreLinks && (h.photoIds?.length || h.sigInspector || h.sigStore)){
-      await ensureRecordPhotos(h);
-    }
-    const root = document.getElementById('pdfInspectionReport');
-    root.innerHTML = renderInspectionReportContent(h, tenant);
-    await capturePdfElementToPdf('pdfInspectionReport', `MallGuard-Report-${h.storeId}-${h.date}.pdf`);
-    showToast('Export PDF สำเร็จ','success');
-  }catch(err){
-    showToast('Export PDF ไม่สำเร็จ: ' + (err.message||'ไม่ทราบสาเหตุ'), 'error');
-  }finally{
-    showDataLoading(false);
-  }
 }
 
 function exportDashboardExcel(){
