@@ -29,13 +29,16 @@
 <link rel="manifest" id="manifestLink" href="">
 
 <!-- ===================== CDN LIBRARIES ===================== -->
-<script src="https://cdn.tailwindcss.com"></script>
+<!-- Tailwind CSS แบบคอมไพล์ล่วงหน้าและฝังในไฟล์ (สร้างด้วย Tailwind CLI v3.4.17)
+     เดิมใช้ cdn.tailwindcss.com ซึ่งเป็นตัวคอมไพล์แบบรันไทม์ จึงขึ้นคำเตือน
+     "should not be used in production" และต้องต่ออินเทอร์เน็ตทุกครั้งที่เปิดแอป
+     เวอร์ชันนี้บรรจุเฉพาะ class ที่ไฟล์นี้ใช้จริง (~13KB) จึงไม่มีคำเตือน
+     โหลดเร็วขึ้น และหน้าตาไม่เพี้ยนแม้เปิดออฟไลน์หรือเน็ตช้า
+     หมายเหตุ: ถ้าเพิ่ม class ของ Tailwind ใหม่ในอนาคต ต้องคอมไพล์ CSS ก้อนนี้ใหม่ -->
+<style id="tailwind-embedded">*,:after,:before{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/*! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com*/*,:after,:before{box-sizing:border-box;border:0 solid #e5e7eb}:after,:before{--tw-content:""}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;-o-tab-size:4;tab-size:4;font-family:ui-sans-serif,system-ui,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0}fieldset,legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::-moz-placeholder,textarea::-moz-placeholder{opacity:1;color:#9ca3af}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.container{width:100%}@media (min-width:640px){.container{max-width:640px}}@media (min-width:768px){.container{max-width:768px}}@media (min-width:1024px){.container{max-width:1024px}}@media (min-width:1280px){.container{max-width:1280px}}@media (min-width:1536px){.container{max-width:1536px}}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.sticky{position:sticky}.bottom-0{bottom:0}.left-0{left:0}.right-0{right:0}.right-1{right:.25rem}.top-0{top:0}.top-1{top:.25rem}.top-24{top:6rem}.z-40{z-index:40}.mx-auto{margin-left:auto;margin-right:auto}.\!mb-0{margin-bottom:0!important}.mb-1{margin-bottom:.25rem}.mb-2{margin-bottom:.5rem}.mb-3{margin-bottom:.75rem}.mb-4{margin-bottom:1rem}.ml-1{margin-left:.25rem}.mt-1{margin-top:.25rem}.mt-2{margin-top:.5rem}.mt-3{margin-top:.75rem}.mt-4{margin-top:1rem}.flex{display:flex}.table{display:table}.grid{display:grid}.hidden{display:none}.aspect-square{aspect-ratio:1/1}.h-2{height:.5rem}.h-6{height:1.5rem}.h-full{height:100%}.\!min-h-\[32px\]{min-height:32px!important}.\!min-h-\[36px\]{min-height:36px!important}.\!min-h-\[38px\]{min-height:38px!important}.\!min-h-\[40px\]{min-height:40px!important}.\!min-h-\[44px\]{min-height:44px!important}.min-h-screen{min-height:100vh}.\!w-auto{width:auto!important}.\!w-full{width:100%!important}.w-6{width:1.5rem}.w-64{width:16rem}.w-full{width:100%}.w-px{width:1px}.min-w-0{min-width:0}.max-w-\[1400px\]{max-width:1400px}.max-w-\[1720px\]{max-width:1720px}.flex-1{flex:1 1 0%}.shrink-0{flex-shrink:0}.transform{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.cursor-pointer{cursor:pointer}.resize{resize:both}.grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr))}.grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.\!flex-col{flex-direction:column!important}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-center{align-items:center}.justify-end{justify-content:flex-end}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.justify-around{justify-content:space-around}.\!gap-0{gap:0!important}.gap-1{gap:.25rem}.gap-2{gap:.5rem}.gap-3{gap:.75rem}.gap-4{gap:1rem}.gap-5{gap:1.25rem}.space-y-1\.5>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.375rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.375rem*var(--tw-space-y-reverse))}.space-y-2>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.5rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.5rem*var(--tw-space-y-reverse))}.space-y-3>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.75rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.75rem*var(--tw-space-y-reverse))}.space-y-4>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem*var(--tw-space-y-reverse))}.space-y-5>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.25rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.25rem*var(--tw-space-y-reverse))}.overflow-auto{overflow:auto}.overflow-hidden{overflow:hidden}.overflow-x-auto{overflow-x:auto}.truncate{overflow:hidden;text-overflow:ellipsis}.truncate,.whitespace-nowrap{white-space:nowrap}.\!rounded-none{border-radius:0!important}.rounded-2xl{border-radius:1rem}.rounded-full{border-radius:9999px}.rounded-xl{border-radius:.75rem}.border{border-width:1px}.border-b{border-bottom-width:1px}.border-t{border-top-width:1px}.bg-black{--tw-bg-opacity:1;background-color:rgb(0 0 0/var(--tw-bg-opacity,1))}.bg-black\/60{background-color:rgba(0,0,0,.6)}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255/var(--tw-bg-opacity,1))}.object-cover{-o-object-fit:cover;object-fit:cover}.p-0{padding:0}.p-2{padding:.5rem}.p-3{padding:.75rem}.p-4{padding:1rem}.p-5{padding:1.25rem}.\!px-2{padding-left:.5rem!important;padding-right:.5rem!important}.\!px-3{padding-left:.75rem!important;padding-right:.75rem!important}.\!px-4{padding-left:1rem!important;padding-right:1rem!important}.\!py-1{padding-top:.25rem!important;padding-bottom:.25rem!important}.\!py-1\.5{padding-top:.375rem!important;padding-bottom:.375rem!important}.\!py-2{padding-top:.5rem!important;padding-bottom:.5rem!important}.px-2{padding-left:.5rem;padding-right:.5rem}.px-4{padding-left:1rem;padding-right:1rem}.py-10{padding-top:2.5rem;padding-bottom:2.5rem}.py-2{padding-top:.5rem;padding-bottom:.5rem}.py-3{padding-top:.75rem;padding-bottom:.75rem}.py-5{padding-top:1.25rem;padding-bottom:1.25rem}.py-6{padding-top:1.5rem;padding-bottom:1.5rem}.pb-24{padding-bottom:6rem}.pt-3{padding-top:.75rem}.text-left{text-align:left}.text-center{text-align:center}.\!text-xs{font-size:.75rem!important;line-height:1rem!important}.text-2xl{font-size:1.5rem;line-height:2rem}.text-\[11px\]{font-size:11px}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:.75rem;line-height:1rem}.font-bold{font-weight:700}.font-extrabold{font-weight:800}.font-semibold{font-weight:600}.leading-none{line-height:1}.leading-relaxed{line-height:1.625}.leading-snug{line-height:1.375}.leading-tight{line-height:1.25}.text-white{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity,1))}.underline{text-decoration-line:underline}.opacity-80{opacity:.8}.opacity-90{opacity:.9}.shadow-lg{--tw-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color),0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.blur{--tw-blur:blur(8px)}.blur,.filter{filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.backdrop-filter{-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition{transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,-webkit-backdrop-filter;transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,backdrop-filter;transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,backdrop-filter,-webkit-backdrop-filter;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.ease-in-out{transition-timing-function:cubic-bezier(.4,0,.2,1)}.ease-out{transition-timing-function:cubic-bezier(0,0,.2,1)}@media (min-width:640px){.sm\:col-span-2{grid-column:span 2/span 2}.sm\:block{display:block}.sm\:hidden{display:none}.sm\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.sm\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.sm\:grid-cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}.sm\:grid-cols-5{grid-template-columns:repeat(5,minmax(0,1fr))}.sm\:flex-row{flex-direction:row}.sm\:items-center{align-items:center}.sm\:justify-between{justify-content:space-between}.sm\:gap-4{gap:1rem}}@media (min-width:768px){.md\:block{display:block}.md\:hidden{display:none}.md\:grid-cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}.md\:pb-5{padding-bottom:1.25rem}}@media (min-width:1280px){.xl\:col-span-4{grid-column:span 4/span 4}.xl\:col-span-5{grid-column:span 5/span 5}.xl\:col-span-7{grid-column:span 7/span 7}.xl\:col-span-8{grid-column:span 8/span 8}.xl\:grid-cols-12{grid-template-columns:repeat(12,minmax(0,1fr))}}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.dataTables.min.css">
-<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
@@ -182,6 +185,8 @@ body::before{
 .check-item{ border:2px solid var(--border); border-radius:16px; padding:14px 16px; transition:.15s ease; }
 .check-item.state-pass{ border-color:#10B981; background:rgba(16,185,129,.08); }
 .check-item.state-fail{ border-color:#EF4444; background:rgba(239,68,68,.1); }
+.check-item.state-na{ border-color:#9CA3AF; background:rgba(156,163,175,.12); opacity:.85; }
+.seg-btn.na-on{ background:#9CA3AF; color:#fff; border-color:#9CA3AF; }
 .seg-btn{ padding:10px 16px; border-radius:12px; font-weight:700; font-size:13px; min-height:44px; border:2px solid var(--border); }
 .seg-btn.pass-on{ background:#10B981; color:#fff; border-color:#10B981; }
 .seg-btn.fail-on{ background:#EF4444; color:#fff; border-color:#EF4444; }
@@ -220,27 +225,28 @@ table.dataTable tbody td{ border-color:var(--border) !important; }
    จะไปบังคับปิดตลอดกาลแม้ตอน md:block ควรแสดง (บั๊กที่ทำให้แถบเมนูข้างกดไม่ได้) */
 .js-hidden{ display:none !important; }
 
-/* ---------- ใบรายงาน (Report Template) — ใช้ร่วมกันทั้งตัวอย่างบนจอและตอน Export PDF ---------- */
-.report-page{ width:1123px; min-height:794px; background:#fff; color:#1e1b2e; font-family:'Prompt',sans-serif; box-sizing:border-box; padding:36px 44px; position:relative; }
-.report-header{ display:flex; align-items:center; justify-content:space-between; border-radius:18px; padding:20px 26px; color:#fff;
-  background-image:linear-gradient(115deg,#2563EB,#3B82F6 45%,#EC4899 100%); margin-bottom:18px; }
-.report-logo{ width:46px; height:46px; border-radius:14px; background:rgba(255,255,255,.22); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:18px; }
-.report-summary-strip{ display:flex; gap:16px; align-items:stretch; margin-bottom:16px; }
-.report-store-block{ flex:1.4; background:#F8FAFC; border-radius:16px; padding:16px 18px; border:1px solid #E6E1FA; }
-.report-grade-block{ flex:.8; border-radius:16px; padding:16px 18px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; }
+/* ---------- ใบรายงาน (Report Template) — ขนาด A4 แนวตั้ง (210×297mm ≈ 794×1123px ที่ 96dpi) ---------- */
+.report-page{ width:794px; min-height:1123px; background:#fff; color:#1e1b2e; font-family:'Prompt',sans-serif; box-sizing:border-box; padding:38px 40px 60px; position:relative; }
+.report-header{ display:flex; align-items:center; justify-content:space-between; border-radius:16px; padding:18px 22px; color:#fff;
+  background-image:linear-gradient(115deg,#2563EB,#3B82F6 45%,#EC4899 100%); margin-bottom:16px; gap:10px; }
+.report-logo{ width:42px; height:42px; border-radius:13px; background:rgba(255,255,255,.22); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:16px; flex-shrink:0; }
+.report-summary-strip{ display:flex; flex-direction:column; gap:12px; margin-bottom:16px; }
+.report-store-block{ background:#F8FAFC; border-radius:14px; padding:14px 18px; border:1px solid #E6E1FA; }
+.report-summary-row2{ display:flex; gap:12px; align-items:stretch; }
+.report-grade-block{ flex:0 0 168px; border-radius:14px; padding:14px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; }
 .report-mini-stats{ flex:1; display:flex; flex-direction:column; gap:8px; justify-content:center; }
-.report-mini-stat{ background:#F8FAFC; border:1px solid #E6E1FA; border-radius:12px; padding:8px 12px; font-size:12.5px; display:flex; justify-content:space-between; gap:8px; }
-.report-checklist-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:14px; }
-.report-cat-card{ border-radius:14px; padding:12px 14px; border:1px solid #eee; background:#FCFCFF; }
-.report-cat-title{ font-weight:700; font-size:13px; margin-bottom:8px; display:flex; align-items:center; gap:6px; }
-.report-check-row{ display:flex; justify-content:space-between; gap:8px; align-items:flex-start; font-size:11.5px; padding:6px 8px; border-radius:8px; margin-bottom:5px; }
-.report-photos-grid{ display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin-bottom:14px; }
-.report-photos-grid img{ width:100%; height:78px; object-fit:cover; border-radius:10px; border:1px solid #eee; }
-.report-note-box{ background:#FFF7ED; border:1px solid #FED7AA; border-radius:14px; padding:12px 16px; font-size:12.5px; margin-bottom:14px; }
-.report-sign-row{ display:flex; gap:24px; margin-top:10px; }
+.report-mini-stat{ background:#F8FAFC; border:1px solid #E6E1FA; border-radius:12px; padding:9px 13px; font-size:12.5px; display:flex; justify-content:space-between; gap:8px; }
+.report-checklist-grid{ display:flex; flex-direction:column; gap:10px; margin-bottom:16px; }
+.report-cat-card{ border-radius:13px; padding:12px 15px; border:1px solid #eee; background:#FCFCFF; }
+.report-cat-title{ font-weight:700; font-size:13.5px; margin-bottom:8px; display:flex; align-items:center; gap:6px; }
+.report-check-row{ display:flex; justify-content:space-between; gap:10px; align-items:center; font-size:12.5px; padding:8px 11px; border-radius:9px; margin-bottom:5px; }
+.report-photos-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:16px; }
+.report-photos-grid img{ width:100%; height:96px; object-fit:cover; border-radius:10px; border:1px solid #eee; }
+.report-note-box{ background:#FFF7ED; border:1px solid #FED7AA; border-radius:14px; padding:13px 17px; font-size:12.5px; margin-bottom:16px; line-height:1.6; }
+.report-sign-row{ display:flex; gap:22px; margin-top:16px; }
 .report-sign-box{ flex:1; text-align:center; font-size:12px; }
-.report-sign-img{ height:64px; object-fit:contain; margin-bottom:4px; }
-.report-footer{ position:absolute; bottom:24px; left:44px; right:44px; display:flex; justify-content:space-between; font-size:11px; color:#9691ab; border-top:1px solid #eee; padding-top:8px; }
+.report-sign-img{ height:60px; object-fit:contain; margin-bottom:4px; }
+.report-footer{ position:absolute; bottom:22px; left:40px; right:40px; display:flex; justify-content:space-between; font-size:10.5px; color:#9691ab; border-top:1px solid #eee; padding-top:8px; }
 
 @media (max-width: 768px){
   .kpi-num{ font-size:28px; }
@@ -328,6 +334,92 @@ table.dataTable tbody td{ border-color:var(--border) !important; }
 .chart-box{ position:relative; height:280px; }
 .chart-box-tall{ position:relative; height:320px; }
 @media (max-width:768px){ .chart-box, .chart-box-tall{ height:240px; } }
+
+/* ============================================================
+   RESPONSIVE — รองรับ Mobile / Tablet / Laptop / Desktop (iOS + Android)
+   ============================================================ */
+
+/* รองรับพื้นที่ปลอดภัยของจอบาก (iPhone notch / Android punch-hole)
+   ไม่ให้แถบเมนูล่างและ header ถูกบังด้วยขอบจอหรือแถบ gesture */
+.app-header{ padding-top: env(safe-area-inset-top, 0px); }
+.mobile-tabbar{ padding-bottom: env(safe-area-inset-bottom, 0px); }
+
+/* iOS จะซูมหน้าจออัตโนมัติเมื่อโฟกัสช่องกรอกที่ฟอนต์เล็กกว่า 16px
+   บังคับขั้นต่ำ 16px บนจอเล็กเพื่อกันจอเด้ง/ซูมค้างระหว่างกรอกฟอร์มหน้างาน */
+@media (max-width:768px){
+  input, select, textarea{ font-size:16px !important; }
+}
+/* กันช่องกรอกกว้างเกินขอบจอ (ไม่พึ่งระบบ grid ของ Tailwind อย่างเดียว) */
+input, select, textarea{ max-width:100%; box-sizing:border-box; }
+
+/* กล่องแจ้งเตือน (toast) บนมือถือ: ไม่ให้ล้นขอบจอและไม่บังปุ่มสำคัญ
+   ย้ายมาไว้ด้านล่างเหนือแถบเมนู เพราะถ้าวางด้านบนจะไปทับ header/โลโก้บนจอแคบ
+   (ตรวจพบจากการทดสอบแสดงผลจริงบนขนาดหน้าจอ iPhone) */
+@media (max-width:640px){
+  .toast-wrap{
+    left:12px; right:12px; top:auto;
+    bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+    flex-direction: column-reverse;
+  }
+  .toast{ min-width:0; max-width:100%; width:100%; }
+}
+
+/* ตารางทุกตัวต้องเลื่อนแนวนอนได้บนจอเล็ก และเลื่อนแบบลื่นบน iOS
+   (ตารางข้อมูลร้านค้า/ประวัติการตรวจมี 8 คอลัมน์ ใส่จอมือถือไม่พอแน่นอน)
+   กำหนด overflow/max-width ในนี้เองด้วย ไม่พึ่ง class ของ Tailwind อย่างเดียว
+   เผื่อกรณี CDN ของ Tailwind โหลดช้าหรือถูกบล็อก แล้วตารางจะดันทั้งหน้าจนล้น */
+.table-scroll{ -webkit-overflow-scrolling: touch; overflow:auto; max-width:100%; }
+main{ min-width:0; max-width:100%; }
+.page{ min-width:0; max-width:100%; }
+@media (max-width:900px){
+  .table-scroll table{ min-width:760px; } /* คงคอลัมน์ให้อ่านง่าย แล้วให้ผู้ใช้ปัดดูแทนการบีบจนอ่านไม่ออก */
+}
+
+/* โมดัล: บนมือถือให้เกือบเต็มจอ อ่านง่ายและกดปุ่มถึง */
+@media (max-width:640px){
+  .modal-backdrop{ padding:8px; align-items:flex-end; }
+  .modal-box{ max-height:94vh; border-radius:20px; }
+  .modal-box .btn{ width:100%; } /* ปุ่มในโมดัลเต็มความกว้าง แตะง่ายด้วยนิ้วโป้ง */
+  .modal-box .btn.\!w-auto{ width:auto; }
+}
+
+/* ปุ่มบนจอสัมผัส: ให้พื้นที่แตะพอสำหรับผู้ใช้ที่สวมถุงมือหน้างาน */
+@media (hover:none) and (pointer:coarse){
+  .btn{ min-height:48px; }
+  .seg-btn{ min-height:46px; }
+  .nav-item{ padding:14px 16px; }
+}
+
+/* จอมือถือแนวตั้ง */
+@media (max-width:640px){
+  .kpi-card{ padding:16px; border-radius:18px; }
+  .kpi-num{ font-size:26px; }
+  .surface{ border-radius:18px; }
+  h1.text-2xl{ font-size:20px; }
+  /* แถวเช็คลิสต์: ให้ปุ่มผ่าน/แก้ไข/ไม่เกี่ยวข้อง เรียงเต็มความกว้าง กดไม่พลาด */
+  .check-item .seg-btn{ flex:1 1 0; min-width:96px; font-size:12px; padding:10px 8px; }
+  /* ปุ่มกลุ่มในหัวข้อหน้า: ให้ตัดบรรทัดแทนล้นออกนอกจอ */
+  .btn{ font-size:14px; padding:0 16px; }
+}
+
+/* แท็บเล็ตแนวตั้ง (iPad ~768-1024px): เมนูข้างยังซ่อน ใช้แถบล่างแทน ให้เนื้อหาเต็มความกว้าง */
+@media (min-width:641px) and (max-width:1024px){
+  .kpi-num{ font-size:30px; }
+}
+
+/* ตัวอย่างใบรายงานในโมดัล: หน้ากระดาษกว้างคงที่ 794px (A4)
+   บนจอเล็กต้องปล่อยให้เลื่อนดูได้ ไม่ให้ดันโมดัลจนล้นจอ */
+@media (max-width:900px){
+  #reportPreviewScrollArea{ overflow:auto; -webkit-overflow-scrolling: touch; }
+}
+
+/* พิมพ์จากเบราว์เซอร์โดยตรง: ซ่อนส่วนติดต่อผู้ใช้ เหลือเฉพาะเนื้อหารายงาน */
+@media print{
+  .app-header, .desktop-sidebar, .mobile-tabbar, .toast-wrap, #splashScreen,
+  #reportPreviewActions, .btn{ display:none !important; }
+  body{ background:#fff !important; }
+  .report-page{ box-shadow:none !important; margin:0 !important; }
+}
 </style>
 </head>
 <body class="min-h-screen">
@@ -363,27 +455,37 @@ table.dataTable tbody td{ border-color:var(--border) !important; }
 
 <!-- ===================== TOP NAVBAR ===================== -->
 <header class="app-header sticky top-0 z-40">
-  <div class="max-w-[1400px] mx-auto px-4 py-3 flex items-center justify-between gap-3">
-    <div class="flex items-center gap-3">
-      <div id="appLogo" class="w-11 h-11 rounded-2xl flex items-center justify-center text-white font-extrabold text-lg shadow-lg" style="background:rgba(255,255,255,.22); backdrop-filter:blur(4px);">MG</div>
-      <div>
-        <div class="font-extrabold text-lg leading-tight text-white">MallGuard</div>
-        <div class="text-xs leading-tight" style="color:rgba(255,255,255,.85);">ระบบตรวจประเมินความปลอดภัยและมาตรฐานร้านค้า</div>
+  <div class="max-w-[1400px] mx-auto px-4 py-3 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-3 sm:gap-4 min-w-0">
+      <!-- โลโก้องค์กร (Seacon Bangkae) — วางเป็นแบรนด์หลักด้านซ้ายสุดตามมาตรฐานการจัดวางเอกลักษณ์องค์กร -->
+      <div class="bg-white rounded-2xl shrink-0 flex items-center justify-center shadow-lg"
+           style="height:52px; padding:8px 14px;">
+        <img id="seaconLogoHeader" alt="Seacon Bangkae" style="height:100%; width:auto; object-fit:contain; display:block;">
+      </div>
+      <!-- เส้นคั่นบางๆ แยกโลโก้องค์กรออกจากชื่อระบบ ให้ลำดับสายตาชัดเจน -->
+      <div class="w-px shrink-0 hidden sm:block" style="height:38px; background:rgba(255,255,255,.4);"></div>
+      <div class="min-w-0 hidden sm:block">
+        <div class="font-extrabold text-lg leading-tight text-white truncate">MallGuard</div>
+        <div class="text-xs leading-snug truncate" style="color:rgba(255,255,255,.88);">ระบบตรวจประเมินความปลอดภัยและมาตรฐานร้านค้า</div>
+      </div>
+      <!-- จอเล็ก: แสดงเฉพาะชื่อระบบสั้นๆ ไม่ให้เบียดโลโก้ -->
+      <div class="min-w-0 sm:hidden">
+        <div class="font-extrabold text-base leading-tight text-white truncate">MallGuard</div>
       </div>
     </div>
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2 shrink-0">
       <select id="roleSwitch" class="header-select !w-auto !py-2 !text-xs font-semibold hidden sm:block">
-        <option value="inspector">👷 เจ้าหน้าที่ผู้ตรวจ (Inspector)</option>
+        <option value="inspector" selected>👷 เจ้าหน้าที่ผู้ตรวจ (Inspector)</option>
         <option value="manager">📊 หัวหน้างาน/ผู้บริหาร (Manager)</option>
-        <option value="admin" selected>🛠️ ผู้ดูแลระบบ (Admin)</option>
+        <option value="admin">🛠️ ผู้ดูแลระบบ (Admin)</option>
       </select>
       <button id="darkToggle" class="btn header-btn !min-h-[44px] !px-3" title="สลับโหมดสว่าง/มืด">🌙</button>
     </div>
   </div>
   <select id="roleSwitchMobile" class="header-select !w-full !py-2 !text-xs font-semibold sm:hidden !rounded-none">
-    <option value="inspector">👷 เจ้าหน้าที่ผู้ตรวจ (Inspector)</option>
+    <option value="inspector" selected>👷 เจ้าหน้าที่ผู้ตรวจ (Inspector)</option>
     <option value="manager">📊 หัวหน้างาน/ผู้บริหาร (Manager)</option>
-    <option value="admin" selected>🛠️ ผู้ดูแลระบบ (Admin)</option>
+    <option value="admin">🛠️ ผู้ดูแลระบบ (Admin)</option>
   </select>
 </header>
 
@@ -397,6 +499,10 @@ table.dataTable tbody td{ border-color:var(--border) !important; }
       <div class="nav-item nav-admin-only" data-page="tenants"><span>🏬</span> ข้อมูลร้านค้า</div>
       <div class="mt-3 pt-3 border-t border-soft text-xs text-muted px-2">เข้าสู่ระบบในบทบาท:</div>
       <div class="px-2 text-sm font-semibold" id="roleLabelSidebar">👷 เจ้าหน้าที่ผู้ตรวจ</div>
+      <div class="nav-admin-only px-2 mt-2 space-y-1.5">
+        <button class="btn btn-outline w-full !min-h-[36px] !py-1.5 text-xs" onclick="openAdminPinSettings()">🔐 ตั้ง/เปลี่ยนรหัสผ่าน Admin</button>
+        <button class="btn btn-outline w-full !min-h-[32px] !py-1 text-xs" style="color:#EF4444;border-color:#FECACA;" onclick="removeAdminPin()">ยกเลิกรหัสผ่าน</button>
+      </div>
     </nav>
   </aside>
 
@@ -541,18 +647,58 @@ table.dataTable tbody td{ border-color:var(--border) !important; }
     <section id="page-reports" class="page js-hidden space-y-5">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <h1 class="text-2xl font-extrabold">รายงาน / ประวัติการตรวจ</h1>
-        <div class="flex gap-2">
+        <div class="flex flex-wrap gap-2">
+          <button class="btn btn-outline" onclick="retryUnsyncedRecords()" title="ลองส่งรายการที่ยังไม่ขึ้น Google Sheets อีกครั้ง">📤 ส่งข้อมูลค้าง</button>
+          <button class="btn btn-outline" onclick="syncFromBackend(true)" title="ดึงข้อมูลล่าสุดจาก Google Sheets">🔄 ซิงก์ใหม่</button>
           <button class="btn btn-outline" onclick="exportHistoryExcel()">📊 Export Excel</button>
           <button class="btn btn-outline" onclick="exportHistoryCSV()">📋 Export CSV</button>
         </div>
       </div>
-      <div class="surface rounded-2xl p-4 overflow-x-auto">
-        <table id="historyTable" class="w-full text-sm" style="width:100%">
-          <thead><tr>
-            <th>วันที่ตรวจ</th><th>ร้านค้า</th><th>โซน</th><th>ประเภทตรวจ</th><th>สถานะ</th><th>ผู้ตรวจ</th><th>รายงาน</th>
-          </tr></thead>
-          <tbody id="historyBody"></tbody>
-        </table>
+
+      <!-- แถบเตือนเมื่อมีรายการที่บันทึกในเครื่องแล้วแต่ยังยืนยันไม่ได้ว่าขึ้น Google Sheets -->
+      <div id="unsyncedBanner" class="js-hidden rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3"
+           style="background:rgba(245,158,11,.12); border:1.5px solid #FDBA74;">
+        <div class="text-sm">
+          <b style="color:#C2410C;">⚠️ มีข้อมูลที่ยังไม่ขึ้น Google Sheets</b>
+          <span id="unsyncedBannerText" class="text-muted"></span>
+        </div>
+        <button class="btn btn-grad !min-h-[38px] !py-1 text-sm" style="--g1:#F59E0B;--g2:#F97316;" onclick="retryUnsyncedRecords()">📤 ส่งซ้ำตอนนี้</button>
+      </div>
+
+      <div class="surface rounded-2xl p-4">
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 mb-4">
+          <input type="text" id="historySearchInput" placeholder="🔍 ค้นหาชื่อร้าน/รหัสร้าน/ผู้ตรวจ..." class="sm:col-span-2" oninput="renderHistoryTable()">
+          <select id="historyStatusFilter" onchange="renderHistoryTable()">
+            <option value="">ทุกสถานะ</option>
+            <option value="compliant">ผ่านมาตรฐาน</option>
+            <option value="minor">ข้อแก้ไขเล็กน้อย</option>
+            <option value="major">ไม่ผ่านขั้นวิกฤต</option>
+          </select>
+          <select id="historySortOrder" onchange="renderHistoryTable()">
+            <option value="desc">ล่าสุดก่อน</option>
+            <option value="asc">เก่าสุดก่อน</option>
+          </select>
+        </div>
+        <div id="historyListCount" class="text-xs text-muted mb-2"></div>
+        <!-- เลื่อนดูรายการได้ยาวๆ แทนการแบ่งหน้า -->
+        <!-- ตารางคอลัมน์ให้ดูเป็นระเบียบ เลื่อนดูต่อเนื่อง + ตรึงหัวตารางไว้ด้านบนขณะเลื่อน -->
+        <div class="table-scroll overflow-auto rounded-xl border border-soft" style="max-height:70vh;">
+          <table class="w-full text-sm" style="border-collapse:separate; border-spacing:0;">
+            <thead>
+              <tr class="text-left" style="position:sticky; top:0; z-index:2; background:var(--surface-2);">
+                <th class="p-3 whitespace-nowrap">วันที่ตรวจ</th>
+                <th class="p-3 whitespace-nowrap">ร้านค้า</th>
+                <th class="p-3 whitespace-nowrap">โซน</th>
+                <th class="p-3 whitespace-nowrap">ประเภทตรวจ</th>
+                <th class="p-3 whitespace-nowrap">สถานะ</th>
+                <th class="p-3 whitespace-nowrap">คะแนน</th>
+                <th class="p-3 whitespace-nowrap">ผู้ตรวจ</th>
+                <th class="p-3 whitespace-nowrap text-center">รายงาน</th>
+              </tr>
+            </thead>
+            <tbody id="historyList"></tbody>
+          </table>
+        </div>
       </div>
     </section>
 
@@ -561,17 +707,32 @@ table.dataTable tbody td{ border-color:var(--border) !important; }
       <div class="flex flex-wrap items-center justify-between gap-3">
         <h1 class="text-2xl font-extrabold">ข้อมูลหลักร้านค้า (Tenant Master Data)</h1>
         <div class="flex flex-wrap gap-2">
+          <button class="btn btn-outline" onclick="syncFromBackend(true)" title="ดึงข้อมูลล่าสุดจาก Google Sheets">🔄 ซิงก์ใหม่</button>
           <button class="btn btn-outline" onclick="openTenantImportModal()">📥 นำเข้าไฟล์ร้านค้า</button>
           <button class="btn btn-grad" style="--g1:var(--grad-4a);--g2:var(--grad-4b);" onclick="openTenantModal()">➕ เพิ่มร้านค้าใหม่</button>
         </div>
       </div>
-      <div class="surface rounded-2xl p-4 overflow-x-auto">
-        <table id="tenantsTable" class="w-full text-sm" style="width:100%">
-          <thead><tr>
-            <th>Store ID</th><th>ชื่อร้าน</th><th>ประเภทธุรกิจ</th><th>โซน/ชั้น</th><th>ผู้ติดต่อ</th><th>เบอร์โทร</th><th>สถานะ</th><th>จัดการ</th>
-          </tr></thead>
-          <tbody id="tenantsBody"></tbody>
-        </table>
+      <div class="surface rounded-2xl p-4">
+        <input type="text" id="tenantSearchInput" placeholder="🔍 ค้นหาชื่อร้าน/รหัสร้าน/โซน..." class="mb-3" oninput="renderTenantsTable()">
+        <div id="tenantListCount" class="text-xs text-muted mb-2"></div>
+        <!-- ตารางคอลัมน์เหมือนเดิม แต่เลื่อนดูต่อเนื่องแทนการกดเลือกทีละหน้า + หัวตารางตรึงไว้ขณะเลื่อน -->
+        <div class="table-scroll overflow-auto rounded-xl border border-soft" style="max-height:70vh;">
+          <table class="w-full text-sm" style="border-collapse:separate; border-spacing:0;">
+            <thead>
+              <tr class="text-left" style="position:sticky; top:0; z-index:2; background:var(--surface-2);">
+                <th class="p-3 whitespace-nowrap">Store ID</th>
+                <th class="p-3 whitespace-nowrap">ชื่อร้าน</th>
+                <th class="p-3 whitespace-nowrap">ประเภทธุรกิจ</th>
+                <th class="p-3 whitespace-nowrap">โซน/ชั้น</th>
+                <th class="p-3 whitespace-nowrap">ผู้ติดต่อ</th>
+                <th class="p-3 whitespace-nowrap">เบอร์โทร</th>
+                <th class="p-3 whitespace-nowrap">สถานะ</th>
+                <th class="p-3 whitespace-nowrap">จัดการ</th>
+              </tr>
+            </thead>
+            <tbody id="tenantsList"></tbody>
+          </table>
+        </div>
       </div>
     </section>
   </main>
@@ -656,6 +817,50 @@ table.dataTable tbody td{ border-color:var(--border) !important; }
   </div>
 </div>
 
+<div id="editInspectionModal" class="modal-backdrop js-hidden">
+  <div class="modal-box p-5" style="max-width:720px;">
+    <div class="flex justify-between items-center mb-3">
+      <h3 class="font-bold text-lg" id="editInspectionTitle">✏️ แก้ไขผลการตรวจ</h3>
+      <button onclick="closeEditInspectionModal()" class="text-2xl leading-none">&times;</button>
+    </div>
+    <div class="surface-2 rounded-xl p-3 text-xs text-muted mb-3">
+      แก้ไขได้เฉพาะประเภทการตรวจ ผลเช็คลิสต์ หมายเหตุ และเดดไลน์ — ส่วนรูปภาพหลักฐานและลายเซ็นจะคงค่าเดิมไว้เสมอ
+      (ถ้าต้องการเปลี่ยนรูป/ลายเซ็นใหม่ทั้งหมด แนะนำให้ลบรายการนี้แล้วตรวจประเมินใหม่แทน)
+    </div>
+    <div class="mb-3">
+      <label class="field-label">ประเภทการตรวจ</label>
+      <select id="editInspectionType">
+        <option value="weekly">📅 ประจำสัปดาห์/เดือน</option>
+        <option value="preopening">🏗️ ก่อนเปิดร้านใหม่</option>
+        <option value="incident">🚨 กรณีฉุกเฉิน/เร่งด่วน</option>
+      </select>
+    </div>
+    <div id="editChecklistWrap" class="space-y-3 mb-3" style="max-height:40vh; overflow-y:auto;"></div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+      <div>
+        <label class="field-label">ชื่อผู้ติดต่อ / ผู้แทนร้าน</label>
+        <input type="text" id="editInspectionContact" placeholder="เช่น คุณสมชาย ใจดี">
+      </div>
+      <div>
+        <label class="field-label">เบอร์โทรศัพท์</label>
+        <input type="tel" id="editInspectionPhone" placeholder="เช่น 081-234-5678">
+      </div>
+      <div class="sm:col-span-2">
+        <label class="field-label">ข้อเสนอแนะ / คำสั่งปรับปรุงงาน</label>
+        <textarea id="editInspectionNotes" rows="3"></textarea>
+      </div>
+      <div>
+        <label class="field-label">กำหนดวันเดดไลน์แก้ไข</label>
+        <input type="date" id="editInspectionDeadline">
+      </div>
+    </div>
+    <div class="flex gap-2">
+      <button class="btn btn-outline flex-1" onclick="closeEditInspectionModal()">ยกเลิก</button>
+      <button class="btn btn-grad flex-1" style="--g1:var(--grad-2a);--g2:var(--grad-2b);" onclick="saveEditedInspection()">💾 บันทึกการแก้ไข</button>
+    </div>
+  </div>
+</div>
+
 <div id="reportPreviewModal" class="modal-backdrop js-hidden">
   <div class="modal-box p-0" style="max-width:940px;">
     <div class="flex justify-between items-center p-4 border-b border-soft">
@@ -682,10 +887,14 @@ table.dataTable tbody td{ border-color:var(--border) !important; }
    ===============  CONFIG / ค่าคงที่ของระบบ  =====================
    ================================================================ */
 const CONFIG = {
-  // TODO: แก้เป็น URL ของ Google Apps Script Web App หลัง deploy จริง (ดูคู่มือ DEPLOY_GUIDE.md)
-  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/REPLACE_WITH_YOUR_DEPLOYMENT_ID/exec',
+  // เชื่อมกับ Google Apps Script Web App จริงของ Secu SBK (Sheet ID: 1t3w_O8_1dYr10KMyr9JzitTYtvNJKx9vfYGFzZAuZr0)
+  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyeEU5_3GOxgL6hMzuClWB_8LHBe0Q44mewCLTYcnvJSvQe0uoSHH4veFFl-P6Y432IIQ/exec',
   APP_NAME: 'MallGuard',
 };
+
+// โลโก้ทางการของ Seacon Bangkae ฝังเป็น base64 ในตัวไฟล์เลย (ยังคงเป็น single-file HTML)
+// ใช้แสดงที่ Header และหัวใบรายงาน/ใบแจ้งเตือนทุกฉบับ
+const SEACON_LOGO_DATA_URL = 'data:image/jpeg;base64,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';
 
 /* หมวดหมู่รายการตรวจสอบ — ตรงตามสเปกโปรเจกต์ 3 หมวด
    severity บอกว่าถ้าข้อในหมวดนี้ "ผิดปกติ" จะถือเป็น major หรือ minor defect */
@@ -694,66 +903,68 @@ const CHECKLIST_CATEGORIES = [
     { id:'fire1', text:'ถังดับเพลิงประจำร้านมีสภาพพร้อมใช้งาน (เกจปกติ / มีแท็กตรวจสอบ / ไม่หมดอายุ)' },
     { id:'fire2', text:'ทางหนีไฟและทางเดินหลังร้านไม่มีสิ่งกีดขวาง' },
     { id:'fire3', text:'ระบบเตือนภัย/สปริงเกลอร์หน้าร้านไม่มีสิ่งบดบัง' },
+    { id:'fire4', text:'ป้ายบอกทางหนีไฟและไฟฉุกเฉินติดสว่าง มองเห็นชัดเจน' },
+    { id:'fire5', text:'ไม่มีการจัดเก็บวัตถุไวไฟ/ถังแก๊สเกินปริมาณที่อนุญาต และเก็บในพื้นที่ที่กำหนด' },
+    { id:'fire6', text:'พนักงานประจำร้านทราบตำแหน่งอุปกรณ์ดับเพลิงและขั้นตอนอพยพเบื้องต้น' },
+    { id:'fire7', text:'ฝ้าเพดาน/ผนังกันไฟไม่ชำรุด ไม่มีช่องเปิดที่ลุกลามไฟได้' },
   ]},
   { key:'hygiene', name:'สุขอนามัยและสิ่งแวดล้อม', icon:'🧼', severity:'minor', grad:['var(--grad-2a)','var(--grad-2b)'], items:[
     { id:'hyg1', text:'บ่อดักไขมันตักล้างสม่ำเสมอ (สำหรับร้านอาหาร)' },
     { id:'hyg2', text:'การคัดแยกขยะไม่มีน้ำรั่วซึม เลอะเทอะ หรือส่งกลิ่นเหม็น' },
     { id:'hyg3', text:'จัดเก็บวัตถุดิบ/สินค้าเป็นระเบียบ ปลอดหนู/แมลงสาบ' },
+    { id:'hyg4', text:'พื้น ผนัง เพดาน และพื้นที่ปฏิบัติงานสะอาด ไม่มีคราบสกปรกสะสม' },
+    { id:'hyg5', text:'มีอ่างล้างมือพร้อมสบู่/เจลและอุปกรณ์เช็ดมือใช้งานได้' },
+    { id:'hyg6', text:'ระบบระบายอากาศ/เครื่องดูดควันสะอาด ไม่มีคราบไขมันสะสมหนา' },
+    { id:'hyg7', text:'มีหลักฐานการกำจัดแมลงและสัตว์พาหะ (Pest Control) ตามรอบที่กำหนด' },
+  ]},
+  { key:'foodsafety', name:'ความปลอดภัยด้านอาหาร', icon:'🍽️', severity:'major', grad:['var(--grad-2a)','var(--grad-2b)'], items:[
+    { id:'food1', text:'อุณหภูมิตู้เย็น/ตู้แช่แข็งอยู่ในเกณฑ์มาตรฐานและมีบันทึกอุณหภูมิประจำวัน' },
+    { id:'food2', text:'วัตถุดิบมีฉลากระบุวันที่รับ/วันหมดอายุ ไม่พบของหมดอายุในพื้นที่ใช้งาน' },
+    { id:'food3', text:'แยกเก็บอาหารดิบและอาหารปรุงสุกอย่างชัดเจน ป้องกันการปนเปื้อนข้าม' },
+    { id:'food4', text:'จัดเก็บวัตถุดิบสูงจากพื้นและไม่ชิดผนัง ตามหลักสุขาภิบาลอาหาร' },
+    { id:'food5', text:'พนักงานสัมผัสอาหารแต่งกายถูกสุขลักษณะ (หมวกคลุมผม ผ้ากันเปื้อน ถุงมือ)' },
+    { id:'food6', text:'พนักงานมีใบรับรองการอบรมสุขาภิบาลอาหาร/ใบรับรองแพทย์ตามที่กฎหมายกำหนด' },
   ]},
   { key:'electrical', name:'ไฟฟ้าและวิศวกรรม', icon:'⚡', severity:'major', grad:['var(--grad-5a)','var(--grad-5b)'], items:[
     { id:'elec1', text:'ตู้ควบคุมไฟฟ้า (MDB) ปิดฝาแน่นหนา ไม่มีของกีดขวาง ไม่มีสายไฟชำรุด' },
     { id:'elec2', text:'การใช้ปลั๊กพ่วงมีความปลอดภัย ไม่โหลดไฟเกินกำลัง' },
+    { id:'elec3', text:'ไม่มีสายไฟเปลือย ฉนวนแตก หรือจุดต่อสายที่ไม่ได้มาตรฐาน' },
+    { id:'elec4', text:'ระบบท่อน้ำ/ท่อระบายไม่มีการรั่วซึม ไม่มีน้ำขังบริเวณที่มีอุปกรณ์ไฟฟ้า' },
+    { id:'elec5', text:'อุปกรณ์แก๊ส สายแก๊ส และวาล์วอยู่ในสภาพดี ไม่มีรอยรั่ว (สำหรับร้านที่ใช้แก๊ส)' },
+    { id:'elec6', text:'เครื่องปรับอากาศ/พัดลมระบายอากาศทำงานปกติ ไม่มีน้ำหยดหรือเสียงผิดปกติ' },
+    { id:'elec7', text:'ป้ายโฆษณา ไฟป้าย และโครงสร้างแขวนยึดแน่นหนา ปลอดภัย' },
+  ]},
+  { key:'safety', name:'อาชีวอนามัยและความปลอดภัยบุคคล', icon:'🦺', severity:'minor', grad:['var(--grad-1a)','var(--grad-1b)'], items:[
+    { id:'safe1', text:'มีชุดปฐมพยาบาลเบื้องต้นพร้อมใช้ และเวชภัณฑ์ไม่หมดอายุ' },
+    { id:'safe2', text:'พื้นบริเวณปฏิบัติงานไม่ลื่น มีป้ายเตือนขณะทำความสะอาด' },
+    { id:'safe3', text:'พนักงานสวมอุปกรณ์ป้องกันที่เหมาะสมกับงาน (ถุงมือ รองเท้ากันลื่น ฯลฯ)' },
+    { id:'safe4', text:'การจัดวางสินค้า/กล่องไม่สูงเกินไปจนเสี่ยงล้มทับ และไม่กีดขวางทางเดิน' },
+    { id:'safe5', text:'อุปกรณ์เครื่องจักร/เครื่องตัดมีการ์ดป้องกันครบถ้วน ใช้งานปลอดภัย' },
+  ]},
+  { key:'operation', name:'มาตรฐานการดำเนินงานร้านค้า', icon:'📋', severity:'minor', grad:['var(--grad-4a)','var(--grad-4b)'], items:[
+    { id:'ops1', text:'ใบอนุญาตประกอบกิจการและเอกสารที่เกี่ยวข้องยังไม่หมดอายุ แสดงไว้ครบถ้วน' },
+    { id:'ops2', text:'ป้ายแสดงราคาสินค้า/บริการชัดเจน ตรงกับที่จำหน่ายจริง' },
+    { id:'ops3', text:'พนักงานแต่งกายสุภาพเรียบร้อย ติดบัตรพนักงานตามระเบียบศูนย์การค้า' },
+    { id:'ops4', text:'การจัดวางสินค้าไม่ล้ำออกนอกพื้นที่เช่าที่กำหนด' },
+    { id:'ops5', text:'เปิด-ปิดร้านตรงตามเวลาที่ศูนย์การค้ากำหนด' },
+    { id:'ops6', text:'ข้อบกพร่องที่เคยตรวจพบในรอบก่อนหน้าได้รับการแก้ไขเรียบร้อยแล้ว' },
   ]},
 ];
 
 /* ================================================================
-   ===============  ข้อมูลจำลอง (Mock Master Data)  ===============
-   ในการใช้งานจริง ข้อมูลนี้จะถูกดึงมาจาก Google Sheets ผ่าน Apps Script
+   ===============  ข้อมูลร้านค้า/ประวัติการตรวจ  ===================
+   เริ่มต้นเป็นค่าว่างเสมอ — "ไม่มี" ข้อมูลตัวอย่าง/จำลองปนอยู่
+   ข้อมูลจริงจะถูกดึงมาจาก Google Sheets ผ่าน Apps Script ตอนเปิดแอป (syncFromBackend)
+   หรือจากที่เคยบันทึกไว้ในเครื่อง (localStorage) ถ้ายังเชื่อมต่อ Sheets ไม่ได้
    ================================================================ */
-let TENANTS = [
-  { storeId:'A-101', name:'ชาบูฮะ บุฟเฟต์', type:'ร้านอาหาร/ชาบูบุฟเฟต์', zone:'โซนอาหาร', floor:'ชั้น 3', contact:'คุณสมชาย ใจดี', phone:'081-234-5671', status:'Active' },
-  { storeId:'A-102', name:'ก๋วยเตี๋ยวเรือคุณยาย', type:'ร้านอาหาร', zone:'โซนอาหาร', floor:'ชั้น 3', contact:'คุณสมหญิง รักษ์ดี', phone:'081-234-5672', status:'Active' },
-  { storeId:'A-103', name:'ครัวอีสานแซ่บนัว', type:'ร้านอาหาร', zone:'โซนอาหาร', floor:'ชั้น 3', contact:'คุณประยุทธ มั่นคง', phone:'081-234-5673', status:'Active' },
-  { storeId:'B-201', name:'แฟชั่นสไตล์ บูติค', type:'เสื้อผ้าแฟชั่น', zone:'โซนแฟชั่น', floor:'ชั้น 1', contact:'คุณนภา สวยงาม', phone:'082-345-6712', status:'Active' },
-  { storeId:'B-202', name:'ยูนิเวิร์ส เดนิม', type:'เสื้อผ้าแฟชั่น', zone:'โซนแฟชั่น', floor:'ชั้น 1', contact:'คุณวิชัย เก่งกาจ', phone:'082-345-6713', status:'Active' },
-  { storeId:'C-301', name:'ไอทีสไมล์ โซลูชัน', type:'อุปกรณ์ไอที', zone:'โซนไอที', floor:'ชั้น 2', contact:'คุณกิตติ เทคโน', phone:'083-456-7812', status:'Active' },
-  { storeId:'C-302', name:'โมบายเวิลด์', type:'มือถือ/อุปกรณ์เสริม', zone:'โซนไอที', floor:'ชั้น 2', contact:'คุณอนุชา ไฮเทค', phone:'083-456-7813', status:'Active' },
-  { storeId:'D-401', name:'คลินิกเสริมความงาม ดีเฟรช', type:'คลินิกเสริมความงาม', zone:'โซนบริการ', floor:'ชั้น 2', contact:'พญ.สุนิสา ผิวใส', phone:'084-567-8912', status:'Active' },
-  { storeId:'D-402', name:'สปาผ่อนคลาย เวลเนส', type:'สปา/นวด', zone:'โซนบริการ', floor:'ชั้น 2', contact:'คุณมาลี สุขใจ', phone:'084-567-8913', status:'Active' },
-  { storeId:'E-501', name:'พลาซ่ามินิมาร์ท', type:'ร้านสะดวกซื้อ', zone:'โซนพลาซ่า', floor:'ชั้น 1', contact:'คุณธนกร ค้าขาย', phone:'085-678-9012', status:'Active' },
-  { storeId:'E-502', name:'ร้านหนังสือปัญญาชน', type:'หนังสือ/เครื่องเขียน', zone:'โซนพลาซ่า', floor:'ชั้น 1', contact:'คุณปัญญา รู้มาก', phone:'085-678-9013', status:'Active' },
-  { storeId:'A-104', name:'ซูชิเดะ โอมากาเสะ', type:'ร้านอาหารญี่ปุ่น', zone:'โซนอาหาร', floor:'ชั้น 3', contact:'คุณฮิโรชิ ทาคาฮาชิ', phone:'081-234-5674', status:'Closed' },
-];
-
-/* ประวัติการตรวจจำลอง เพื่อให้ Dashboard มีข้อมูลตั้งต้นแสดงผลได้ทันที
-   (ในระบบจริงจะดึงจาก Google Sheets ผ่าน Apps Script API) */
-let INSPECTION_HISTORY = [
-  mkHistory('A-101','2569-07-01','weekly','major', {fire:'fail',hygiene:'pass',electrical:'pass'}, 62, 'จนท.ตรวจ สมศักดิ์'),
-  mkHistory('A-102','2569-07-02','weekly','minor', {fire:'pass',hygiene:'fail',electrical:'pass'}, 78, 'จนท.ตรวจ สมศักดิ์'),
-  mkHistory('A-103','2569-07-02','weekly','compliant', {fire:'pass',hygiene:'pass',electrical:'pass'}, 96, 'จนท.ตรวจ วิภา'),
-  mkHistory('B-201','2569-07-03','weekly','compliant', {fire:'pass',hygiene:'pass',electrical:'pass'}, 92, 'จนท.ตรวจ วิภา'),
-  mkHistory('B-202','2569-07-05','weekly','minor', {fire:'pass',hygiene:'pass',electrical:'fail'}, 80, 'จนท.ตรวจ สมศักดิ์'),
-  mkHistory('C-301','2569-07-06','weekly','compliant', {fire:'pass',hygiene:'pass',electrical:'pass'}, 95, 'จนท.ตรวจ วิภา'),
-  mkHistory('C-302','2569-07-08','preopening','major', {fire:'fail',hygiene:'pass',electrical:'fail'}, 45, 'จนท.ตรวจ สมศักดิ์'),
-  mkHistory('D-401','2569-07-09','weekly','compliant', {fire:'pass',hygiene:'pass',electrical:'pass'}, 90, 'จนท.ตรวจ วิภา'),
-  mkHistory('D-402','2569-07-10','weekly','minor', {fire:'pass',hygiene:'fail',electrical:'pass'}, 75, 'จนท.ตรวจ สมศักดิ์'),
-  mkHistory('E-501','2569-07-11','weekly','compliant', {fire:'pass',hygiene:'pass',electrical:'pass'}, 94, 'จนท.ตรวจ วิภา'),
-  mkHistory('E-502','2569-07-12','incident','major', {fire:'fail',hygiene:'pass',electrical:'pass'}, 55, 'จนท.ตรวจ สมศักดิ์'),
-];
-
-function mkHistory(storeId, dateStr, type, grade, checks, score, inspector){
-  return {
-    id: 'INS-' + storeId + '-' + dateStr.replace(/-/g,''),
-    storeId, date: dateStr, type, grade, checks, score, inspector,
-    notes:'', deadline:'', photos:[], sigInspector:null, sigStore:null,
-  };
-}
+let TENANTS = [];
+let INSPECTION_HISTORY = [];
 
 /* ================================================================
    ===============  STATE ของแอปพลิเคชัน  =========================
    ================================================================ */
 const State = {
-  role: 'admin', // ค่าเริ่มต้นเป็น Admin เพื่อให้เห็นเมนูครบทุกอันตั้งแต่เปิดแอปครั้งแรก (สลับเป็นบทบาทอื่นได้จากมุมขวาบน)
+  role: 'inspector', // ค่าเริ่มต้น — สลับเป็น Admin ได้จากมุมขวาบน (ต้องใส่รหัสผ่านถ้าเคยตั้งไว้)
   page: 'dashboard',
   draft: null,        // ฟอร์มตรวจที่กำลังกรอกอยู่
   photos: [],          // รูปที่แนบในฟอร์มปัจจุบัน (base64 หลัง compress แล้ว)
@@ -764,6 +975,8 @@ const State = {
   editingTenantId: null,
   pendingRecord: null, // ผลตรวจที่ผ่านการตรวจสอบแล้วและกำลังรอดูตัวอย่าง/ยืนยันบันทึก
   importRows: [], // แถวร้านค้าที่พาร์สจากไฟล์นำเข้า รอผู้ใช้กดยืนยัน
+  editingRecordId: null, // id ของผลตรวจที่กำลังแก้ไขอยู่ (ถ้ามี)
+  editChecks: {}, // ผลเช็คลิสต์ที่กำลังแก้ไขในโมดัลแก้ไขผลตรวจ
 };
 
 /* ================================================================
@@ -784,6 +997,29 @@ function parseBEDateStr(beDateStr){
   return new Date(y - 543, m - 1, dd);
 }
 function numFmt(n){ return Number(n).toLocaleString('th-TH'); }
+// เทียบรหัสร้านแบบไม่สนตัวพิมพ์เล็ก-ใหญ่และช่องว่างหัวท้าย (กัน QR/ไฟล์นำเข้าพิมพ์ "a-101" ไม่ตรงกับที่บันทึกไว้เป็น "A-101")
+function normalizeStoreId(id){ return String(id||'').trim().toUpperCase(); }
+
+/* ================================================================
+   ===============  ความปลอดภัยของการแสดงผล (XSS / Attribute-breakage)  ====
+   ข้อมูลร้านค้า/หมายเหตุ/ผู้ตรวจ ฯลฯ อาจมาจากผู้ใช้พิมพ์เอง, ไฟล์ CSV/Excel ที่นำเข้า,
+   หรือ Google Sheets ที่ถูกแก้ไขตรงๆ โดยคนอื่น — ถ้ามีอักขระ " ' < > อยู่ในข้อมูลแล้วเราแทรก
+   ลง HTML/onclick ตรงๆ จะทำให้ปุ่มพัง (JS syntax error) หรือแย่กว่านั้นคือเปิดช่องให้แทรกโค้ดได้
+   จึงต้อง escape ทุกครั้งที่นำข้อมูลเหล่านี้ไปแสดงผลหรือฝังใน attribute
+   ================================================================ */
+function escapeHtml(str){
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+// ใช้เฉพาะตอนฝังค่าไว้ใน onclick="fn('${...}')" — escape ทั้งชั้น JS string literal (กัน ' ตัดจบสตริงก่อนกำหนด)
+// แล้วค่อย escape ชั้น HTML attribute อีกที (กัน " ตัดจบ attribute) เรียงลำดับให้ถูกต้อง
+function escAttr(str){
+  if (str === null || str === undefined) return '';
+  let s = String(str).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+  return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
 
 function showToast(msg, type='success'){
   const colors = { success:'#10B981', error:'#EF4444', info:'#3B82F6', warning:'#F59E0B' };
@@ -823,9 +1059,13 @@ function gradeMeta(grade){
 document.addEventListener('DOMContentLoaded', init);
 
 function init(){
+  // โหลดข้อมูลจริงที่เคยบันทึกไว้ในเครื่อง (ถ้ามี) มาแทนที่ข้อมูลตัวอย่างก่อนเริ่ม render ใดๆ
+  // นี่คือจุดสำคัญที่ทำให้ "บันทึกแล้วหาไม่เจอ" ถูกแก้ — ไม่งั้นข้อมูลจะอยู่แค่ในหน่วยความจำ หายทันทีที่รีเฟรช/ปิดแท็บ
+  loadPersistedData();
+
   // แยกแต่ละขั้นตอนด้วย try-catch ของตัวเอง เพื่อไม่ให้ปัญหาจากขั้นตอนหนึ่ง (เช่น ตารางข้อมูล)
   // ลามไปทำให้ขั้นตอนสำคัญถัดไป (การแสดงเมนูตามบทบาท, หน้าล็อกจอ) ไม่ถูกเรียกใช้งานตามไปด้วย
-  const steps = [setupPWAAssets, setupDarkMode, setupNav, setupRoleSwitch, populateStoreSelect,
+  const steps = [setupPWAAssets, setupHeaderLogo, setupDarkMode, setupNav, setupRoleSwitch, populateStoreSelect,
     setupInspectionTypeButtons, renderTenantsTable, renderHistoryTable, renderDashboard];
   steps.forEach(fn=>{
     try { fn(); } catch(err){ console.error('เริ่มต้นระบบส่วน "' + fn.name + '" ผิดพลาด:', err); }
@@ -835,6 +1075,148 @@ function init(){
   } catch(err){ console.error(err); }
   applyRoleVisibility();
   setupSplashAndIdle();
+
+  // ดึงข้อมูลจริงจาก Google Sheets มาผสานกับข้อมูลในเครื่อง (ทำงานเบื้องหลัง ไม่บล็อกหน้าเว็บ)
+  syncFromBackend();
+}
+
+/* ================================================================
+   ===============  บันทึกข้อมูลลงเครื่อง (localStorage)  ===========
+   เนื่องจาก TENANTS / INSPECTION_HISTORY เดิมเป็นแค่ตัวแปรในหน่วยความจำ (RAM) เท่านั้น
+   พอปิดแท็บ/รีเฟรช/เปิดไฟล์ใหม่ ข้อมูลที่เพิ่งบันทึกจะหายไปทันที — นี่คือสาเหตุของปัญหา
+   "บันทึกแล้วหาไม่เจอ" ที่รายงานมา จึงเพิ่มชั้นนี้ให้ข้อมูลอยู่ถาวรในเบราว์เซอร์เครื่องนั้นๆ
+   (คนละเครื่อง/เบราว์เซอร์จะไม่เห็นข้อมูลเดียวกัน — ถ้าต้องการให้ทุกคนเห็นข้อมูลชุดเดียวกันแบบ
+   real-time ต้องตั้งค่า CONFIG.APPS_SCRIPT_URL ให้เชื่อม Google Sheets จริงตาม DEPLOY_GUIDE.md)
+   ================================================================ */
+const STORAGE_KEYS = { tenants:'mallguard_tenants_v2', history:'mallguard_inspection_history_v2', adminPin:'mallguard_admin_pin_hash' };
+
+/* ================================================================
+   ===============  รหัสผ่านผู้ดูแลระบบ (ตั้งเองได้จากในแอป)  ========
+   หมายเหตุตรงไปตรงมา: นี่คือ "ด่านกันคนเผลอ/กันเด็กซน" สำหรับอุปกรณ์ที่ใช้ร่วมกัน
+   (เช่น แท็บเล็ตหน้าเคาน์เตอร์) ไม่ใช่ระบบความปลอดภัยระดับสูง — รหัสผ่านถูกแฮชแบบง่ายๆ
+   เก็บไว้ในเบราว์เซอร์เครื่องนั้นเท่านั้น (ไม่ได้เข้ารหัสระดับมาตรฐานอุตสาหกรรม และไม่ได้ซิงก์
+   ขึ้น Google Sheets) ผู้ที่เข้าถึง DevTools ของเบราว์เซอร์โดยตรงสามารถข้ามได้ ถ้าต้องการความ
+   ปลอดภัยของข้อมูลจริงจัง ควรจำกัดสิทธิ์การเข้าถึง Google Sheets/Drive ต้นทางเป็นหลัก
+   ================================================================ */
+function simpleHash(str){
+  let hash = 0;
+  for (let i=0; i<str.length; i++){ hash = ((hash<<5) - hash + str.charCodeAt(i)) | 0; }
+  return 'h' + Math.abs(hash).toString(36) + '_' + str.length;
+}
+function getAdminPinHash(){ return localStorage.getItem(STORAGE_KEYS.adminPin) || ''; }
+function hasAdminPinSet(){ return !!getAdminPinHash(); }
+function setAdminPinHash(pin){ localStorage.setItem(STORAGE_KEYS.adminPin, simpleHash(pin)); }
+
+/** เปิดกล่องตั้ง/เปลี่ยนรหัสผ่านผู้ดูแลระบบ — ถ้าเคยตั้งไว้แล้วต้องใส่รหัสเดิมให้ถูกก่อนถึงจะเปลี่ยนได้ */
+function openAdminPinSettings(){
+  const hasPin = hasAdminPinSet();
+  Swal.fire({
+    title: hasPin ? '🔐 เปลี่ยนรหัสผ่านผู้ดูแลระบบ' : '🔐 ตั้งรหัสผ่านผู้ดูแลระบบ',
+    html: `
+      ${hasPin ? '<input type="password" id="swalOldPin" class="swal2-input" placeholder="รหัสผ่านเดิม" autocomplete="off">' : ''}
+      <input type="password" id="swalNewPin" class="swal2-input" placeholder="รหัสผ่านใหม่ (อย่างน้อย 4 ตัว)" autocomplete="off">
+      <input type="password" id="swalConfirmPin" class="swal2-input" placeholder="ยืนยันรหัสผ่านใหม่" autocomplete="off">
+    `,
+    confirmButtonText: 'บันทึก', showCancelButton: true, cancelButtonText: 'ยกเลิก', confirmButtonColor: '#3B82F6',
+    focusConfirm: false,
+    preConfirm: () => {
+      const oldPin = document.getElementById('swalOldPin') ? document.getElementById('swalOldPin').value : '';
+      const newPin = document.getElementById('swalNewPin').value;
+      const confirmPin = document.getElementById('swalConfirmPin').value;
+      if (hasPin && simpleHash(oldPin) !== getAdminPinHash()){ Swal.showValidationMessage('รหัสผ่านเดิมไม่ถูกต้อง'); return false; }
+      if (!newPin || newPin.length < 4){ Swal.showValidationMessage('รหัสผ่านใหม่ต้องมีอย่างน้อย 4 ตัวอักษร'); return false; }
+      if (newPin !== confirmPin){ Swal.showValidationMessage('รหัสผ่านใหม่และรหัสยืนยันไม่ตรงกัน'); return false; }
+      return newPin;
+    }
+  }).then(res=>{
+    if (res.isConfirmed && res.value){
+      setAdminPinHash(res.value);
+      showToast('ตั้งรหัสผ่านผู้ดูแลระบบสำเร็จ — ครั้งถัดไปที่สลับมาโหมด Admin จะต้องใส่รหัสนี้', 'success');
+    }
+  });
+}
+/** เปิดกล่องยกเลิกรหัสผ่าน (เผื่อกรณีลืม ต้องเข้า Admin อยู่ก่อนถึงจะปิดการล็อกได้) */
+function removeAdminPin(){
+  Swal.fire({ icon:'warning', title:'ยกเลิกรหัสผ่านผู้ดูแลระบบ?', text:'หลังจากนี้ใครก็สลับเป็น Admin ได้โดยไม่ต้องใส่รหัส', showCancelButton:true, confirmButtonText:'ยกเลิกรหัสผ่าน', cancelButtonText:'ไม่ยกเลิก', confirmButtonColor:'#EF4444' })
+    .then(res=>{
+      if (res.isConfirmed){
+        localStorage.removeItem(STORAGE_KEYS.adminPin);
+        showToast('ยกเลิกรหัสผ่านผู้ดูแลระบบแล้ว', 'success');
+      }
+    });
+}
+
+// เรียก render function หลักๆ ทั้งหมดแบบกันพัง — ถ้าตัวใดตัวหนึ่ง error (เช่น Chart.js โหลดไม่ทัน/ถูกบล็อก)
+// จะไม่ทำให้ขั้นตอนสำคัญถัดไปในโค้ดที่เรียกมัน (ปิดโมดัล, แจ้งเตือนสำเร็จ, เคลียร์ฟอร์ม) ถูกขัดจังหวะไปด้วย
+// ข้อมูลถูกบันทึกสำเร็จไปแล้วก่อนจุดนี้เสมอ ต่อให้การรีเฟรชหน้าจอมีปัญหา ผู้ใช้ก็ไม่ควรเห็น error ที่ทำให้เข้าใจผิดว่าบันทึกไม่สำเร็จ
+function safeRefreshUI(){
+  try { renderHistoryTable(); } catch(err){ console.error('renderHistoryTable error:', err); }
+  try { renderTenantsTable(); } catch(err){ console.error('renderTenantsTable error:', err); }
+  try { renderDashboard(); } catch(err){ console.error('renderDashboard error:', err); }
+}
+
+function persistTenants(){
+  try { localStorage.setItem(STORAGE_KEYS.tenants, JSON.stringify(TENANTS)); }
+  catch(err){
+    console.warn('บันทึกข้อมูลร้านค้าลงเครื่องไม่สำเร็จ:', err);
+    showToast('พื้นที่จัดเก็บในเบราว์เซอร์เต็ม อาจบันทึกข้อมูลร้านค้าไม่ครบ', 'error');
+  }
+}
+/**
+ * บันทึกประวัติลงเครื่อง โดย "ไม่เก็บรูป/ลายเซ็น base64 ของรายการที่ยืนยันแล้วว่าขึ้น Google Drive สำเร็จ"
+ * เหตุผล: localStorage มีโควตาแค่ ~5-10MB รูป base64 เพียงไม่กี่สิบรายการก็เต็มแล้ว
+ * และเมื่อเต็ม การบันทึกจะล้มเหลวทั้งก้อน ทำให้ข้อมูลใหม่หายไปเงียบๆ
+ * เมื่อรายการถูกยืนยันแล้ว (synced=true) รูปตัวจริงอยู่บน Google Drive ปลอดภัยแล้ว
+ * จึงเก็บแค่ลิงก์พอ — ส่วนรายการที่ยังซิงก์ไม่สำเร็จจะยังเก็บ base64 ไว้ครบเพื่อส่งซ้ำภายหลัง
+ */
+function stripHeavyFieldsIfSynced(record){
+  if (!record || !record.synced) return record; // ยังไม่ยืนยัน = เก็บ base64 ไว้ก่อน ห้ามทิ้ง
+  const isDataUrl = (v)=> typeof v === 'string' && v.indexOf('data:') === 0;
+  const light = Object.assign({}, record);
+  // เก็บเฉพาะลิงก์ Drive ทิ้ง base64 (ถ้ายังไม่มีลิงก์กลับมา ให้เก็บเป็น array ว่างแทน รูปจริงอยู่บน Drive แล้ว)
+  light.photos = (record.photos || []).filter(p=> !isDataUrl(p));
+  if (isDataUrl(light.sigInspector)) light.sigInspector = '';
+  if (isDataUrl(light.sigStore)) light.sigStore = '';
+  return light;
+}
+
+function persistHistory(){
+  const payload = INSPECTION_HISTORY.map(stripHeavyFieldsIfSynced);
+  try {
+    localStorage.setItem(STORAGE_KEYS.history, JSON.stringify(payload));
+  } catch(err){
+    console.warn('บันทึกประวัติการตรวจลงเครื่องไม่สำเร็จ:', err);
+    // ถ้ายังเต็มอยู่ ลองอีกครั้งโดยตัด base64 ของทุกรายการทิ้ง (รวมรายการที่ยังไม่ยืนยัน)
+    // ยอมเสียรูปในเครื่องดีกว่าเสียตัวบันทึกผลตรวจทั้งหมด — แต่ต้องเตือนผู้ใช้ให้ชัด
+    try {
+      const minimal = INSPECTION_HISTORY.map(r=> Object.assign({}, r, {
+        photos: (r.photos||[]).filter(p=> typeof p==='string' && p.indexOf('data:')!==0),
+        sigInspector: (typeof r.sigInspector==='string' && r.sigInspector.indexOf('data:')===0) ? '' : r.sigInspector,
+        sigStore: (typeof r.sigStore==='string' && r.sigStore.indexOf('data:')===0) ? '' : r.sigStore,
+      }));
+      localStorage.setItem(STORAGE_KEYS.history, JSON.stringify(minimal));
+      showToast('⚠️ พื้นที่จัดเก็บในเครื่องเต็ม จึงเก็บเฉพาะข้อมูลผลตรวจ (รูปในเครื่องถูกตัดออก) — รูปที่ซิงก์ขึ้น Google Drive แล้วยังอยู่ครบ', 'error');
+    } catch(err2){
+      console.error('บันทึกประวัติลงเครื่องไม่สำเร็จแม้ตัดรูปออกแล้ว:', err2);
+      showToast('⚠️ บันทึกลงเครื่องไม่สำเร็จ (พื้นที่เต็ม) กรุณาตรวจสอบว่าข้อมูลขึ้น Google Sheets แล้วก่อนปิดหน้าเว็บ', 'error');
+    }
+  }
+}
+function loadPersistedData(){
+  try {
+    const savedTenants = localStorage.getItem(STORAGE_KEYS.tenants);
+    if (savedTenants){
+      const parsed = JSON.parse(savedTenants);
+      if (Array.isArray(parsed) && parsed.length) TENANTS = parsed;
+    }
+  } catch(err){ console.warn('โหลดข้อมูลร้านค้าที่เคยบันทึกไว้ไม่สำเร็จ:', err); }
+  try {
+    const savedHistory = localStorage.getItem(STORAGE_KEYS.history);
+    if (savedHistory){
+      const parsed = JSON.parse(savedHistory);
+      if (Array.isArray(parsed)) INSPECTION_HISTORY = parsed;
+    }
+  } catch(err){ console.warn('โหลดประวัติการตรวจที่เคยบันทึกไว้ไม่สำเร็จ:', err); }
 }
 
 /* ================================================================
@@ -849,6 +1231,7 @@ const IDLE_LIMIT_MS = 60 * 1000; // 1 นาที
 let idleTimer = null;
 let splashActive = true;   // เริ่มต้นแอปด้วยหน้า splash เสมอ
 let splashClockTimer = null;
+let idlePaused = false;    // true ระหว่างเปิดกล้อง/สแกน QR — กันจอล็อกอัตโนมัติขัดจังหวะการถ่ายรูป/สแกน
 
 function setupSplashAndIdle(){
   buildSplashParticles();
@@ -914,13 +1297,22 @@ function showSplash(){
   try{ closeQrScanner(); }catch(e){}
   document.querySelectorAll('.modal-backdrop').forEach(m=> m.classList.add('js-hidden'));
 
+  // ล็อกจอแล้วลดสิทธิ์กลับเป็น Inspector เสมอ (เฉพาะกรณีตั้งรหัสผ่าน Admin ไว้แล้ว) กันคนอื่นมาเจอ
+  // แท็บเล็ตที่ไม่ได้ล็อกแล้วได้สิทธิ์ Admin ต่อทันทีโดยไม่ต้องใส่รหัส — ต้องปลดล็อกรหัสใหม่ทุกครั้ง
+  if (State.role === 'admin' && hasAdminPinSet()){
+    State.role = 'inspector';
+    document.getElementById('roleSwitch').value = 'inspector';
+    document.getElementById('roleSwitchMobile').value = 'inspector';
+    applyRoleVisibility();
+  }
+
   updateSplashClock();
   document.getElementById('splashScreen').classList.remove('splash-hidden');
 }
 
-// รีเซ็ตตัวจับเวลาว่าง ทุกครั้งที่มีการใช้งาน (ทำงานเฉพาะตอนอยู่ในแอป)
+// รีเซ็ตตัวจับเวลาว่าง ทุกครั้งที่มีการใช้งาน (ทำงานเฉพาะตอนอยู่ในแอปและไม่ได้ถูก pause ไว้)
 function resetIdleTimer(){
-  if (splashActive) return;
+  if (splashActive || idlePaused) return;
   clearTimeout(idleTimer);
   idleTimer = setTimeout(showSplash, IDLE_LIMIT_MS);
 }
@@ -930,6 +1322,12 @@ function resetIdleTimer(){
    ถ้าใช้ SVG ไอคอนจะไม่ขึ้น (iOS จะแคปหน้าจอมาใช้แทนโลโก้จริง) จึงต้องวาดออกมาเป็นไฟล์ภาพ PNG จริงๆ
    โค้ดนี้วาดโลโก้ด้วย Canvas API ล้วนๆ (ไม่พึ่งไฟล์ภาพภายนอก ยังคงเป็น single-file HTML เดิม)
    แล้วแปลงเป็น PNG data URI ในหลายขนาดให้ครบตามที่ iOS/Android/เดสก์ท็อปต้องการ */
+// แสดงโลโก้ Seacon Bangkae ที่ Header (ฝังเป็น base64 ไว้แล้วในตัวไฟล์ ไม่ต้องโหลดจากภายนอก)
+function setupHeaderLogo(){
+  const img = document.getElementById('seaconLogoHeader');
+  if (img) img.src = SEACON_LOGO_DATA_URL;
+}
+
 function setupPWAAssets(){
   const icon152 = generateAppIconDataURL(152); // iPad (รุ่นเก่า)
   const icon167 = generateAppIconDataURL(167); // iPad Pro
@@ -1043,18 +1441,39 @@ function goToPage(page){
   document.querySelectorAll('.nav-item').forEach(el=>{
     el.classList.toggle('active', el.dataset.page===page);
   });
-  if (page==='dashboard') renderDashboard();
-  if (page==='tenants') { renderTenantsTable(); }
-  if (page==='reports') { renderHistoryTable(); }
+  try {
+    if (page==='dashboard') renderDashboard();
+    if (page==='tenants') renderTenantsTable();
+    if (page==='reports') renderHistoryTable();
+  } catch(err){ console.error('render page "' + page + '" error:', err); }
 }
 
 /* ---------- Role Switch ---------- */
 function setupRoleSwitch(){
-  const sync = (val)=>{
+  const applySwitch = (val)=>{
     State.role = val;
     document.getElementById('roleSwitch').value = val;
     document.getElementById('roleSwitchMobile').value = val;
     applyRoleVisibility();
+  };
+  const sync = (val)=>{
+    // สลับเข้าโหมด Admin ต้องใส่รหัสผ่านให้ถูกก่อน (ถ้าเคยตั้งรหัสไว้แล้ว) — ถ้ายังไม่เคยตั้ง จะเข้าได้อิสระเหมือนเดิม
+    if (val === 'admin' && hasAdminPinSet()){
+      Swal.fire({
+        title: '🔐 ใส่รหัสผ่านผู้ดูแลระบบ', input: 'password', inputPlaceholder: 'รหัสผ่าน',
+        showCancelButton: true, confirmButtonText: 'เข้าสู่ระบบ', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#3B82F6',
+        inputAttributes: { autocomplete: 'off' },
+        preConfirm: (pin)=>{
+          if (!pin || simpleHash(pin) !== getAdminPinHash()){ Swal.showValidationMessage('รหัสผ่านไม่ถูกต้อง'); return false; }
+          return true;
+        }
+      }).then(res=>{
+        if (res.isConfirmed){ applySwitch(val); }
+        else { applySwitch(State.role); } // ยกเลิก/ใส่รหัสผิด -> คืนค่า select กลับไปที่บทบาทเดิม
+      });
+    } else {
+      applySwitch(val);
+    }
   };
   document.getElementById('roleSwitch').addEventListener('change', e=>sync(e.target.value));
   document.getElementById('roleSwitchMobile').addEventListener('change', e=>sync(e.target.value));
@@ -1246,8 +1665,8 @@ function renderDashboard(){
     const g = gradeMeta(h.grade);
     return `<tr class="border-b border-soft">
       <td class="py-2 font-bold">#${i+1}</td>
-      <td class="font-semibold">${tenant.name||h.storeId}</td>
-      <td>${tenant.zone||'-'}</td>
+      <td class="font-semibold">${escapeHtml(tenant.name||h.storeId)}</td>
+      <td>${escapeHtml(tenant.zone||'-')}</td>
       <td><span class="chip" style="background:${g.bg};color:${g.color};">${g.label}</span></td>
       <td class="font-bold">${h.score}</td>
       <td class="text-muted">${toBuddhistDateStr(parseBEDateStr(h.date))}</td>
@@ -1260,9 +1679,26 @@ function renderDashboard(){
    ================================================================ */
 function populateStoreSelect(){
   const sel = document.getElementById('storeSelect');
-  sel.innerHTML = '<option value="">-- เลือกร้านค้า --</option>' +
-    TENANTS.filter(t=>t.status==='Active').map(t=> `<option value="${t.storeId}">${t.storeId} — ${t.name} (${t.zone})</option>`).join('');
-  sel.addEventListener('change', ()=> selectStore(sel.value));
+  // จำร้านที่ผู้ใช้เลือกค้างไว้ก่อนสร้าง option ใหม่ — เพราะฟังก์ชันนี้ถูกเรียกจากการซิงก์เบื้องหลังด้วย
+  // ถ้าไม่คืนค่ากลับ ร้านที่กำลังกรอกฟอร์มอยู่จะถูกรีเซ็ตหายกลางคัน (อาการ "ฟอร์มไม่ขึ้น/หลุดเอง")
+  const previous = sel.value || (State.draft ? State.draft.storeId : '');
+
+  if (!TENANTS.length){
+    sel.innerHTML = '<option value="">-- ยังไม่มีร้านค้าในระบบ กรุณาเพิ่ม/นำเข้าร้านค้าก่อน --</option>';
+  } else {
+    sel.innerHTML = '<option value="">-- เลือกร้านค้า --</option>' +
+      TENANTS.filter(t=>t.status==='Active').map(t=> `<option value="${escapeHtml(t.storeId)}">${escapeHtml(t.storeId)} — ${escapeHtml(t.name)} (${escapeHtml(t.zone)})</option>`).join('');
+  }
+
+  // คืนค่าที่เลือกไว้เดิม ถ้าร้านนั้นยังอยู่ในรายการ (ไม่ยิง onchange ซ้ำ จึงไม่รีเซ็ตฟอร์มที่กรอกค้างไว้)
+  if (previous){
+    const stillExists = Array.from(sel.options).some(o=> o.value === previous);
+    if (stillExists) sel.value = previous;
+  }
+
+  // ใช้ .onchange แทน addEventListener เพราะฟังก์ชันนี้ถูกเรียกซ้ำหลายครั้งตลอดอายุแอป
+  // (หลังเพิ่ม/ลบ/นำเข้าร้านค้า, ซิงก์จาก Sheets ฯลฯ) — addEventListener จะพอกพูน handler ซ้ำๆ ทำให้ selectStore() ยิงซ้ำหลายรอบ
+  sel.onchange = ()=> selectStore(sel.value);
 }
 
 function setupInspectionTypeButtons(){
@@ -1289,7 +1725,9 @@ function selectStore(storeId){
     State.draft = null;
     return;
   }
-  const tenant = TENANTS.find(t=>t.storeId===storeId);
+  // เทียบแบบ normalize (ตัดช่องว่าง/ไม่สนตัวพิมพ์) เหมือนจุดอื่นในระบบ
+  // ถ้าเทียบแบบตรงเป๊ะ ข้อมูลที่พิมพ์มือใน Sheets ที่มีช่องว่างหลงเหลือจะหาไม่เจอ แล้วฟอร์มจะไม่ขึ้นเลย
+  const tenant = TENANTS.find(t=>normalizeStoreId(t.storeId)===normalizeStoreId(storeId));
   if (!tenant){ showToast('ไม่พบข้อมูลร้านค้านี้ในระบบ','error'); return; }
 
   // เริ่มฟอร์มตรวจใหม่
@@ -1305,20 +1743,67 @@ function selectStore(storeId){
   infoCard.classList.remove('js-hidden');
   infoCard.innerHTML = `
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
-      <div><div class="text-muted text-xs">รหัสร้าน</div><div class="font-bold">${tenant.storeId}</div></div>
-      <div><div class="text-muted text-xs">ชื่อร้าน</div><div class="font-bold">${tenant.name}</div></div>
-      <div><div class="text-muted text-xs">ประเภทธุรกิจ</div><div class="font-bold">${tenant.type}</div></div>
-      <div><div class="text-muted text-xs">โซน/ชั้น</div><div class="font-bold">${tenant.zone} / ${tenant.floor}</div></div>
-      <div><div class="text-muted text-xs">ผู้ติดต่อ</div><div class="font-bold">${tenant.contact}</div></div>
-      <div><div class="text-muted text-xs">เบอร์โทร</div><div class="font-bold">${tenant.phone}</div></div>
-      <div><div class="text-muted text-xs">สถานะ</div><div class="font-bold">${tenant.status}</div></div>
+      <div><div class="text-muted text-xs">รหัสร้าน</div><div class="font-bold">${escapeHtml(tenant.storeId)}</div></div>
+      <div><div class="text-muted text-xs">ชื่อร้าน</div><div class="font-bold">${escapeHtml(tenant.name)}</div></div>
+      <div><div class="text-muted text-xs">ประเภทธุรกิจ</div><div class="font-bold">${escapeHtml(tenant.type)}</div></div>
+      <div><div class="text-muted text-xs">โซน/ชั้น</div><div class="font-bold">${escapeHtml(tenant.zone)} / ${escapeHtml(tenant.floor)}</div></div>
+      <div><div class="text-muted text-xs">สถานะ</div><div class="font-bold">${escapeHtml(tenant.status)}</div></div>
       <div><div class="text-muted text-xs">วันที่ตรวจ</div><div class="font-bold">${toBuddhistDateStr(new Date())}</div></div>
+    </div>
+    <div class="mt-3 pt-3 border-t border-soft">
+      <div class="flex items-center justify-between gap-2 mb-2 flex-wrap">
+        <div class="text-xs text-muted">ผู้ติดต่อ ณ วันที่เข้าตรวจ (แก้ไข/กรอกเพิ่มได้ที่หน้างาน)</div>
+        <button class="btn btn-outline !min-h-[32px] !py-1 !px-3 text-xs" onclick="saveContactToTenant()"
+                title="อัปเดตข้อมูลนี้กลับเข้าข้อมูลหลักร้านค้าถาวร">💾 บันทึกเข้าข้อมูลร้านค้า</button>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="field-label">ชื่อผู้ติดต่อ / ผู้แทนร้าน</label>
+          <input type="text" id="inspectContactName" placeholder="เช่น คุณสมชาย ใจดี" value="${escapeHtml(tenant.contact || '')}" oninput="syncDraftContact()">
+        </div>
+        <div>
+          <label class="field-label">เบอร์โทรศัพท์</label>
+          <input type="tel" id="inspectContactPhone" placeholder="เช่น 081-234-5678" value="${escapeHtml(tenant.phone || '')}" oninput="syncDraftContact()">
+        </div>
+      </div>
     </div>`;
+
+  syncDraftContact(); // เก็บค่าเริ่มต้นลง draft ทันที เผื่อผู้ใช้ไม่ได้แก้ไขอะไรเลย
 
   renderChecklist();
   document.getElementById('checklistWrap').classList.remove('js-hidden');
   document.getElementById('evidenceWrap').classList.remove('js-hidden');
   resetSignatures();
+}
+
+/* ---------- ข้อมูลผู้ติดต่อ ณ วันที่เข้าตรวจ ----------
+   แยกเก็บไว้ใน draft/record ของการตรวจแต่ละครั้ง เพราะผู้แทนร้านอาจเปลี่ยนคนได้
+   ค่าที่กรอกจะไปแสดงบนใบรายงานของครั้งนั้นๆ โดยไม่กระทบข้อมูลหลักร้านค้า
+   เว้นแต่ผู้ใช้จะกดปุ่ม "บันทึกเข้าข้อมูลร้านค้า" เอง */
+function syncDraftContact(){
+  if (!State.draft) return;
+  const nameEl = document.getElementById('inspectContactName');
+  const phoneEl = document.getElementById('inspectContactPhone');
+  State.draft.contact = nameEl ? nameEl.value.trim() : '';
+  State.draft.phone = phoneEl ? phoneEl.value.trim() : '';
+}
+
+// อัปเดตชื่อผู้ติดต่อ/เบอร์โทรที่กรอกในฟอร์มตรวจ กลับเข้าข้อมูลหลักร้านค้าแบบถาวร (และซิงก์ขึ้น Google Sheets)
+function saveContactToTenant(){
+  if (!State.draft){ showToast('กรุณาเลือกร้านค้าก่อน', 'error'); return; }
+  const idx = TENANTS.findIndex(t=>normalizeStoreId(t.storeId)===normalizeStoreId(State.draft.storeId));
+  if (idx < 0){ showToast('ไม่พบร้านค้านี้ในระบบแล้ว (อาจถูกลบไป)', 'error'); return; }
+
+  syncDraftContact();
+  const contact = State.draft.contact || '';
+  const phone = State.draft.phone || '';
+  if (!contact && !phone){ showToast('กรุณากรอกชื่อผู้ติดต่อหรือเบอร์โทรก่อนบันทึก', 'error'); return; }
+
+  TENANTS[idx] = Object.assign({}, TENANTS[idx], { contact, phone });
+  persistTenants();
+  postTenantToBackend('saveTenant', TENANTS[idx]);
+  try { renderTenantsTable(); } catch(err){ console.error('renderTenantsTable error:', err); }
+  showToast('อัปเดตข้อมูลผู้ติดต่อเข้าข้อมูลหลักร้านค้าแล้ว', 'success');
 }
 
 function renderChecklist(){
@@ -1335,9 +1820,10 @@ function renderChecklist(){
         ${cat.items.map(item=>`
           <div class="check-item flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3" id="checkrow-${item.id}">
             <div class="text-sm flex-1">${item.text}</div>
-            <div class="flex gap-2 shrink-0">
+            <div class="flex gap-2 shrink-0 flex-wrap">
               <button class="seg-btn" onclick="setCheck('${item.id}','${cat.key}','pass')" id="btn-${item.id}-pass">⬜ ปกติ/ผ่าน</button>
               <button class="seg-btn" onclick="setCheck('${item.id}','${cat.key}','fail')" id="btn-${item.id}-fail">⬜ ผิดปกติ/ต้องแก้ไข</button>
+              <button class="seg-btn" onclick="setCheck('${item.id}','${cat.key}','na')" id="btn-${item.id}-na" title="ข้อนี้ไม่เกี่ยวข้องกับร้านประเภทนี้">⬜ ไม่เกี่ยวข้อง</button>
             </div>
           </div>`).join('')}
       </div>
@@ -1348,14 +1834,20 @@ function setCheck(itemId, catKey, value){
   if (!State.draft) return;
   State.draft.checks[itemId] = value;
   const row = document.getElementById('checkrow-'+itemId);
-  row.classList.remove('state-pass','state-fail');
-  row.classList.add(value==='pass' ? 'state-pass' : 'state-fail');
+  row.classList.remove('state-pass','state-fail','state-na');
+  if (value==='pass') row.classList.add('state-pass');
+  else if (value==='fail') row.classList.add('state-fail');
+  else row.classList.add('state-na');
   document.getElementById(`btn-${itemId}-pass`).classList.toggle('pass-on', value==='pass');
   document.getElementById(`btn-${itemId}-fail`).classList.toggle('fail-on', value==='fail');
+  const naBtn = document.getElementById(`btn-${itemId}-na`);
+  if (naBtn) naBtn.classList.toggle('na-on', value==='na');
 }
 
 /* ---------- QR Scanner (html5-qrcode) ---------- */
 function openQrScanner(){
+  idlePaused = true; // กันจอล็อกอัตโนมัติขัดจังหวะระหว่างกำลังสแกน
+  clearTimeout(idleTimer);
   document.getElementById('qrModal').classList.remove('js-hidden');
   State.qrScanner = new Html5Qrcode('qrReader');
   State.qrScanner.start(
@@ -1363,7 +1855,7 @@ function openQrScanner(){
     { fps:10, qrbox:230 },
     (decodedText)=>{
       // QR Code ควรเก็บ Store ID ตรงๆ เช่น "A-101"
-      const found = TENANTS.find(t=> t.storeId===decodedText.trim());
+      const found = TENANTS.find(t=> normalizeStoreId(t.storeId) === normalizeStoreId(decodedText));
       if (found){
         document.getElementById('storeSelect').value = found.storeId;
         selectStore(found.storeId);
@@ -1385,10 +1877,14 @@ function closeQrScanner(){
     State.qrScanner.stop().then(()=>State.qrScanner.clear()).catch(()=>{});
     State.qrScanner = null;
   }
+  idlePaused = false;
+  resetIdleTimer();
 }
 
 /* ---------- กล้องถ่ายภาพหลักฐาน ---------- */
 function openCamera(){
+  idlePaused = true; // กันจอล็อกอัตโนมัติขัดจังหวะระหว่างกำลังถ่ายรูป
+  clearTimeout(idleTimer);
   document.getElementById('cameraModal').classList.remove('js-hidden');
   navigator.mediaDevices.getUserMedia({ video:{ facingMode:'environment' } })
     .then(stream=>{
@@ -1403,6 +1899,8 @@ function openCamera(){
 function closeCamera(){
   document.getElementById('cameraModal').classList.add('js-hidden');
   if (State.cameraStream){ State.cameraStream.getTracks().forEach(t=>t.stop()); State.cameraStream=null; }
+  idlePaused = false;
+  resetIdleTimer();
 }
 function capturePhoto(){
   const video = document.getElementById('cameraVideo');
@@ -1417,8 +1915,13 @@ function capturePhoto(){
 /* ---------- อัปโหลดรูปจากเครื่อง ---------- */
 function handleFileUpload(evt){
   Array.from(evt.target.files).forEach(file=>{
+    if (!file.type || !file.type.startsWith('image/')){
+      showToast(`ไฟล์ "${file.name}" ไม่ใช่ไฟล์รูปภาพ ข้ามไฟล์นี้`, 'error');
+      return;
+    }
     const reader = new FileReader();
-    reader.onload = e=> compressAndAddPhoto(e.target.result);
+    reader.onload = e=> compressAndAddPhoto(e.target.result, file.name);
+    reader.onerror = () => showToast(`อ่านไฟล์ "${file.name}" ไม่สำเร็จ (ไฟล์อาจเสียหาย)`, 'error');
     reader.readAsDataURL(file);
   });
   evt.target.value = '';
@@ -1426,8 +1929,9 @@ function handleFileUpload(evt){
 
 // บีบอัดภาพฝั่ง client ด้วย canvas (ลดขนาด ≤ 800px, quality 0.7) ก่อนแนบไป Apps Script
 // เพื่อไม่ให้ payload เกิน limit ของ Google Apps Script เวลาส่งเป็น base64
-function compressAndAddPhoto(dataUrl){
+function compressAndAddPhoto(dataUrl, filename){
   const img = new Image();
+  img.onerror = () => showToast(`ไฟล์${filename ? ' "' + filename + '"' : ''} ไม่ใช่รูปภาพที่ใช้งานได้ (เปิดไม่ขึ้น)`, 'error');
   img.onload = ()=>{
     const MAX = 800;
     let { width, height } = img;
@@ -1455,17 +1959,41 @@ function renderPhotoGallery(){
 function removePhoto(i){ State.photos.splice(i,1); renderPhotoGallery(); }
 
 /* ---------- ลายเซ็นดิจิทัล (Signature Pad) ---------- */
-function resetSignatures(){
+function resetSignatures(retryCount){
   const c1 = document.getElementById('sigInspector');
   const c2 = document.getElementById('sigStore');
+  if (!c1 || !c2) return;
   fitCanvas(c1); fitCanvas(c2);
-  State.sigPadInspector = new SignaturePad(c1, { backgroundColor:'#ffffff' });
-  State.sigPadStore = new SignaturePad(c2, { backgroundColor:'#ffffff' });
+
+  // บนเน็ตมือถือช้า ไลบรารี SignaturePad อาจยังโหลดไม่เสร็จตอนผู้ใช้เลือกร้าน
+  // ถ้าปล่อยให้ throw จะทำให้ขั้นตอนถัดไปหยุดกลางคันและช่องเซ็นใช้ไม่ได้โดยไม่มีอะไรแจ้ง
+  // จึงรอแล้วลองใหม่อัตโนมัติ (สูงสุด ~10 วินาที) แทนการล้มทันที
+  if (typeof SignaturePad === 'undefined'){
+    const tries = retryCount || 0;
+    if (tries < 20){
+      setTimeout(()=> resetSignatures(tries + 1), 500);
+    } else {
+      console.warn('โหลดไลบรารีลายเซ็น (SignaturePad) ไม่สำเร็จ');
+      showToast('โหลดระบบลายเซ็นไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เน็ตแล้วรีเฟรชหน้าเว็บ', 'error');
+    }
+    return;
+  }
+
+  try {
+    State.sigPadInspector = new SignaturePad(c1, { backgroundColor:'#ffffff' });
+    State.sigPadStore = new SignaturePad(c2, { backgroundColor:'#ffffff' });
+  } catch(err){
+    console.error('เริ่มต้นช่องลายเซ็นไม่สำเร็จ:', err);
+    showToast('เริ่มต้นช่องลายเซ็นไม่สำเร็จ กรุณารีเฟรชหน้าเว็บ', 'error');
+  }
 }
 function fitCanvas(canvas){
   const ratio = Math.max(window.devicePixelRatio || 1, 1);
-  canvas.width = canvas.offsetWidth * ratio;
-  canvas.height = canvas.offsetHeight * ratio;
+  // กันกรณี container ยัง layout ไม่เสร็จแล้ว offsetWidth/Height อ่านได้ 0 — ไม่งั้นลายเซ็นจะใช้งานไม่ได้แบบเงียบๆ
+  const w = canvas.offsetWidth || (canvas.parentElement ? canvas.parentElement.clientWidth : 0) || 300;
+  const h = canvas.offsetHeight || 160;
+  canvas.width = w * ratio;
+  canvas.height = h * ratio;
   canvas.getContext('2d').scale(ratio, ratio);
 }
 function clearSig(id){
@@ -1475,23 +2003,26 @@ function clearSig(id){
 
 /* ---------- คำนวณผลตรวจ (Grade) ---------- */
 function computeGrade(checks){
+  checks = checks || {}; // กันพังถ้าเรียกด้วยค่าว่าง/undefined (เช่น บันทึกเก่าที่ข้อมูลไม่ครบ)
   let hasMajorFail=false, hasMinorFail=false, answered=0, total=0;
+  let passCount = 0, scorable = 0; // scorable = จำนวนข้อที่นำมาคิดคะแนนจริง (ไม่รวมข้อที่ระบุว่า "ไม่เกี่ยวข้อง")
   CHECKLIST_CATEGORIES.forEach(cat=>{
     cat.items.forEach(item=>{
       total++;
       const v = checks[item.id];
-      if (v) answered++;
-      if (v==='fail'){
+      if (v) answered++;           // 'pass' / 'fail' / 'na' ถือว่าประเมินแล้วทั้งหมด
+      if (v === 'na') return;      // ข้อที่ไม่เกี่ยวข้องกับร้านประเภทนี้ ไม่นำมาคิดคะแนนและไม่ถือเป็นข้อบกพร่อง
+      if (v === 'pass' || v === 'fail') scorable++;
+      if (v === 'pass') passCount++;
+      if (v === 'fail'){
         if (cat.severity==='major') hasMajorFail = true; else hasMinorFail = true;
       }
     });
   });
   const grade = hasMajorFail ? 'major' : (hasMinorFail ? 'minor' : 'compliant');
-  // คะแนน = สัดส่วนข้อที่ผ่านจากทั้งหมด (0 ถ้ายังไม่ตอบเลย)
-  let passCount = 0;
-  CHECKLIST_CATEGORIES.forEach(cat=> cat.items.forEach(item=>{ if (checks[item.id]==='pass') passCount++; }));
-  const score = total ? Math.round((passCount/total)*100) : 0;
-  return { grade, score, answered, total };
+  // คะแนน = สัดส่วนข้อที่ผ่าน จากเฉพาะข้อที่เกี่ยวข้องกับร้านนั้นจริงๆ
+  const score = scorable ? Math.round((passCount/scorable)*100) : 0;
+  return { grade, score, answered, total, scorable, passCount };
 }
 
 /* ---------- ขั้นที่ 1: ตรวจสอบฟอร์มแล้วเปิด "ตัวอย่างใบรายงาน" ก่อนบันทึกจริง ---------- */
@@ -1502,10 +2033,16 @@ function openSubmitPreview(){
     Swal.fire({ icon:'warning', title:'กรอกข้อมูลไม่ครบถ้วน', text:`กรุณาประเมินให้ครบทุกข้อ (ตอบแล้ว ${answered}/${total} ข้อ)`, confirmButtonColor:'#3B82F6' });
     return;
   }
+  if (!State.sigPadInspector || !State.sigPadStore){
+    Swal.fire({ icon:'error', title:'ช่องลายเซ็นยังไม่พร้อมใช้งาน', text:'ระบบลายเซ็นโหลดไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เน็ตแล้วรีเฟรชหน้าเว็บ (ข้อมูลที่กรอกไว้จะหาย กรุณาถ่ายภาพหน้าจอเก็บไว้ก่อน)', confirmButtonColor:'#EF4444' });
+    return;
+  }
   if (State.sigPadInspector.isEmpty() || State.sigPadStore.isEmpty()){
     Swal.fire({ icon:'warning', title:'ยังไม่ได้ลงลายมือชื่อ', text:'กรุณาให้ผู้ตรวจและผู้แทนร้านค้าลงลายมือชื่อให้ครบ', confirmButtonColor:'#3B82F6' });
     return;
   }
+
+  syncDraftContact(); // ดึงค่าผู้ติดต่อล่าสุดจากช่องกรอกก่อนสร้างบันทึก
 
   const now = new Date();
   const record = {
@@ -1516,6 +2053,9 @@ function openSubmitPreview(){
     grade, score,
     checks: { ...State.draft.checks },
     inspector: 'จนท.ตรวจ (ผู้ใช้งานปัจจุบัน)',
+    // ผู้ติดต่อ ณ วันที่เข้าตรวจครั้งนี้ (อาจต่างจากข้อมูลหลักร้านค้า เช่น ผู้จัดการร้านเปลี่ยนคน)
+    contact: State.draft.contact || '',
+    phone: State.draft.phone || '',
     notes: document.getElementById('noteText').value.trim(),
     deadline: document.getElementById('deadlineInput').value,
     photos: State.photos.slice(),
@@ -1524,7 +2064,7 @@ function openSubmitPreview(){
   };
   State.pendingRecord = record; // เก็บพักไว้ก่อน จะบันทึกจริงก็ต่อเมื่อกดยืนยันในหน้าตัวอย่าง
 
-  const tenant = TENANTS.find(t=>t.storeId===record.storeId);
+  const tenant = TENANTS.find(t=>t.storeId===record.storeId) || {}; // กันพังถ้าร้านถูกลบไปแล้วระหว่างกรอกฟอร์ม
   openReportPreview({
     record, tenant, mode:'presubmit',
     title: '👁️ ตรวจสอบตัวอย่างก่อนบันทึกผล',
@@ -1535,62 +2075,230 @@ function openSubmitPreview(){
 }
 
 /* ---------- ขั้นที่ 2: ยืนยันแล้วค่อยบันทึกจริง + ส่งเข้า backend + แจ้งเตือน ---------- */
-function finalizeSubmit(){
+async function finalizeSubmit(){
   const record = State.pendingRecord;
   if (!record) return;
-  const tenant = TENANTS.find(t=>t.storeId===record.storeId);
+  const tenant = TENANTS.find(t=>t.storeId===record.storeId) || {}; // กันพังถ้าร้านถูกลบไปแล้วระหว่างกรอกฟอร์ม
   const btn = document.getElementById('confirmSubmitBtn');
-  if (btn){ btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> กำลังบันทึกข้อมูล...'; }
+  if (btn){ btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> กำลังบันทึกและยืนยันกับ Google Sheets...'; }
 
-  // ส่งข้อมูลไปยัง Google Apps Script backend (no-cors: อ่าน response ไม่ได้ จึงถือว่าสำเร็จเมื่อ fetch ไม่ throw)
-  postInspectionToBackend(record)
-    .then(()=>{
-      INSPECTION_HISTORY.unshift(record);
-      renderDashboard();
-      renderHistoryTable();
-      closeReportPreview();
-      showToast('บันทึกผลการตรวจประเมินสำเร็จ', 'success');
+  // เก็บลงเครื่องก่อนเสมอ (กันข้อมูลหายถ้าปิดแท็บระหว่างรอยืนยัน) แล้วค่อยยืนยันผลกับ Sheets
+  record.synced = false;
+  INSPECTION_HISTORY.unshift(record);
+  persistHistory();
+  safeRefreshUI();
 
-      if (record.grade === 'major'){
-        // แจ้งเตือนอัตโนมัติทันทีเมื่อพบ Major Defect (ไม่ต้องรอ batch)
-        sendMajorDefectAlert(record, tenant);
-      }
+  let result = { ok:false };
+  try {
+    result = await submitInspectionVerified(record);
+  } catch(err){
+    console.error('finalizeSubmit error:', err);
+  }
 
-      Swal.fire({
-        icon: record.grade==='major' ? 'error' : (record.grade==='minor' ? 'warning' : 'success'),
-        title: 'บันทึกผลสำเร็จ',
-        html: `ร้าน <b>${tenant.name}</b><br>ผลการตรวจ: <b style="color:${gradeMeta(record.grade).color}">${gradeMeta(record.grade).label}</b><br>คะแนน: <b>${record.score}</b>/100`,
-        confirmButtonColor:'#3B82F6'
-      });
+  persistHistory(); // บันทึกซ้ำหลังรู้สถานะ synced จริง (ถ้าสำเร็จ จะตัด base64 ออกจากเครื่องให้อัตโนมัติ)
+  safeRefreshUI();
+  closeReportPreview();
 
-      // เคลียร์ฟอร์มเพื่อตรวจร้านถัดไป
-      document.getElementById('storeSelect').value = '';
-      selectStore('');
-      document.getElementById('noteText').value = '';
-      document.getElementById('deadlineInput').value = '';
-      State.pendingRecord = null;
-    })
-    .catch(err=>{
-      showToast('เกิดข้อผิดพลาดในการส่งข้อมูล: ' + (err.message||'ไม่ทราบสาเหตุ'), 'error');
-    })
-    .finally(()=>{
-      if (btn){ btn.disabled = false; btn.innerHTML = '✅ ยืนยันบันทึกผล'; }
+  if (record.grade === 'major'){
+    // แจ้งเตือนอัตโนมัติทันทีเมื่อพบ Major Defect (ไม่ต้องรอ batch)
+    sendMajorDefectAlert(record, tenant);
+  }
+
+  if (result.ok){
+    showToast('บันทึกและยืนยันขึ้น Google Sheets สำเร็จ', 'success');
+    Swal.fire({
+      icon: record.grade==='major' ? 'error' : (record.grade==='minor' ? 'warning' : 'success'),
+      title: '✅ บันทึกขึ้น Google Sheets แล้ว',
+      html: `ร้าน <b>${escapeHtml(tenant.name || record.storeId)}</b><br>ผลการตรวจ: <b style="color:${gradeMeta(record.grade).color}">${gradeMeta(record.grade).label}</b><br>คะแนน: <b>${record.score}</b>/100`,
+      confirmButtonColor:'#3B82F6'
     });
+  } else {
+    // บอกความจริง: ข้อมูลอยู่ในเครื่องแล้ว แต่ยังยืนยันไม่ได้ว่าขึ้น Sheets
+    Swal.fire({
+      icon: 'warning',
+      title: '⚠️ บันทึกในเครื่องแล้ว แต่ยังไม่ขึ้น Google Sheets',
+      html: `ร้าน <b>${escapeHtml(tenant.name || record.storeId)}</b> · คะแนน <b>${record.score}</b>/100<br><br>
+             ข้อมูลถูกเก็บไว้ในเครื่องเรียบร้อยแล้ว <b>ยังไม่สูญหาย</b><br>
+             แต่ระบบยังยืนยันไม่ได้ว่าขึ้น Google Sheets สำเร็จ<br>
+             <span style="color:#EF4444;">กรุณาอย่าล้างข้อมูลเบราว์เซอร์ก่อนส่งซ้ำสำเร็จ</span><br><br>
+             กดปุ่ม "ส่งข้อมูลค้าง" ในหน้ารายงาน/ประวัติ เพื่อลองส่งใหม่เมื่อเชื่อมต่อได้`,
+      confirmButtonColor:'#F59E0B'
+    });
+  }
+
+  // เคลียร์ฟอร์มเพื่อตรวจร้านถัดไป
+  document.getElementById('storeSelect').value = '';
+  selectStore('');
+  document.getElementById('noteText').value = '';
+  document.getElementById('deadlineInput').value = '';
+  State.pendingRecord = null;
+  if (btn){ btn.disabled = false; btn.innerHTML = '✅ ยืนยันบันทึกผล'; }
 }
 
 /* ---------- เชื่อมต่อ Google Apps Script Backend ---------- */
 function postInspectionToBackend(record){
-  // ใช้ no-cors เพราะ Apps Script Web App ไม่ส่ง CORS header กลับมาให้อ่าน response ได้
-  // ฝั่ง Code.gs จะเป็นผู้ตัดสินใจเรื่อง Major Defect alert เองอีกชั้นด้วย (กันกรณี alert ไม่ยิงจาก client)
+  return postToBackend('submitInspection', record);
+}
+
+/* ================================================================
+   ===============  ซิงก์ข้อมูลกับ Google Sheets (สองทาง)  ===========
+   ================================================================ */
+// ส่งคำสั่งไปที่ Apps Script แบบ fire-and-forget (ใช้ร่วมกันทุก action: บันทึก/แก้ไข/ลบ ผลตรวจและร้านค้า)
+// ใช้ no-cors เพราะ Apps Script Web App ไม่ส่ง CORS header กลับมาให้อ่าน response ได้ตอน POST
+// (ต่างจากตอน GET ที่อ่านได้ปกติ — ดู syncFromBackend ด้านล่าง)
+function postToBackend(action, payload){
+  if (!CONFIG.APPS_SCRIPT_URL || CONFIG.APPS_SCRIPT_URL.indexOf('REPLACE_WITH_YOUR_DEPLOYMENT_ID') > -1) return Promise.resolve();
   return fetch(CONFIG.APPS_SCRIPT_URL, {
     method:'POST', mode:'no-cors',
     headers:{ 'Content-Type':'text/plain;charset=utf-8' }, // ใช้ text/plain เพื่อเลี่ยง CORS preflight ตามข้อจำกัดของ Apps Script
-    body: JSON.stringify({ action:'submitInspection', payload: record })
+    body: JSON.stringify({ action, payload })
   }).catch(err=>{
-    // ถ้ายังไม่ได้ตั้งค่า APPS_SCRIPT_URL จริง ระบบจะยัง demo ต่อได้แบบ local-only
-    console.warn('ส่งข้อมูลไป Apps Script ไม่สำเร็จ (อาจยังไม่ได้ deploy):', err);
+    // ถ้ายังไม่ได้ตั้งค่า APPS_SCRIPT_URL จริง หรือเน็ตขัดข้อง ระบบจะยังใช้งานต่อได้แบบ local-only
+    console.warn(`ส่งข้อมูล (${action}) ไป Google Sheets ไม่สำเร็จ (จะยังใช้งานได้จากข้อมูลในเครื่อง):`, err);
   });
 }
+// ใช้ตอนบันทึก/แก้ไข/ลบร้านค้า
+function postTenantToBackend(action, payload){ return postToBackend(action, payload); }
+
+/* ================================================================
+   ===============  ยืนยันผลการบันทึกจริงจาก Google Sheets  =========
+   ปัญหาเดิม: POST ไป Apps Script ต้องใช้ mode:'no-cors' ซึ่งอ่าน response ไม่ได้เลย
+   ระบบจึงขึ้นว่า "บันทึกสำเร็จ" ทุกครั้งที่ fetch ไม่ throw แม้ฝั่ง Sheets จะปฏิเสธข้อมูลก็ตาม
+   สำหรับระบบที่ใช้ออกใบเตือนผู้เช่าซึ่งมีผลผูกพัน การแจ้งผลลวงแบบนี้ยอมรับไม่ได้
+   วิธีแก้: หลัง POST ให้ยิง GET กลับไปถามว่า "มีแถวนี้ในชีตจริงไหม" แล้วค่อยแจ้งผลตามความจริง
+   (GET อ่าน response ได้ปกติ ไม่ติดข้อจำกัด no-cors)
+   ================================================================ */
+const VERIFY_ATTEMPTS = 4;      // จำนวนครั้งที่ลองถามยืนยัน
+const VERIFY_DELAY_MS = 1500;   // เว้นระยะระหว่างครั้ง (เผื่อ Apps Script ประมวลผล/อัปโหลดรูปยังไม่เสร็จ)
+
+function delay(ms){ return new Promise(res=> setTimeout(res, ms)); }
+
+/**
+ * ถาม Google Sheets ว่าผลตรวจ id นี้ถูกบันทึกจริงหรือยัง
+ * คืน { exists, photoCount, hasSignatures } หรือ null ถ้าติดต่อไม่ได้เลย
+ */
+function verifyInspectionSaved(id){
+  if (!CONFIG.APPS_SCRIPT_URL || CONFIG.APPS_SCRIPT_URL.indexOf('REPLACE_WITH_YOUR_DEPLOYMENT_ID') > -1) return Promise.resolve(null);
+  return fetch(`${CONFIG.APPS_SCRIPT_URL}?action=verifyInspection&id=${encodeURIComponent(id)}`)
+    .then(res=> res.json())
+    .then(json=> (json && json.success) ? json : null)
+    .catch(err=>{ console.warn('ยืนยันผลบันทึกกับ Google Sheets ไม่สำเร็จ:', err); return null; });
+}
+
+/** ลองยืนยันซ้ำหลายครั้งจนกว่าจะพบข้อมูลในชีต (หรือครบจำนวนครั้งที่กำหนด) */
+async function verifyInspectionWithRetry(id, expectedPhotoCount){
+  for (let i = 0; i < VERIFY_ATTEMPTS; i++){
+    await delay(VERIFY_DELAY_MS);
+    const info = await verifyInspectionSaved(id);
+    if (info && info.exists){
+      // ถ้ามีรูปแนบ ให้รอจนอัปโหลดขึ้น Drive ครบก่อน ถึงจะถือว่าปลอดภัยพอที่จะทิ้ง base64 ในเครื่อง
+      const photosOk = !expectedPhotoCount || info.photoCount >= expectedPhotoCount;
+      if (photosOk) return info;
+      if (i === VERIFY_ATTEMPTS - 1) return info; // ครบรอบแล้ว คืนค่าที่ได้จริง (รูปอาจยังไม่ครบ)
+    }
+  }
+  return null;
+}
+
+/**
+ * บันทึกผลตรวจแบบยืนยันผลจริง: POST -> ถามยืนยัน -> ตั้งสถานะ synced ตามความจริง
+ * ถ้ายืนยันไม่ได้ จะเก็บรายการไว้ในคิวเพื่อส่งซ้ำ และแจ้งผู้ใช้ตรงๆ ว่ายังไม่ขึ้น Sheets
+ */
+async function submitInspectionVerified(record){
+  await postToBackend('submitInspection', record);
+  const expectedPhotos = (record.photos || []).filter(p=> typeof p==='string' && p.indexOf('data:')===0).length;
+  const info = await verifyInspectionWithRetry(record.id, expectedPhotos);
+  if (info && info.exists){
+    record.synced = true;
+    record.syncedAt = new Date().toISOString();
+    // ถ้ารูปขึ้น Drive ครบแล้ว ค่อยอนุญาตให้ทิ้ง base64 ตอน persist (ดู stripHeavyFieldsIfSynced)
+    record.photosUploaded = !expectedPhotos || info.photoCount >= expectedPhotos;
+    return { ok: true, info };
+  }
+  record.synced = false;
+  return { ok: false, info: null };
+}
+
+/** รายการที่ยังซิงก์ไม่สำเร็จ — ใช้แสดงป้ายเตือนและปุ่มส่งซ้ำ */
+function getUnsyncedRecords(){
+  return INSPECTION_HISTORY.filter(r=> r.synced === false);
+}
+
+/** ส่งซ้ำรายการที่ยังไม่ขึ้น Sheets ทั้งหมด (เรียกเองจากปุ่ม หรืออัตโนมัติตอนซิงก์) */
+async function retryUnsyncedRecords(silent){
+  const pending = getUnsyncedRecords();
+  if (!pending.length){
+    if (!silent) showToast('ไม่มีรายการที่ค้างส่ง — ข้อมูลขึ้น Google Sheets ครบแล้ว', 'success');
+    return;
+  }
+  if (!silent) showToast(`กำลังส่งซ้ำ ${pending.length} รายการที่ค้างอยู่...`, 'info');
+  let ok = 0;
+  for (const rec of pending){
+    const res = await submitInspectionVerified(rec);
+    if (res.ok) ok++;
+  }
+  persistHistory();
+  safeRefreshUI();
+  if (ok === pending.length) showToast(`✅ ส่งข้อมูลค้างขึ้น Google Sheets สำเร็จครบ ${ok} รายการ`, 'success');
+  else showToast(`ส่งสำเร็จ ${ok}/${pending.length} รายการ — ที่เหลือยังส่งไม่ได้ กรุณาตรวจสอบการเชื่อมต่อ`, 'error');
+}
+
+/**
+ * ดึงข้อมูลจริงจาก Google Sheets มา "ผสาน" (merge) กับข้อมูลในเครื่อง — ไม่ใช่ล้างทับทั้งหมด
+ * เพราะถ้าล้างทับตรงๆ แล้วผู้ใช้เพิ่งบันทึกอะไรไปที่ยังไปไม่ถึง Sheets (เช่น เพิ่งกดบันทึกตอนเน็ตหลุด
+ * หรือจังหวะ sync ตัดหน้า) ข้อมูลนั้นจะหายไปจากหน้าจอทันที — การ merge โดยยึด id/storeId เป็นหลัก
+ * ปลอดภัยกว่า: รายการที่มีทั้งสองฝั่งจะได้ค่าล่าสุดจาก Sheets, รายการที่มีแต่ในเครื่อง (ยังไม่ทันซิงก์) จะยังคงอยู่
+ * @param {boolean} manual - true เมื่อผู้ใช้กดปุ่ม "ซิงก์ใหม่" เอง (จะแจ้งผลเสมอ ไม่ว่าสำเร็จหรือไม่)
+ */
+function syncFromBackend(manual){
+  if (!CONFIG.APPS_SCRIPT_URL || CONFIG.APPS_SCRIPT_URL.indexOf('REPLACE_WITH_YOUR_DEPLOYMENT_ID') > -1){
+    if (manual) showToast('ยังไม่ได้ตั้งค่า Apps Script URL — ดูวิธีตั้งค่าใน DEPLOY_GUIDE.md', 'error');
+    return;
+  }
+
+  const fetchJson = (action)=> fetch(`${CONFIG.APPS_SCRIPT_URL}?action=${action}`)
+    .then(res=> res.json())
+    .catch(err=>{ console.warn(`ดึงข้อมูล (${action}) จาก Google Sheets ไม่สำเร็จ:`, err); return null; });
+
+  Promise.all([fetchJson('getTenants'), fetchJson('getInspections')]).then(([tenantsRes, inspectionsRes])=>{
+    let tenantsOk = false, inspectionsOk = false;
+
+    if (tenantsRes && tenantsRes.success && Array.isArray(tenantsRes.data)){
+      TENANTS = mergeById(TENANTS, tenantsRes.data, t=>normalizeStoreId(t.storeId));
+      persistTenants();
+      tenantsOk = true;
+    }
+    if (inspectionsRes && inspectionsRes.success && Array.isArray(inspectionsRes.data)){
+      // รายการที่ดึงกลับมาจาก Sheets ถือว่ายืนยันแล้ว (synced=true) — mergeById จะให้ฝั่ง remote ทับ local
+      // ส่วนรายการที่มีแต่ในเครื่องและยัง synced=false จะยังคงอยู่ ไม่ถูกลบทิ้ง
+      const remote = inspectionsRes.data.map(r=> Object.assign({}, r, { synced: true, photosUploaded: true }));
+      INSPECTION_HISTORY = mergeById(INSPECTION_HISTORY, remote, h=>h.id);
+      persistHistory();
+      inspectionsOk = true;
+    }
+
+    if (tenantsOk || inspectionsOk){
+      try { populateStoreSelect(); } catch(err){ console.error('populateStoreSelect error:', err); }
+      safeRefreshUI();
+      showToast(`✅ เชื่อมต่อ Google Sheets สำเร็จ (ร้านค้า ${TENANTS.length} ร้าน · ประวัติตรวจ ${INSPECTION_HISTORY.length} รายการ)`, 'success');
+      // เชื่อมต่อได้แล้ว — ลองส่งรายการที่ค้างอยู่ขึ้นไปอัตโนมัติเลย (เงียบๆ ไม่รบกวนผู้ใช้)
+      if (getUnsyncedRecords().length) retryUnsyncedRecords(true);
+    } else {
+      console.warn('เชื่อมต่อ Google Sheets ไม่สำเร็จ หรือยังไม่มีข้อมูลในชีต — ใช้ข้อมูลในเครื่อง (localStorage) ต่อไปก่อน');
+      if (manual) showToast('⚠️ เชื่อมต่อ Google Sheets ไม่สำเร็จ — ตรวจสอบว่า Deploy โค้ด Code.gs เวอร์ชันล่าสุดแล้วหรือยัง (ดู DEPLOY_GUIDE.md)', 'error');
+    }
+  });
+}
+
+// ผสานรายการจาก backend (remote) เข้ากับของในเครื่อง (local) โดยยึด key เดียวกันเป็นหลัก
+// remote ที่มี key ตรงกับ local จะทับค่าเดิม (ถือว่า Sheets เป็นข้อมูลล่าสุด), local ที่ไม่มีใน remote จะยังคงอยู่ (ยังไม่ทันซิงก์ขึ้นไป)
+function mergeById(localArr, remoteArr, keyFn){
+  const map = new Map();
+  (localArr||[]).forEach(item=> map.set(keyFn(item), item));
+  (remoteArr||[]).forEach(item=> map.set(keyFn(item), item));
+  return Array.from(map.values());
+}
+
 function sendMajorDefectAlert(record, tenant){
   // การส่ง Email/LINE Notify จริงเกิดขึ้นฝั่ง Code.gs (ดู DEPLOY_GUIDE) — ฝั่ง client แค่ยิง flag แจ้งเตือนซ้ำเพื่อความไว
   fetch(CONFIG.APPS_SCRIPT_URL, {
@@ -1605,47 +2313,199 @@ function sendMajorDefectAlert(record, tenant){
    ===============  หน้ารายงาน/ประวัติ  ============================
    ================================================================ */
 
-// เรียกใช้ DataTables อย่างปลอดภัย — บางเครือข่าย/ส่วนขยายเบราว์เซอร์บล็อก cdn.datatables.net
-// ทำให้ปลั๊กอินโหลดไม่สำเร็จ (jQuery ทำงานได้ปกติแต่ $.fn.DataTable ไม่มีอยู่จริง)
-// ถ้าเจอกรณีนี้จะไม่ทำให้ทั้งแอปพัง แค่ตารางจะแสดงข้อมูลแบบปกติโดยไม่มีช่องค้นหา/แบ่งหน้าเท่านั้น
-let _dataTableUnavailableWarned = false;
-function initDataTable(selector, options){
-  if (typeof $ === 'undefined' || !$.fn || typeof $.fn.DataTable !== 'function'){
-    if (!_dataTableUnavailableWarned){
-      console.warn('ปลั๊กอิน DataTables โหลดไม่สำเร็จ (อาจถูกบล็อกโดยเครือข่าย/ส่วนขยายเบราว์เซอร์) — ตารางจะยังแสดงข้อมูลได้ปกติ เพียงแต่ไม่มีช่องค้นหา/แบ่งหน้า');
-      _dataTableUnavailableWarned = true;
+function renderHistoryTable(){
+  try {
+    const listEl = document.getElementById('historyList');
+    const countEl = document.getElementById('historyListCount');
+    const searchInput = document.getElementById('historySearchInput');
+    const statusFilter = document.getElementById('historyStatusFilter');
+    const sortOrder = document.getElementById('historySortOrder');
+    if (!listEl) return;
+
+    const q = (searchInput ? searchInput.value : '').trim().toLowerCase();
+    const statusQ = statusFilter ? statusFilter.value : '';
+    const sortDir = sortOrder ? sortOrder.value : 'desc';
+
+    let rows = INSPECTION_HISTORY.map(h=>{
+      const tenant = TENANTS.find(t=>normalizeStoreId(t.storeId)===normalizeStoreId(h.storeId)) || {};
+      return { h, tenant };
+    });
+
+    if (statusQ) rows = rows.filter(r=> r.h.grade === statusQ);
+    if (q){
+      rows = rows.filter(r=>
+        (r.tenant.name||'').toLowerCase().includes(q) ||
+        (r.h.storeId||'').toLowerCase().includes(q) ||
+        (r.h.inspector||'').toLowerCase().includes(q)
+      );
     }
-    return null;
+    rows.sort((a,b)=>{
+      const da = parseBEDateStr(a.h.date), db = parseBEDateStr(b.h.date);
+      const diff = (da instanceof Date && !isNaN(da)) && (db instanceof Date && !isNaN(db)) ? da - db : 0;
+      return sortDir === 'asc' ? diff : -diff;
+    });
+
+    if (countEl) countEl.textContent = `พบ ${numFmt(rows.length)} รายการ จากทั้งหมด ${numFmt(INSPECTION_HISTORY.length)} รายการ`;
+
+    // อัปเดตแถบเตือนรายการที่ยังยืนยันไม่ได้ว่าขึ้น Google Sheets
+    const unsynced = getUnsyncedRecords();
+    const banner = document.getElementById('unsyncedBanner');
+    if (banner){
+      banner.classList.toggle('js-hidden', unsynced.length === 0);
+      const txt = document.getElementById('unsyncedBannerText');
+      if (txt) txt.textContent = ` — ${numFmt(unsynced.length)} รายการเก็บไว้ในเครื่องนี้เท่านั้น กรุณาส่งซ้ำก่อนล้างข้อมูลเบราว์เซอร์`;
+    }
+
+    if (!rows.length){
+      listEl.innerHTML = `<tr><td colspan="8" class="text-center py-10 text-muted text-sm">ไม่พบข้อมูลที่ตรงกับเงื่อนไข</td></tr>`;
+      return;
+    }
+
+    const typeLabels = { weekly:'ประจำสัปดาห์/เดือน', preopening:'ก่อนเปิดร้าน', incident:'ฉุกเฉิน' };
+    listEl.innerHTML = rows.map(({h, tenant})=>{
+      const g = gradeMeta(h.grade);
+      const typeLabel = typeLabels[h.type] || h.type || '-';
+      return `<tr class="border-t border-soft">
+        <td class="p-3 whitespace-nowrap">${toBuddhistDateStr(parseBEDateStr(h.date))}</td>
+        <td class="p-3 font-semibold">${escapeHtml(tenant.name || h.storeId)}${h.synced === false ? ' <span class="chip" style="background:rgba(245,158,11,.15);color:#C2410C;" title="บันทึกในเครื่องแล้ว แต่ยังยืนยันไม่ได้ว่าขึ้น Google Sheets">⚠️ ค้างส่ง</span>' : ''}</td>
+        <td class="p-3 whitespace-nowrap">${escapeHtml(tenant.zone||'-')}</td>
+        <td class="p-3 whitespace-nowrap">${escapeHtml(typeLabel)}</td>
+        <td class="p-3 whitespace-nowrap"><span class="chip" style="background:${g.bg};color:${g.color};">${g.label}</span></td>
+        <td class="p-3 whitespace-nowrap font-bold">${h.score}</td>
+        <td class="p-3">${escapeHtml(h.inspector||'-')}</td>
+        <td class="p-3 whitespace-nowrap text-center">
+          <button class="btn btn-soft !min-h-[32px] !py-1 !px-2 text-xs" title="ดูตัวอย่างใบรายงาน" onclick="previewHistoryReport('${escAttr(h.id)}')">👁️ ดู</button>
+          <button class="btn btn-soft !min-h-[32px] !py-1 !px-2 text-xs" title="แก้ไขผลตรวจนี้" onclick="openEditInspection('${escAttr(h.id)}')">✏️ แก้ไข</button>
+          <button class="btn btn-soft !min-h-[32px] !py-1 !px-2 text-xs" title="พิมพ์ / บันทึกเป็น PDF" onclick="exportSingleReportPDF('${escAttr(h.id)}')">🖨️ PDF</button>
+          <button class="btn btn-soft !min-h-[32px] !py-1 !px-2 text-xs" style="color:#EF4444;" title="ลบผลตรวจนี้" onclick="deleteInspection('${escAttr(h.id)}')">🗑️ ลบ</button>
+        </td>
+      </tr>`;
+    }).join('');
+  } catch(err){
+    console.error('renderHistoryTable error:', err);
+    const listEl = document.getElementById('historyList');
+    if (listEl) listEl.innerHTML = `<tr><td colspan="8" class="text-center py-10 text-sm" style="color:#EF4444;">เกิดข้อผิดพลาดในการแสดงรายการ กรุณาลองรีเฟรชหน้าเว็บ</td></tr>`;
   }
-  try { return $(selector).DataTable(options); }
-  catch(err){ console.warn('เริ่มต้น DataTable สำหรับ ' + selector + ' ไม่สำเร็จ:', err); return null; }
 }
 
-let historyDT = null;
-function renderHistoryTable(){
-  const body = document.getElementById('historyBody');
-  body.innerHTML = INSPECTION_HISTORY.map(h=>{
-    const tenant = TENANTS.find(t=>t.storeId===h.storeId) || {};
-    const g = gradeMeta(h.grade);
-    const typeLabel = { weekly:'ประจำสัปดาห์/เดือน', preopening:'ก่อนเปิดร้าน', incident:'ฉุกเฉิน' }[h.type] || h.type;
-    return `<tr>
-      <td>${toBuddhistDateStr(parseBEDateStr(h.date))}</td>
-      <td class="font-semibold">${tenant.name||h.storeId}</td>
-      <td>${tenant.zone||'-'}</td>
-      <td>${typeLabel}</td>
-      <td><span class="chip" style="background:${g.bg};color:${g.color};">${g.label}</span></td>
-      <td>${h.inspector}</td>
-      <td class="whitespace-nowrap">
-        <button class="btn btn-soft !min-h-[32px] !py-1 !px-3 text-xs" title="ดูตัวอย่างใบรายงาน" onclick="previewHistoryReport('${h.id}')">👁️ ดู</button>
-        <button class="btn btn-soft !min-h-[32px] !py-1 !px-3 text-xs" title="พิมพ์ / บันทึกเป็น PDF" onclick="exportSingleReportPDF('${h.id}')">🖨️ PDF</button>
-      </td>
-    </tr>`;
-  }).join('');
+/** ลบผลตรวจ 1 รายการ (มีถามยืนยันก่อนเสมอ) ทั้งจากเครื่องและ Google Sheets */
+/* ================================================================
+   ===============  แก้ไขผลการตรวจที่บันทึกไปแล้ว  ==================
+   ================================================================ */
+// สร้าง HTML checklist แบบใช้ซ้ำได้ (ใช้ prefix แยก id ไม่ให้ชนกับฟอร์มตรวจหลักที่อาจเปิดค้างอยู่พร้อมกัน)
+function buildChecklistHtml(checks, prefix){
+  checks = checks || {};
+  return CHECKLIST_CATEGORIES.map(cat=>`
+    <div class="surface-2 rounded-2xl p-3">
+      <h4 class="font-bold mb-2 flex items-center gap-2 text-sm"><span>${cat.icon}</span> ${cat.name}</h4>
+      <div class="space-y-2">
+        ${cat.items.map(item=>{
+          const v = checks[item.id];
+          const stateCls = v==='pass'?'state-pass':v==='fail'?'state-fail':v==='na'?'state-na':'';
+          return `<div class="check-item flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 ${stateCls}" id="${prefix}-row-${item.id}">
+            <div class="text-xs flex-1">${item.text}</div>
+            <div class="flex gap-2 shrink-0 flex-wrap">
+              <button type="button" class="seg-btn ${v==='pass'?'pass-on':''}" id="${prefix}-${item.id}-pass" onclick="setEditCheck('${item.id}','pass')">⬜ ผ่าน</button>
+              <button type="button" class="seg-btn ${v==='fail'?'fail-on':''}" id="${prefix}-${item.id}-fail" onclick="setEditCheck('${item.id}','fail')">⬜ แก้ไข</button>
+              <button type="button" class="seg-btn ${v==='na'?'na-on':''}" id="${prefix}-${item.id}-na" onclick="setEditCheck('${item.id}','na')">⬜ ไม่เกี่ยวข้อง</button>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`).join('');
+}
+function setEditCheck(itemId, value){
+  State.editChecks[itemId] = value;
+  const row = document.getElementById('edit-row-'+itemId);
+  if (row){
+    row.classList.remove('state-pass','state-fail','state-na');
+    row.classList.add(value==='pass'?'state-pass':value==='fail'?'state-fail':'state-na');
+  }
+  const passBtn = document.getElementById(`edit-${itemId}-pass`);
+  const failBtn = document.getElementById(`edit-${itemId}-fail`);
+  const naBtn = document.getElementById(`edit-${itemId}-na`);
+  if (passBtn) passBtn.classList.toggle('pass-on', value==='pass');
+  if (failBtn) failBtn.classList.toggle('fail-on', value==='fail');
+  if (naBtn) naBtn.classList.toggle('na-on', value==='na');
+}
 
-  if (historyDT) { try{ historyDT.destroy(); }catch(e){} }
-  historyDT = initDataTable('#historyTable', {
-    order:[[0,'desc']],
-    language:{ search:'ค้นหา:', lengthMenu:'แสดง _MENU_ รายการ', info:'แสดง _START_ ถึง _END_ จาก _TOTAL_ รายการ', paginate:{previous:'ก่อนหน้า',next:'ถัดไป'}, zeroRecords:'ไม่พบข้อมูล', infoEmpty:'ไม่มีข้อมูล' }
+function openEditInspection(recordId){
+  const h = INSPECTION_HISTORY.find(r=>r.id===recordId);
+  if (!h){ showToast('ไม่พบรายการนี้ (อาจถูกลบไปแล้ว)', 'error'); return; }
+  const tenant = TENANTS.find(t=>normalizeStoreId(t.storeId)===normalizeStoreId(h.storeId)) || {};
+
+  State.editingRecordId = recordId;
+  State.editChecks = Object.assign({}, h.checks || {});
+
+  document.getElementById('editInspectionTitle').textContent = `✏️ แก้ไขผลการตรวจ — ${tenant.name || h.storeId}`;
+  document.getElementById('editInspectionType').value = h.type || 'weekly';
+  document.getElementById('editInspectionContact').value = h.contact || tenant.contact || '';
+  document.getElementById('editInspectionPhone').value = h.phone || tenant.phone || '';
+  document.getElementById('editInspectionNotes').value = h.notes || '';
+  document.getElementById('editInspectionDeadline').value = h.deadline || '';
+  document.getElementById('editChecklistWrap').innerHTML = buildChecklistHtml(State.editChecks, 'edit');
+  document.getElementById('editInspectionModal').classList.remove('js-hidden');
+}
+function closeEditInspectionModal(){
+  document.getElementById('editInspectionModal').classList.add('js-hidden');
+  State.editingRecordId = null;
+  State.editChecks = {};
+}
+function saveEditedInspection(){
+  const recordId = State.editingRecordId;
+  const h = INSPECTION_HISTORY.find(r=>r.id===recordId);
+  if (!h){ showToast('ไม่พบรายการนี้ (อาจถูกลบไปแล้ว)', 'error'); closeEditInspectionModal(); return; }
+
+  const { grade, score, answered, total } = computeGrade(State.editChecks);
+  if (answered < total){
+    Swal.fire({ icon:'warning', title:'กรอกข้อมูลไม่ครบถ้วน', text:`กรุณาประเมินให้ครบทุกข้อ (ตอบแล้ว ${answered}/${total} ข้อ)`, confirmButtonColor:'#3B82F6' });
+    return;
+  }
+
+  h.type = document.getElementById('editInspectionType').value;
+  h.checks = Object.assign({}, State.editChecks);
+  h.grade = grade;
+  h.score = score;
+  h.contact = document.getElementById('editInspectionContact').value.trim();
+  h.phone = document.getElementById('editInspectionPhone').value.trim();
+  h.notes = document.getElementById('editInspectionNotes').value.trim();
+  h.deadline = document.getElementById('editInspectionDeadline').value;
+
+  h.synced = false; // รอยืนยันผลกับ Sheets ก่อน
+  persistHistory();
+  safeRefreshUI();
+  closeEditInspectionModal();
+  showToast('บันทึกการแก้ไขในเครื่องแล้ว กำลังยืนยันกับ Google Sheets...', 'info');
+
+  // id เดิม -> ฝั่ง Code.gs จะอัปเดตทับแถวเดิมใน Sheets ให้เอง (upsert) แล้วเรายืนยันผลจริงอีกชั้น
+  submitInspectionVerified(h).then(res=>{
+    persistHistory();
+    safeRefreshUI();
+    if (res.ok) showToast('✅ แก้ไขผลการตรวจและยืนยันขึ้น Google Sheets สำเร็จ', 'success');
+    else showToast('⚠️ แก้ไขแล้วแต่ยังไม่ขึ้น Google Sheets — กด "ส่งข้อมูลค้าง" เพื่อลองใหม่', 'error');
+  });
+
+  if (grade === 'major'){
+    const tenant = TENANTS.find(t=>normalizeStoreId(t.storeId)===normalizeStoreId(h.storeId)) || {};
+    sendMajorDefectAlert(h, tenant);
+  }
+}
+
+function deleteInspection(recordId){
+  const h = INSPECTION_HISTORY.find(r=>r.id===recordId);
+  if (!h) return;
+  const tenant = TENANTS.find(t=>normalizeStoreId(t.storeId)===normalizeStoreId(h.storeId)) || {};
+  Swal.fire({
+    icon:'warning', title:'ยืนยันลบผลการตรวจนี้?',
+    html:`ร้าน <b>${escapeHtml(tenant.name || h.storeId)}</b><br>วันที่ตรวจ ${toBuddhistDateStr(parseBEDateStr(h.date))}<br><span style="color:#EF4444;">การลบนี้ไม่สามารถย้อนกลับได้</span>`,
+    showCancelButton:true, confirmButtonText:'ลบเลย', cancelButtonText:'ยกเลิก', confirmButtonColor:'#EF4444'
+  }).then(res=>{
+    if (!res.isConfirmed) return;
+    INSPECTION_HISTORY = INSPECTION_HISTORY.filter(r=>r.id!==recordId);
+    persistHistory();
+    postToBackend('deleteInspection', { id: recordId });
+    safeRefreshUI();
+    showToast('ลบผลการตรวจเรียบร้อย', 'success');
   });
 }
 
@@ -1702,13 +2562,15 @@ function openReportPreview({ record, tenant, mode, title, actionsHtml }){
 function closeReportPreview(){
   document.getElementById('reportPreviewModal').classList.add('js-hidden');
 }
-// ย่อ/ขยายตัวอย่างใบรายงาน (กว้างจริง 1123px) ให้พอดีกับความกว้างของโมดัลเสมอ ไม่ว่าจะเปิดจากจอไหน
+// ย่อ/ขยายตัวอย่างใบรายงานให้พอดีกับความกว้างของโมดัลเสมอ — วัดขนาดจริงของหน้า (.report-page) แทนการฝังตัวเลขตายตัว
 function fitReportPreviewScale(){
   const scrollArea = document.getElementById('reportPreviewScrollArea');
   const wrap = document.getElementById('reportPreviewScaleWrap');
   const content = document.getElementById('reportPreviewContent');
-  if (!scrollArea || !content.firstElementChild) return;
-  const naturalWidth = 1123, naturalHeight = 794;
+  const page = content.firstElementChild;
+  if (!scrollArea || !page) return;
+  content.style.transform = 'none'; // รีเซ็ตก่อนวัดขนาดจริง ไม่งั้น scale เก่าจะรบกวนการวัด
+  const naturalWidth = page.offsetWidth, naturalHeight = page.offsetHeight;
   const availW = scrollArea.clientWidth - 4;
   const scale = Math.min(1, availW / naturalWidth);
   content.style.transform = `scale(${scale})`;
@@ -1723,23 +2585,50 @@ window.addEventListener('resize', ()=>{
 /* ================================================================
    ===============  หน้าจัดการร้านค้า (ADMIN)  ======================
    ================================================================ */
-let tenantsDT = null;
 function renderTenantsTable(){
-  const body = document.getElementById('tenantsBody');
-  body.innerHTML = TENANTS.map(t=>`
-    <tr>
-      <td class="font-semibold">${t.storeId}</td><td>${t.name}</td><td>${t.type}</td>
-      <td>${t.zone} / ${t.floor}</td><td>${t.contact}</td><td>${t.phone}</td>
-      <td><span class="chip" style="background:${t.status==='Active'?'rgba(16,185,129,.12)':'rgba(107,98,128,.15)'}; color:${t.status==='Active'?'#10B981':'#6b6280'};">${t.status}</span></td>
-      <td class="whitespace-nowrap">
-        <button class="btn btn-soft !min-h-[30px] !py-1 !px-3 text-xs" onclick="openTenantModal('${t.storeId}')">แก้ไข</button>
-        <button class="btn btn-soft !min-h-[30px] !py-1 !px-3 text-xs" onclick="deleteTenant('${t.storeId}')">ลบ</button>
-      </td>
-    </tr>`).join('');
-  if (tenantsDT) { try{ tenantsDT.destroy(); }catch(e){} }
-  tenantsDT = initDataTable('#tenantsTable', {
-    language:{ search:'ค้นหา:', lengthMenu:'แสดง _MENU_ รายการ', info:'แสดง _START_ ถึง _END_ จาก _TOTAL_ รายการ', paginate:{previous:'ก่อนหน้า',next:'ถัดไป'}, zeroRecords:'ไม่พบข้อมูล', infoEmpty:'ไม่มีข้อมูล' }
-  });
+  try {
+    const listEl = document.getElementById('tenantsList');
+    const countEl = document.getElementById('tenantListCount');
+    const searchInput = document.getElementById('tenantSearchInput');
+    if (!listEl) return;
+
+    const q = (searchInput ? searchInput.value : '').trim().toLowerCase();
+    let rows = TENANTS.slice();
+    if (q){
+      rows = rows.filter(t=>
+        (t.name||'').toLowerCase().includes(q) ||
+        (t.storeId||'').toLowerCase().includes(q) ||
+        (t.zone||'').toLowerCase().includes(q)
+      );
+    }
+    if (countEl) countEl.textContent = `พบ ${numFmt(rows.length)} ร้าน จากทั้งหมด ${numFmt(TENANTS.length)} ร้าน`;
+
+    if (!rows.length){
+      listEl.innerHTML = `<tr><td colspan="8" class="text-center py-10 text-muted text-sm">${TENANTS.length ? 'ไม่พบร้านค้าที่ตรงกับคำค้นหา' : 'ยังไม่มีร้านค้าในระบบ กด "เพิ่มร้านค้าใหม่" หรือ "นำเข้าไฟล์ร้านค้า" เพื่อเริ่มต้น'}</td></tr>`;
+      return;
+    }
+
+    listEl.innerHTML = rows.map(t=>{
+      const isActive = t.status === 'Active';
+      return `<tr class="border-t border-soft">
+        <td class="p-3 font-semibold whitespace-nowrap">${escapeHtml(t.storeId)}</td>
+        <td class="p-3 font-semibold">${escapeHtml(t.name)}</td>
+        <td class="p-3">${escapeHtml(t.type||'-')}</td>
+        <td class="p-3 whitespace-nowrap">${escapeHtml(t.zone||'-')} ${escapeHtml(t.floor||'')}</td>
+        <td class="p-3">${escapeHtml(t.contact||'-')}</td>
+        <td class="p-3 whitespace-nowrap">${escapeHtml(t.phone||'-')}</td>
+        <td class="p-3"><span class="chip" style="background:${isActive?'rgba(16,185,129,.12)':'rgba(107,98,128,.15)'}; color:${isActive?'#10B981':'#6b6280'};">${escapeHtml(t.status)}</span></td>
+        <td class="p-3 whitespace-nowrap">
+          <button class="btn btn-soft !min-h-[32px] !py-1 !px-3 text-xs" onclick="openTenantModal('${escAttr(t.storeId)}')">แก้ไข</button>
+          <button class="btn btn-soft !min-h-[32px] !py-1 !px-3 text-xs" style="color:#EF4444;" onclick="deleteTenant('${escAttr(t.storeId)}')">ลบ</button>
+        </td>
+      </tr>`;
+    }).join('');
+  } catch(err){
+    console.error('renderTenantsTable error:', err);
+    const listEl = document.getElementById('tenantsList');
+    if (listEl) listEl.innerHTML = `<tr><td colspan="8" class="text-center py-10 text-sm" style="color:#EF4444;">เกิดข้อผิดพลาดในการแสดงรายการ กรุณาลองรีเฟรชหน้าเว็บ</td></tr>`;
+  }
 }
 
 function openTenantModal(storeId){
@@ -1778,11 +2667,13 @@ function saveTenant(){
     const idx = TENANTS.findIndex(t=>t.storeId===State.editingTenantId);
     if (idx>-1) TENANTS[idx] = data;
   } else {
-    if (TENANTS.some(t=>t.storeId===storeId)){ showToast('รหัสร้านนี้มีอยู่ในระบบแล้ว','error'); return; }
+    if (TENANTS.some(t=>normalizeStoreId(t.storeId)===normalizeStoreId(storeId))){ showToast('รหัสร้านนี้มีอยู่ในระบบแล้ว','error'); return; }
     TENANTS.push(data);
   }
-  renderTenantsTable();
-  populateStoreSelect();
+  persistTenants(); // บันทึกลงเครื่องทันที กันข้อมูลหายเมื่อรีเฟรช/ปิดแท็บ
+  postTenantToBackend('saveTenant', data); // ซิงก์ไป Google Sheets ด้วย (fire-and-forget)
+  safeRefreshUI();
+  try { populateStoreSelect(); } catch(err){ console.error('populateStoreSelect error:', err); }
   closeTenantModal();
   showToast('บันทึกข้อมูลร้านค้าสำเร็จ', 'success');
 }
@@ -1792,8 +2683,10 @@ function deleteTenant(storeId){
     .then(res=>{
       if (res.isConfirmed){
         TENANTS = TENANTS.filter(t=>t.storeId!==storeId);
-        renderTenantsTable();
-        populateStoreSelect();
+        persistTenants(); // บันทึกลงเครื่องทันที กันข้อมูลหายเมื่อรีเฟรช/ปิดแท็บ
+        postTenantToBackend('deleteTenant', { storeId }); // ซิงก์ไป Google Sheets ด้วย
+        safeRefreshUI();
+        try { populateStoreSelect(); } catch(err){ console.error('populateStoreSelect error:', err); }
         showToast('ลบข้อมูลร้านค้าเรียบร้อย', 'success');
       }
     });
@@ -1846,17 +2739,25 @@ function handleTenantImportFile(evt){
   const file = evt.target.files[0];
   if (!file) return;
   const reader = new FileReader();
+  reader.onerror = () => showToast('อ่านไฟล์ไม่สำเร็จ (ไฟล์อาจเสียหายหรือถูกล็อก)', 'error');
   reader.onload = (e)=>{
     try {
       const data = new Uint8Array(e.target.result);
       const wb = XLSX.read(data, { type:'array' });
+      if (!wb.SheetNames || !wb.SheetNames.length){
+        showToast('ไม่พบชีตข้อมูลในไฟล์นี้', 'error'); return;
+      }
       const firstSheet = wb.Sheets[wb.SheetNames[0]];
       const rawRows = XLSX.utils.sheet_to_json(firstSheet, { defval:'' });
-      const mapped = rawRows.map(mapImportedRow).filter(r=>r.storeId && r.name);
+      if (rawRows.length > 5000){
+        showToast(`ไฟล์มีข้อมูลมากถึง ${numFmt(rawRows.length)} แถว จะประมวลผลเฉพาะ 5,000 แถวแรกเพื่อความเสถียร`, 'error');
+      }
+      const mapped = rawRows.slice(0, 5000).map(mapImportedRow).filter(r=>r.storeId && r.name);
       State.importRows = mapped;
       renderImportPreview(mapped, rawRows.length);
     } catch(err){
-      showToast('ไม่สามารถอ่านไฟล์นี้ได้: ' + err.message, 'error');
+      console.error('handleTenantImportFile error:', err);
+      showToast('ไม่สามารถอ่านไฟล์นี้ได้: ' + (err.message || 'รูปแบบไฟล์ไม่ถูกต้อง'), 'error');
     }
   };
   reader.readAsArrayBuffer(file);
@@ -1893,17 +2794,20 @@ function renderImportPreview(mapped, totalRaw){
 function confirmTenantImport(){
   if (!State.importRows || !State.importRows.length) return;
   let added = 0, updated = 0;
+  const importedRecords = [];
   State.importRows.forEach(r=>{
-    const idx = TENANTS.findIndex(t=>t.storeId===r.storeId);
+    const idx = TENANTS.findIndex(t=>normalizeStoreId(t.storeId)===normalizeStoreId(r.storeId));
     const record = {
       storeId: r.storeId, name: r.name, type: r.type || '-', zone: r.zone || 'โซนอาหาร',
       floor: r.floor || '-', contact: r.contact || '-', phone: r.phone || '-', status: r.status || 'Active',
     };
     if (idx > -1){ TENANTS[idx] = record; updated++; } else { TENANTS.push(record); added++; }
+    importedRecords.push(record);
   });
-  renderTenantsTable();
-  populateStoreSelect();
-  renderDashboard();
+  persistTenants(); // บันทึกลงเครื่องทันที กันข้อมูลหายเมื่อรีเฟรช/ปิดแท็บ
+  postTenantToBackend('importTenants', importedRecords); // ซิงก์ไป Google Sheets ทั้งชุดด้วย
+  safeRefreshUI();
+  try { populateStoreSelect(); } catch(err){ console.error('populateStoreSelect error:', err); }
   closeTenantImportModal();
   Swal.fire({ icon:'success', title:'นำเข้าข้อมูลร้านค้าสำเร็จ', html:`เพิ่มร้านใหม่ <b>${added}</b> ร้าน · อัปเดตข้อมูลเดิม <b>${updated}</b> ร้าน`, confirmButtonColor:'#3B82F6' });
 }
@@ -1996,14 +2900,15 @@ function renderInspectionReportContent(record, tenant){
   let passCount = 0, totalCount = 0;
   const catCards = CHECKLIST_CATEGORIES.map(cat=>{
     const rows = cat.items.map(item=>{
-      totalCount++;
       const v = record.checks ? record.checks[item.id] : null;
+      const isNa = v === 'na';
       const ok = v === 'pass';
+      if (!isNa) totalCount++;   // ข้อที่ระบุว่าไม่เกี่ยวข้องกับร้านนี้ ไม่นับรวมในผลรวมข้อตรวจ
       if (ok) passCount++;
-      const bg = v==null ? '#F3F4F6' : (ok ? '#ECFDF5' : '#FEF2F2');
-      const color = v==null ? '#9CA3AF' : (ok ? '#10B981' : '#EF4444');
-      const label = v==null ? 'ยังไม่ประเมิน' : (ok ? '✓ ผ่าน' : '✕ แก้ไข');
-      return `<div class="report-check-row" style="background:${bg};">
+      const bg = isNa ? '#F3F4F6' : (v==null ? '#F3F4F6' : (ok ? '#ECFDF5' : '#FEF2F2'));
+      const color = isNa ? '#9CA3AF' : (v==null ? '#9CA3AF' : (ok ? '#10B981' : '#EF4444'));
+      const label = isNa ? '— ไม่เกี่ยวข้อง' : (v==null ? 'ยังไม่ประเมิน' : (ok ? '✓ ผ่าน' : '✕ แก้ไข'));
+      return `<div class="report-check-row" style="background:${bg};${isNa?'opacity:.7;':''}">
         <span>${item.text}</span><span style="font-weight:700;color:${color};white-space:nowrap;">${label}</span>
       </div>`;
     }).join('');
@@ -2012,11 +2917,11 @@ function renderInspectionReportContent(record, tenant){
 
   const photosHtml = (record.photos && record.photos.length) ? `
     <div style="font-weight:700;font-size:13px;margin-bottom:8px;">📸 หลักฐานภาพถ่าย (${record.photos.length} รูป)</div>
-    <div class="report-photos-grid">${record.photos.slice(0,6).map(p=>`<img src="${p}">`).join('')}</div>` : '';
+    <div class="report-photos-grid">${record.photos.slice(0,8).map(p=>`<img src="${p}">`).join('')}</div>` : '';
 
   const noteHtml = record.notes ? `
     <div class="report-note-box">
-      <b>📝 ข้อเสนอแนะ / คำสั่งปรับปรุงงาน:</b> ${record.notes}
+      <b>📝 ข้อเสนอแนะ / คำสั่งปรับปรุงงาน:</b> ${escapeHtml(record.notes)}
       ${record.deadline ? `<br><b>⏰ กำหนดเดดไลน์แก้ไข:</b> ${record.deadline}` : ''}
     </div>` : '';
 
@@ -2026,31 +2931,34 @@ function renderInspectionReportContent(record, tenant){
   return `
   <div class="report-page">
     <div class="report-header">
-      <div style="display:flex;align-items:center;gap:14px;">
+      <div style="display:flex;align-items:center;gap:12px;min-width:0;">
+        <div style="background:#fff;border-radius:10px;padding:5px 7px;flex-shrink:0;display:flex;align-items:center;"><img src="${SEACON_LOGO_DATA_URL}" style="height:26px;width:auto;display:block;"></div>
         <div class="report-logo">MG</div>
-        <div>
-          <div style="font-size:21px;font-weight:800;">ใบรายงานผลการตรวจประเมินร้านค้า</div>
-          <div style="font-size:12.5px;opacity:.9;">MallGuard · ระบบตรวจประเมินความปลอดภัยและมาตรฐานร้านค้า</div>
+        <div style="min-width:0;">
+          <div style="font-size:17px;font-weight:800;line-height:1.25;">ใบรายงานผลการตรวจประเมินร้านค้า</div>
+          <div style="font-size:11px;opacity:.9;">MallGuard · ระบบตรวจประเมินความปลอดภัยและมาตรฐานร้านค้า</div>
         </div>
       </div>
-      <div style="text-align:right;font-size:12.5px;opacity:.95;">เลขที่รายงาน: <b>${record.id}</b><br>วันที่ตรวจ: <b>${toBuddhistDateStr(parseBEDateStr(record.date))}</b></div>
+      <div style="text-align:right;font-size:11px;opacity:.95;flex-shrink:0;">เลขที่: <b>${record.id}</b><br>วันที่ตรวจ: <b>${toBuddhistDateStr(parseBEDateStr(record.date))}</b></div>
     </div>
 
     <div class="report-summary-strip">
       <div class="report-store-block">
-        <div style="font-size:17px;font-weight:800;margin-bottom:4px;">${tenant.name || record.storeId}</div>
-        <div style="font-size:12px;color:#6b6280;">${record.storeId} · ${tenant.type||'-'} · ${tenant.zone||'-'} ${tenant.floor||''}</div>
-        <div style="font-size:12px;color:#6b6280;margin-top:6px;">ผู้ติดต่อ: ${tenant.contact||'-'} (${tenant.phone||'-'})</div>
+        <div style="font-size:17px;font-weight:800;margin-bottom:4px;">${escapeHtml(tenant.name || record.storeId)}</div>
+        <div style="font-size:12px;color:#6b6280;">${escapeHtml(record.storeId)} · ${escapeHtml(tenant.type||'-')} · ${escapeHtml(tenant.zone||'-')} ${escapeHtml(tenant.floor||'')}</div>
+        <div style="font-size:12px;color:#6b6280;margin-top:6px;">ผู้ติดต่อ: ${escapeHtml(record.contact || tenant.contact || '-')} (${escapeHtml(record.phone || tenant.phone || '-')})</div>
       </div>
-      <div class="report-grade-block" style="background:${g.bg};">
-        <div style="font-size:12px;font-weight:700;color:${g.color};margin-bottom:2px;">ผลสรุปการตรวจ</div>
-        <div style="font-size:15px;font-weight:800;color:${g.color};margin-bottom:6px;">${g.label}</div>
-        <div style="font-size:30px;font-weight:800;color:${g.color};line-height:1;">${record.score}<span style="font-size:14px;">/100</span></div>
-      </div>
-      <div class="report-mini-stats">
-        <div class="report-mini-stat"><span>ประเภทการตรวจ</span><b>${typeLabelOf(record.type)}</b></div>
-        <div class="report-mini-stat"><span>ผู้ตรวจ</span><b>${record.inspector}</b></div>
-        <div class="report-mini-stat"><span>ผลรวมข้อตรวจ</span><b>ผ่าน ${passCount}/${totalCount} ข้อ</b></div>
+      <div class="report-summary-row2">
+        <div class="report-grade-block" style="background:${g.bg};">
+          <div style="font-size:11.5px;font-weight:700;color:${g.color};margin-bottom:2px;">ผลสรุปการตรวจ</div>
+          <div style="font-size:13.5px;font-weight:800;color:${g.color};margin-bottom:6px;">${g.label}</div>
+          <div style="font-size:28px;font-weight:800;color:${g.color};line-height:1;">${record.score}<span style="font-size:13px;">/100</span></div>
+        </div>
+        <div class="report-mini-stats">
+          <div class="report-mini-stat"><span>ประเภทการตรวจ</span><b>${typeLabelOf(record.type)}</b></div>
+          <div class="report-mini-stat"><span>ผู้ตรวจ</span><b>${escapeHtml(record.inspector)}</b></div>
+          <div class="report-mini-stat"><span>ผลรวมข้อตรวจ</span><b>ผ่าน ${passCount}/${totalCount} ข้อ</b></div>
+        </div>
       </div>
     </div>
 
@@ -2063,7 +2971,7 @@ function renderInspectionReportContent(record, tenant){
       <div class="report-sign-box">${sigStoreImg}<div>ลงชื่อผู้แทนร้านค้า (Store Rep.)</div></div>
     </div>
 
-    <div class="report-footer"><span>ออกโดยระบบ MallGuard · พิมพ์เมื่อ ${toBuddhistDateStr(new Date())}</span><span>หน้า 1/1</span></div>
+    <div class="report-footer"><span>ออกโดยระบบ MallGuard · พิมพ์เมื่อ ${toBuddhistDateStr(new Date())}</span><span>A4 · หน้า 1/1</span></div>
   </div>`;
 }
 
@@ -2094,37 +3002,40 @@ function renderWarningNoticeContent(record, tenant){
 
   return `
   <div class="report-page">
-    <div style="background-image:${bannerColor};color:#fff;border-radius:18px;padding:22px 26px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center;">
-      <div>
-        <div style="font-size:22px;font-weight:800;">${bannerLabel}</div>
-        <div style="font-size:12.5px;opacity:.9;margin-top:4px;">MallGuard · แจ้งไปยังผู้เช่าเพื่อดำเนินการแก้ไขตามกำหนดเวลา</div>
+    <div style="background-image:${bannerColor};color:#fff;border-radius:16px;padding:18px 22px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;gap:10px;">
+      <div style="display:flex;align-items:center;gap:12px;min-width:0;">
+        <div style="background:#fff;border-radius:10px;padding:5px 7px;flex-shrink:0;display:flex;align-items:center;"><img src="${SEACON_LOGO_DATA_URL}" style="height:24px;width:auto;display:block;"></div>
+        <div style="min-width:0;">
+          <div style="font-size:18px;font-weight:800;line-height:1.3;">${bannerLabel}</div>
+          <div style="font-size:11px;opacity:.9;margin-top:4px;">MallGuard · แจ้งไปยังผู้เช่าเพื่อดำเนินการแก้ไขตามกำหนดเวลา</div>
+        </div>
       </div>
-      <div style="text-align:right;font-size:12.5px;">เลขที่: <b>${record.id}</b><br>วันที่ตรวจ: <b>${toBuddhistDateStr(parseBEDateStr(record.date))}</b></div>
+      <div style="text-align:right;font-size:11px;flex-shrink:0;">เลขที่: <b>${record.id}</b><br>วันที่ตรวจ: <b>${toBuddhistDateStr(parseBEDateStr(record.date))}</b></div>
     </div>
 
     <div class="report-store-block" style="margin-bottom:16px;">
-      <div style="font-size:18px;font-weight:800;">${tenant.name || record.storeId}</div>
-      <div style="font-size:12.5px;color:#6b6280;">${record.storeId} · ${tenant.zone||'-'} ${tenant.floor||''} · ผู้ติดต่อ: ${tenant.contact||'-'} (${tenant.phone||'-'})</div>
+      <div style="font-size:17px;font-weight:800;">${escapeHtml(tenant.name || record.storeId)}</div>
+      <div style="font-size:12px;color:#6b6280;margin-top:4px;">${escapeHtml(record.storeId)} · ${escapeHtml(tenant.zone||'-')} ${escapeHtml(tenant.floor||'')} · ผู้ติดต่อ: ${escapeHtml(record.contact || tenant.contact || '-')} (${escapeHtml(record.phone || tenant.phone || '-')})</div>
     </div>
 
-    <div style="font-weight:700;font-size:14px;margin-bottom:8px;">รายการที่ตรวจพบว่าไม่ผ่านมาตรฐาน (${failedItems.length} ข้อ)</div>
+    <div style="font-weight:700;font-size:13.5px;margin-bottom:8px;">รายการที่ตรวจพบว่าไม่ผ่านมาตรฐาน (${failedItems.length} ข้อ)</div>
     ${itemsHtml}
 
-    <div style="background:#FFF7ED;border:2px dashed #FDBA74;border-radius:14px;padding:16px 20px;margin:18px 0;text-align:center;">
-      <div style="font-size:12.5px;color:#9A3412;">กำหนดระยะเวลาดำเนินการแก้ไขภายในวันที่</div>
-      <div style="font-size:26px;font-weight:800;color:#C2410C;">${record.deadline ? toBuddhistDateStr(record.deadline) : 'ตามดุลยพินิจของฝ่ายปฏิบัติการ'}</div>
+    <div style="background:#FFF7ED;border:2px dashed #FDBA74;border-radius:14px;padding:16px 20px;margin:16px 0;text-align:center;">
+      <div style="font-size:12px;color:#9A3412;">กำหนดระยะเวลาดำเนินการแก้ไขภายในวันที่</div>
+      <div style="font-size:24px;font-weight:800;color:#C2410C;">${record.deadline ? toBuddhistDateStr(record.deadline) : 'ตามดุลยพินิจของฝ่ายปฏิบัติการ'}</div>
     </div>
 
-    ${record.notes ? `<div class="report-note-box"><b>📝 ข้อเสนอแนะ/คำสั่งจากผู้ตรวจ:</b> ${record.notes}</div>` : ''}
+    ${record.notes ? `<div class="report-note-box"><b>📝 ข้อเสนอแนะ/คำสั่งจากผู้ตรวจ:</b> ${escapeHtml(record.notes)}</div>` : ''}
 
-    <p style="font-size:11px;color:#6b6280;margin:14px 0;line-height:1.7;">หมายเหตุ: หากไม่ดำเนินการแก้ไขให้แล้วเสร็จภายในกำหนดเวลาข้างต้น ทางศูนย์การค้าขอสงวนสิทธิ์พิจารณาดำเนินการตามระเบียบสัญญาเช่าพื้นที่ต่อไป</p>
+    <p style="font-size:10.5px;color:#6b6280;margin:12px 0;line-height:1.7;">หมายเหตุ: หากไม่ดำเนินการแก้ไขให้แล้วเสร็จภายในกำหนดเวลาข้างต้น ทางศูนย์การค้าขอสงวนสิทธิ์พิจารณาดำเนินการตามระเบียบสัญญาเช่าพื้นที่ต่อไป</p>
 
     <div class="report-sign-row">
       <div class="report-sign-box">${sigInspectorImg}<div>ผู้แจ้งเตือน (Inspector)</div></div>
       <div class="report-sign-box">${sigStoreImg}<div>ผู้รับทราบ (Store Rep.)</div></div>
     </div>
 
-    <div class="report-footer"><span>ออกโดยระบบ MallGuard · พิมพ์เมื่อ ${toBuddhistDateStr(new Date())}</span><span>หน้า 1/1</span></div>
+    <div class="report-footer"><span>ออกโดยระบบ MallGuard · พิมพ์เมื่อ ${toBuddhistDateStr(new Date())}</span><span>A4 · หน้า 1/1</span></div>
   </div>`;
 }
 
@@ -2141,8 +3052,8 @@ function renderDashboardReportContent(s){
     const g = gradeMeta(h.grade);
     return `<tr>
       <td style="padding:8px;border-bottom:1px solid #eee;">#${i+1}</td>
-      <td style="padding:8px;border-bottom:1px solid #eee;">${tenant.name||h.storeId}</td>
-      <td style="padding:8px;border-bottom:1px solid #eee;">${tenant.zone||'-'}</td>
+      <td style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(tenant.name||h.storeId)}</td>
+      <td style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(tenant.zone||'-')}</td>
       <td style="padding:8px;border-bottom:1px solid #eee;color:${g.color};font-weight:700;">${g.label}</td>
       <td style="padding:8px;border-bottom:1px solid #eee;font-weight:700;">${h.score}</td>
     </tr>`;
@@ -2152,47 +3063,47 @@ function renderDashboardReportContent(s){
   return `
   <div class="report-page">
     <div class="report-header">
-      <div style="display:flex;align-items:center;gap:14px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="background:#fff;border-radius:10px;padding:5px 7px;flex-shrink:0;display:flex;align-items:center;"><img src="${SEACON_LOGO_DATA_URL}" style="height:26px;width:auto;display:block;"></div>
         <div class="report-logo">MG</div>
         <div>
-          <div style="font-size:21px;font-weight:800;">รายงานสรุปผลการตรวจประเมินร้านค้า</div>
-          <div style="font-size:12.5px;opacity:.9;">MallGuard · ภาพรวมทั้งศูนย์การค้า</div>
+          <div style="font-size:17px;font-weight:800;">รายงานสรุปผลการตรวจประเมินร้านค้า</div>
+          <div style="font-size:11px;opacity:.9;">MallGuard · ภาพรวมทั้งศูนย์การค้า</div>
         </div>
       </div>
-      <div style="text-align:right;font-size:12.5px;opacity:.95;">วันที่ออกรายงาน<br><b>${toBuddhistDateStr(new Date())}</b></div>
+      <div style="text-align:right;font-size:11px;opacity:.95;">วันที่ออกรายงาน<br><b>${toBuddhistDateStr(new Date())}</b></div>
     </div>
 
-    <div style="display:flex;gap:14px;margin-bottom:16px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;">
       ${kpis.map(([label,val,color])=>`
-        <div style="flex:1;background:${color};color:#fff;border-radius:16px;padding:16px;">
-          <div style="font-size:12px;opacity:.9;">${label}</div><div style="font-size:26px;font-weight:800;">${val}</div>
+        <div style="background:${color};color:#fff;border-radius:14px;padding:14px 16px;">
+          <div style="font-size:12px;opacity:.9;">${label}</div><div style="font-size:24px;font-weight:800;">${val}</div>
         </div>`).join('')}
     </div>
 
-    <div style="display:flex;gap:16px;">
-      <div style="flex:1.4;">
-        <div style="font-weight:700;font-size:13px;margin-bottom:8px;">🔥 Top 5 ร้านค้าที่ต้องปรับปรุงด่วนที่สุด</div>
-        <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
-          <thead><tr style="background:#F8FAFC;text-align:left;">
-            <th style="padding:8px;border-bottom:2px solid #E6E1FA;">อันดับ</th><th style="padding:8px;border-bottom:2px solid #E6E1FA;">ร้านค้า</th>
-            <th style="padding:8px;border-bottom:2px solid #E6E1FA;">โซน</th><th style="padding:8px;border-bottom:2px solid #E6E1FA;">สถานะ</th>
-            <th style="padding:8px;border-bottom:2px solid #E6E1FA;">คะแนน</th>
-          </tr></thead>
-          <tbody>${top5Rows || `<tr><td colspan="5" style="padding:12px;text-align:center;color:#9691ab;">ยังไม่มีข้อมูล</td></tr>`}</tbody>
-        </table>
-      </div>
-      <div style="flex:1;">
-        <div style="font-weight:700;font-size:13px;margin-bottom:8px;">📊 คะแนนเฉลี่ยแยกโซน</div>
-        <div style="display:flex;flex-direction:column;gap:8px;">${zoneRows}</div>
-      </div>
+    <div style="margin-bottom:18px;">
+      <div style="font-weight:700;font-size:13.5px;margin-bottom:8px;">🔥 Top 5 ร้านค้าที่ต้องปรับปรุงด่วนที่สุด</div>
+      <table style="width:100%;border-collapse:collapse;font-size:12px;">
+        <thead><tr style="background:#F8FAFC;text-align:left;">
+          <th style="padding:7px;border-bottom:2px solid #E6E1FA;">อันดับ</th><th style="padding:7px;border-bottom:2px solid #E6E1FA;">ร้านค้า</th>
+          <th style="padding:7px;border-bottom:2px solid #E6E1FA;">โซน</th><th style="padding:7px;border-bottom:2px solid #E6E1FA;">สถานะ</th>
+          <th style="padding:7px;border-bottom:2px solid #E6E1FA;">คะแนน</th>
+        </tr></thead>
+        <tbody>${top5Rows || `<tr><td colspan="5" style="padding:12px;text-align:center;color:#9691ab;">ยังไม่มีข้อมูล</td></tr>`}</tbody>
+      </table>
     </div>
 
-    <div class="report-sign-row" style="margin-top:36px;">
+    <div style="margin-bottom:16px;">
+      <div style="font-weight:700;font-size:13.5px;margin-bottom:8px;">📊 คะแนนเฉลี่ยแยกโซน</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">${zoneRows || `<p style="color:#9691ab;font-size:12px;">ยังไม่มีข้อมูล</p>`}</div>
+    </div>
+
+    <div class="report-sign-row" style="margin-top:24px;">
       <div class="report-sign-box"><div style="border-bottom:1px solid #ccc;margin-bottom:8px;height:1px;"></div>ผู้จัดทำรายงาน</div>
       <div class="report-sign-box"><div style="border-bottom:1px solid #ccc;margin-bottom:8px;height:1px;"></div>ผู้ตรวจสอบ/อนุมัติ</div>
     </div>
 
-    <div class="report-footer"><span>ออกโดยระบบ MallGuard</span><span>หน้า 1/1</span></div>
+    <div class="report-footer"><span>ออกโดยระบบ MallGuard · พิมพ์เมื่อ ${toBuddhistDateStr(new Date())}</span><span>A4 · หน้า 1/1</span></div>
   </div>`;
 }
 
